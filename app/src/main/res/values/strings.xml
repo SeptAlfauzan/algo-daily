@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Algo Track</string>
+    <string name="login_form_title">Masuk ke akun anda</string>
 </resources>
