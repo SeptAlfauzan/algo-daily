@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">Algo Track</string>
     <string name="login_form_title">Masuk ke akun anda</string>
+    <string name="register_form_title">Buat Akun Anda</string>
+    <string name="login">Login</string>
+    <string name="register">Register</string>
+    <string name="already_have_account">Already Have Account, </string>
+    <string name="dont_have_account">Dont Have Account, </string>
 </resources>
