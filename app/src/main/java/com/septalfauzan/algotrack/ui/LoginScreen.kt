@@ -14,17 +14,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.septalfauzan.algotrack.R
+import com.septalfauzan.algotrack.data.userData
 import com.septalfauzan.algotrack.ui.component.Header
 import com.septalfauzan.algotrack.ui.component.LogRegButton
 import com.septalfauzan.algotrack.ui.component.RoundedTextInput
-import com.septalfauzan.algotrack.ui.theme.AlgoTrackTheme
 
 @Composable
-fun LoginScreen(modifier: Modifier = Modifier) {
+fun LoginScreen(modifier: Modifier = Modifier, navController: NavController) {
     Column(
         modifier
             .fillMaxSize()
@@ -41,12 +40,15 @@ fun LoginScreen(modifier: Modifier = Modifier) {
             )
         )
         Spacer(modifier = Modifier.size(8.dp))
-        LoginForm()
+        LoginForm(
+            onRegisterClick = { navController.navigate("register") },
+            onLoginCLick = { navController.navigate("home") }
+        )
     }
 }
 
 @Composable
-private fun LoginForm(){
+private fun LoginForm(onRegisterClick: () -> Unit, onLoginCLick: (userData) -> Unit){
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -75,16 +77,8 @@ private fun LoginForm(){
             Text(
                 text = stringResource(id = R.string.register),
                 color = MaterialTheme.colors.primary,
-                modifier = Modifier.clickable { /* go to register screen */ })
+                modifier = Modifier.clickable { onRegisterClick })
         }
-        LogRegButton(text = stringResource(id = R.string.login), onClick = { /*TODO*/ }, modifier = Modifier.fillMaxWidth())
-    }
-}
-
-@Preview(showBackground = true, device = Devices.PIXEL_4)
-@Composable
-private fun Preview() {
-    AlgoTrackTheme {
-        LoginScreen()
+        LogRegButton(text = stringResource(id = R.string.login), onClick = { onLoginCLick }, modifier = Modifier.fillMaxWidth())
     }
 }
