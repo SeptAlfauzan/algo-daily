@@ -19,6 +19,7 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.septalfauzan.algotrack.R
+import com.septalfauzan.algotrack.ui.component.Header
 import com.septalfauzan.algotrack.ui.component.LogRegButton
 import com.septalfauzan.algotrack.ui.component.RoundedTextInput
 import com.septalfauzan.algotrack.ui.theme.AlgoTrackTheme
@@ -32,7 +33,7 @@ fun LoginScreen(modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Header()
+        Header(painterResource(id = R.drawable.login_illustration))
         Text(
             text = stringResource(R.string.login_form_title),
             style = MaterialTheme.typography.h5.copy(
@@ -42,26 +43,6 @@ fun LoginScreen(modifier: Modifier = Modifier) {
         )
         Spacer(modifier = Modifier.size(8.dp))
         LoginForm()
-    }
-}
-
-@Composable
-private fun Header(){
-    Box(
-        Modifier
-            .fillMaxWidth()
-            .height(262.dp)
-            .clip(RoundedCornerShape(bottomStart = 88.dp))
-            .background(MaterialTheme.colors.secondary)
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.login_illustration),
-            contentDescription = "login illustration",
-            modifier = Modifier
-                .align(Alignment.Center)
-                .width(240.dp)
-                .height(176.dp)
-        )
     }
 }
 
