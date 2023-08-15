@@ -11,11 +11,14 @@ import androidx.navigation.compose.rememberNavController
 import com.septalfauzan.algotrack.navigation.Screen
 import com.septalfauzan.algotrack.ui.LoginScreen
 import com.septalfauzan.algotrack.ui.RegisterScreen
+import com.septalfauzan.algotrack.viewmodels.AuthViewModel
 
 @Composable
 fun AlgoTrackApp(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
+    authViewModel: AuthViewModel,
+    registerViewModel: AuthViewModel,
 ) {
     Scaffold(
         modifier = modifier,
