@@ -78,7 +78,7 @@ private fun RegisterForm(onRegisterClick: (UserData) -> Unit, onLoginCLick: () -
 
     Column(
         modifier = Modifier.padding(horizontal = 76.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         RoundedTextInput(
             label = "Nama",
@@ -103,8 +103,8 @@ private fun RegisterForm(onRegisterClick: (UserData) -> Unit, onLoginCLick: () -
             onChange = { email = it },
             value = email,
             keyboardType = KeyboardType.Email,
-
-imeAction = ImeAction.Next,            modifier = Modifier.fillMaxWidth()
+            imeAction = ImeAction.Next,
+            modifier = Modifier.fillMaxWidth()
         )
         RoundedTextInput(
             label = "Password",
@@ -118,7 +118,6 @@ imeAction = ImeAction.Next,            modifier = Modifier.fillMaxWidth()
             ),
             modifier = Modifier.fillMaxWidth()
         )
-        Spacer(modifier = Modifier.weight(1f))
         Row {
             Text(text = stringResource(id = R.string.already_have_account))
             Text(
