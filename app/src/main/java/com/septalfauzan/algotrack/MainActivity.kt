@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.septalfauzan.algotrack.ui.theme.AlgoTrackTheme
 import com.septalfauzan.algotrack.viewmodels.AuthViewModel
+import com.septalfauzan.algotrack.viewmodels.RegisterViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -20,7 +21,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val authViewModel: AuthViewModel by viewModels()
-        val registerViewModel: AuthViewModel by viewModels()
+        val registerViewModel: RegisterViewModel by viewModels()
 
         installSplashScreen().setKeepOnScreenCondition{//splash screen will disapprear whenever already check auth token
             authViewModel.isLoadingSplash.value
