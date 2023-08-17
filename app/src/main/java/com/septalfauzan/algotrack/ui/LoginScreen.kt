@@ -14,7 +14,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -24,14 +23,17 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.septalfauzan.algotrack.R
-import com.septalfauzan.algotrack.data.AuthData
-import com.septalfauzan.algotrack.data.UserData
+import com.septalfauzan.algotrack.data.model.AuthData
 import com.septalfauzan.algotrack.ui.component.Header
 import com.septalfauzan.algotrack.ui.component.LogRegButton
 import com.septalfauzan.algotrack.ui.component.RoundedTextInput
 
 @Composable
-fun LoginScreen(modifier: Modifier = Modifier, navController: NavController) {
+fun LoginScreen(
+    modifier: Modifier = Modifier,
+    navController: NavController,
+    loginAction: (AuthData) -> Unit
+) {
     Column(
         modifier
             .fillMaxSize()
@@ -50,13 +52,16 @@ fun LoginScreen(modifier: Modifier = Modifier, navController: NavController) {
         Spacer(modifier = Modifier.size(8.dp))
         LoginForm(
             onRegisterClick = { navController.navigate("register") },
-            onLoginCLick = { navController.navigate("home") }
+            onLoginCLick = loginAction
         )
     }
 }
 
 @Composable
-private fun LoginForm(onRegisterClick: () -> Unit, onLoginCLick: (AuthData) -> Unit){
+private fun LoginForm(
+    onRegisterClick: () -> Unit,
+    onLoginCLick: (AuthData) -> Unit,
+) {
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -96,6 +101,10 @@ private fun LoginForm(onRegisterClick: () -> Unit, onLoginCLick: (AuthData) -> U
                 color = MaterialTheme.colors.primary,
                 modifier = Modifier.clickable { onRegisterClick() })
         }
-        LogRegButton(text = stringResource(id = R.string.login), onClick = { onLoginCLick(AuthData(email = email, password = password)) }, modifier = Modifier.fillMaxWidth())
+        LogRegButton(
+            text = stringResource(id = R.string.login),
+            onClick = { onLoginCLick(AuthData(email = email, password = password)) },
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }

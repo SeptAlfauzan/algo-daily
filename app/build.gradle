@@ -63,11 +63,28 @@ dependencies {
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_ui_version"
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_ui_version"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_ui_version"
+
     //dagger hilt
     implementation "com.google.dagger:hilt-android:2.44"
     kapt "com.google.dagger:hilt-android-compiler:2.44"
+
     //extend icon
     implementation "androidx.compose.material:material-icons-extended:$compose_ui_version"
+
+    //retrofit
+    implementation 'com.google.code.gson:gson:2.6.2'
+    implementation "com.squareup.retrofit2:retrofit:2.9.0"
+    implementation "com.squareup.retrofit2:converter-gson:2.5.0"
+    implementation "com.squareup.okhttp3:logging-interceptor:4.9.0"
+
+    //datastore
+    implementation "androidx.datastore:datastore-preferences:1.0.0"
+
+    //location
+    implementation 'com.google.android.gms:play-services-location:19.0.1'
+
+    //splash screen
+    implementation 'androidx.core:core-splashscreen:1.0.0-beta02'
 }
 
 kapt {

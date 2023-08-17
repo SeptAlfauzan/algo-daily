@@ -1,7 +1,7 @@
 package com.septalfauzan.algotrack.viewmodels
 
 import androidx.lifecycle.ViewModel
-import com.septalfauzan.algotrack.repository.MainRepository
+import com.septalfauzan.algotrack.data.repository.MainRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
