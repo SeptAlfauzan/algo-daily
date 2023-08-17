@@ -3,36 +3,66 @@ package com.septalfauzan.algotrack
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.septalfauzan.algotrack.navigation.Screen
+import com.septalfauzan.algotrack.ui.HomeScreen
 import com.septalfauzan.algotrack.ui.LoginScreen
 import com.septalfauzan.algotrack.ui.RegisterScreen
 import com.septalfauzan.algotrack.viewmodels.AuthViewModel
 
 @Composable
 fun AlgoTrackApp(
-    modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
     authViewModel: AuthViewModel,
     registerViewModel: AuthViewModel,
+    isLogged: Boolean,
+    modifier: Modifier = Modifier,
 ) {
+
+
     Scaffold(
         modifier = modifier,
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = Screen.Login.route,
+            startDestination = if (isLogged) Screen.Home.route else Screen.Login.route,
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(Screen.Login.route) {
-                LoginScreen(navController = navController)
+                fun navigateToHome() = navController.navigate(Screen.Home.route) {
+                    popUpTo(Screen.Login.route) {
+                        inclusive = true
+                    }
+                }
+
+                LoginScreen(
+                    navController = navController,
+                    loginAction = { loginData ->
+                        authViewModel.login(
+                            body = loginData,
+                            onSuccess = { navigateToHome() })
+                    })
             }
             composable(Screen.Register.route) {
                 RegisterScreen(navController = navController)
+            }
+            composable(Screen.Home.route) {
+                fun navigateToLogin() = navController.navigate(Screen.Login.route) {
+                    popUpTo(Screen.Home.route) {
+                        inclusive = true
+                    }
+                }
+
+                HomeScreen(
+                    logout = {
+                        authViewModel.logout(onSuccess = { navigateToLogin() })
+                    })
             }
         }
     }

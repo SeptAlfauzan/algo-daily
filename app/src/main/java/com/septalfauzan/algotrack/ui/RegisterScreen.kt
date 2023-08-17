@@ -36,7 +36,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.septalfauzan.algotrack.R
-import com.septalfauzan.algotrack.data.UserData
+import com.septalfauzan.algotrack.data.model.UserData
 import com.septalfauzan.algotrack.ui.component.Header
 import com.septalfauzan.algotrack.ui.component.LogRegButton
 import com.septalfauzan.algotrack.ui.component.RoundedTextInput
