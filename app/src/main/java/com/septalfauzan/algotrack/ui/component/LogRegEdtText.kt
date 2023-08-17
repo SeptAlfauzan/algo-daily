@@ -49,6 +49,8 @@ fun RoundedTextInput(
     label: String,
     onChange: (String) -> Unit,
     value: String,
+    error: Boolean = false,
+    errorText: String = "",
     keyboardType: KeyboardType = KeyboardType.Text,
     imeAction: ImeAction = ImeAction.Done,
     keyboardAction: KeyboardActions = KeyboardActions.Default,
@@ -57,11 +59,15 @@ fun RoundedTextInput(
     var peekPassword by remember { mutableStateOf(keyboardType != KeyboardType.Password) }
 
     Column {
+        if(error) Text(text = errorText, style = MaterialTheme.typography.caption.copy(
+            color = RedAccent
+        ))
         Box(
             modifier = Modifier.fillMaxWidth(),
             contentAlignment = Alignment.CenterStart
         ) {
             OutlinedTextField(
+                isError = error,
                 maxLines = 1,
                 singleLine = true,
                 label = { Text(text = label, style = MaterialTheme.typography.caption) },
