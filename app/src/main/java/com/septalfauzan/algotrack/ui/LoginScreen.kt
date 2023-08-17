@@ -2,7 +2,6 @@
 
 package com.septalfauzan.algotrack.ui
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
@@ -12,12 +11,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -40,7 +37,7 @@ fun LoginScreen(
     updateEmail: (String) -> Unit,
     updatePassword: (String) -> Unit,
     formUIStateFlow: StateFlow<AuthFormUIState>,
-    loginAction: () -> Unit
+    loginAction: () -> Unit,
 ) {
     val formUiState by formUIStateFlow.collectAsState()
     Column(

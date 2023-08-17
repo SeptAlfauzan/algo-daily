@@ -2,6 +2,7 @@
 
 package com.septalfauzan.algotrack.ui
 
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,7 +19,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Phone
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,6 +27,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -34,15 +35,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.septalfauzan.algotrack.R
 import com.septalfauzan.algotrack.data.model.UserData
+import com.septalfauzan.algotrack.helper.RegistrationStatus
 import com.septalfauzan.algotrack.ui.component.Header
 import com.septalfauzan.algotrack.ui.component.LogRegButton
 import com.septalfauzan.algotrack.ui.component.RoundedTextInput
 
 @Composable
-fun RegisterScreen(modifier: Modifier = Modifier, navController: NavController){
+fun RegisterScreen(
+    modifier: Modifier = Modifier,
+    RegisterAction: (UserData) -> Unit,
+    LoginAction: () -> Unit,
+    registrationStatus: RegistrationStatus?,
+){
     Column(
         modifier
             .fillMaxSize()
@@ -60,9 +66,23 @@ fun RegisterScreen(modifier: Modifier = Modifier, navController: NavController){
         )
         Spacer(modifier = Modifier.size(8.dp))
         RegisterForm(
-            onRegisterClick = { navController.navigate("login") },
-            onLoginCLick = { navController.navigate("login") }
+            onRegisterClick = RegisterAction,
+            onLoginCLick = LoginAction
         )
+        registrationStatus?.let {
+            when (it) {
+                is RegistrationStatus.Success -> {
+                    LoginAction()
+                }
+                is RegistrationStatus.Error -> {
+                    Toast.makeText(
+                        LocalContext.current,
+                        "Registration failed: ${it.errorMessage}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        }
     }
 }
 
@@ -70,7 +90,6 @@ fun RegisterScreen(modifier: Modifier = Modifier, navController: NavController){
 private fun RegisterForm(onRegisterClick: (UserData) -> Unit, onLoginCLick: () -> Unit){
 
     var name by remember { mutableStateOf("") }
-    var phone by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
@@ -78,22 +97,13 @@ private fun RegisterForm(onRegisterClick: (UserData) -> Unit, onLoginCLick: () -
 
     Column(
         modifier = Modifier.padding(horizontal = 76.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         RoundedTextInput(
             label = "Nama",
             icon = Icons.Default.Person,
             onChange = { name = it },
             value = name,
-            imeAction = ImeAction.Next,
-            modifier = Modifier.fillMaxWidth()
-        )
-        RoundedTextInput(
-            label = "No. Telp.",
-            icon = Icons.Default.Phone,
-            onChange = { phone = it },
-            value = phone,
-            keyboardType = KeyboardType.Phone,
             imeAction = ImeAction.Next,
             modifier = Modifier.fillMaxWidth()
         )
@@ -128,7 +138,7 @@ private fun RegisterForm(onRegisterClick: (UserData) -> Unit, onLoginCLick: () -
         LogRegButton(
             text = stringResource(R.string.register),
             onClick = {
-                val userData = UserData(name, phone, email, password)
+                val userData = UserData(name, email, password)
                 onRegisterClick(userData)
             },
             modifier = Modifier.fillMaxWidth()
