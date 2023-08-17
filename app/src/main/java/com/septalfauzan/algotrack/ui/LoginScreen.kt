@@ -2,6 +2,7 @@
 
 package com.septalfauzan.algotrack.ui
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
@@ -11,9 +12,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -23,17 +27,22 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.septalfauzan.algotrack.R
-import com.septalfauzan.algotrack.data.model.AuthData
 import com.septalfauzan.algotrack.ui.component.Header
 import com.septalfauzan.algotrack.ui.component.LogRegButton
 import com.septalfauzan.algotrack.ui.component.RoundedTextInput
+import com.septalfauzan.algotrack.viewmodels.AuthFormUIState
+import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 fun LoginScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
-    loginAction: (AuthData) -> Unit
+    updateEmail: (String) -> Unit,
+    updatePassword: (String) -> Unit,
+    formUIStateFlow: StateFlow<AuthFormUIState>,
+    loginAction: () -> Unit
 ) {
+    val formUiState by formUIStateFlow.collectAsState()
     Column(
         modifier
             .fillMaxSize()
@@ -51,6 +60,9 @@ fun LoginScreen(
         )
         Spacer(modifier = Modifier.size(8.dp))
         LoginForm(
+            updateEmail = updateEmail,
+            updatePassword = updatePassword,
+            formUiState = formUiState,
             onRegisterClick = { navController.navigate("register") },
             onLoginCLick = loginAction
         )
@@ -60,11 +72,14 @@ fun LoginScreen(
 @Composable
 private fun LoginForm(
     onRegisterClick: () -> Unit,
-    onLoginCLick: (AuthData) -> Unit,
+    updateEmail: (String) -> Unit,
+    updatePassword: (String) -> Unit,
+    onLoginCLick: () -> Unit,
+    formUiState: AuthFormUIState,
 ) {
 
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    var emailBlur by remember {mutableStateOf(false) }
+    var passwordBlur by remember {mutableStateOf(false) }
 
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -75,23 +90,35 @@ private fun LoginForm(
         RoundedTextInput(
             label = "Email",
             icon = Icons.Default.Email,
-            onChange = { email = it },
-            value = email,
+            onChange = { updateEmail(it) },
+            value = formUiState.email,
+            error = formUiState.emailError.isNotEmpty(),
+            errorText = formUiState.emailError,
             keyboardType = KeyboardType.Email,
             imeAction = ImeAction.Next,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth().onFocusChanged {
+                if (it.isFocused && !emailBlur) emailBlur = true
+                if (!it.isFocused && emailBlur) updateEmail(formUiState.email)
+            }
         )
         RoundedTextInput(
             label = "Password",
             icon = Icons.Default.Lock,
-            onChange = { password = it },
-            value = password,
+            onChange = { updatePassword(it) },
+            value = formUiState.password,
+            error = formUiState.passwordError.isNotEmpty(),
+            errorText = formUiState.passwordError,
             keyboardType = KeyboardType.Password,
             imeAction = ImeAction.Done,
             keyboardAction = KeyboardActions(
                 onDone = { keyboardController?.hide() }
             ),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .onFocusChanged {
+                    if (it.isFocused && !passwordBlur) passwordBlur = true
+                    if (!it.isFocused && passwordBlur) updatePassword(formUiState.password)
+                }
         )
         Spacer(modifier = Modifier.weight(1f))
         Row {
@@ -103,7 +130,7 @@ private fun LoginForm(
         }
         LogRegButton(
             text = stringResource(id = R.string.login),
-            onClick = { onLoginCLick(AuthData(email = email, password = password)) },
+            onClick = { onLoginCLick() },
             modifier = Modifier.fillMaxWidth()
         )
     }

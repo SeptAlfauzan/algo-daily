@@ -18,7 +18,7 @@ class ApiConfig{
             .build()
 
         private val retrofit = Retrofit.Builder().apply {
-            baseUrl("https://restaurant-api.dicoding.dev")// TODO: change base url api
+            baseUrl("https://algo-track.onrender.com/api/")// TODO: change base url api
             addConverterFactory(GsonConverterFactory.create())
             client(client)
         }.build()

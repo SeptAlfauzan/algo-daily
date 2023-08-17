@@ -3,8 +3,6 @@ package com.septalfauzan.algotrack
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -43,11 +41,10 @@ fun AlgoTrackApp(
 
                 LoginScreen(
                     navController = navController,
-                    loginAction = { loginData ->
-                        authViewModel.login(
-                            body = loginData,
-                            onSuccess = { navigateToHome() })
-                    })
+                    updateEmail = {authViewModel.updateEmail(it)},
+                    updatePassword = {authViewModel.updatePassword(it)},
+                    formUIStateFlow = authViewModel.formUiState,
+                    loginAction = { authViewModel.login(onSuccess = { navigateToHome() }) })
             }
             composable(Screen.Register.route) {
                 RegisterScreen(navController = navController)

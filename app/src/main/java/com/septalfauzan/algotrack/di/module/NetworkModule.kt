@@ -24,7 +24,7 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit = Retrofit.Builder()
-            .baseUrl("https://restaurant-api.dicoding.dev")// TODO: change api base url
+            .baseUrl("https://algo-track.onrender.com/api/")// TODO: change api base url
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
