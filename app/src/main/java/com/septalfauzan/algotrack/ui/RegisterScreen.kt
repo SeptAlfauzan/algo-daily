@@ -5,6 +5,7 @@ package com.septalfauzan.algotrack.ui
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -23,6 +24,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -34,7 +36,6 @@ import androidx.compose.ui.unit.dp
 import com.septalfauzan.algotrack.R
 import com.septalfauzan.algotrack.data.event.MyEvent
 import com.septalfauzan.algotrack.data.model.UserData
-import com.septalfauzan.algotrack.helper.RegistrationStatus
 import com.septalfauzan.algotrack.ui.component.Header
 import com.septalfauzan.algotrack.ui.component.LogRegButton
 import com.septalfauzan.algotrack.ui.component.RoundedTextInput
@@ -46,7 +47,6 @@ fun RegisterScreen(
     RegisterAction: (UserData) -> Unit,
     LoginAction: () -> Unit,
     eventMessage: Flow<MyEvent>,
-    registrationStatus: RegistrationStatus?,
 ){
 
     val context = LocalContext.current
@@ -78,29 +78,17 @@ fun RegisterScreen(
             onRegisterClick = RegisterAction,
             onLoginCLick = LoginAction
         )
-//        registrationStatus?.let {
-//            when (it) {
-//                is RegistrationStatus.Success -> {
-//                    LoginAction()
-//                }
-//                is RegistrationStatus.Error -> {
-//                    Toast.makeText(
-//                        LocalContext.current,
-//                        "Registration failed: ${it.errorMessage}",
-//                        Toast.LENGTH_SHORT
-//                    ).show()
-//                }
-//            }
-//        }
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun RegisterForm(onRegisterClick: (UserData) -> Unit, onLoginCLick: () -> Unit){
 
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var showError by remember { mutableStateOf(false) }
 
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -137,18 +125,41 @@ private fun RegisterForm(onRegisterClick: (UserData) -> Unit, onLoginCLick: () -
             ),
             modifier = Modifier.fillMaxWidth()
         )
-        Row {
-            Text(text = stringResource(id = R.string.already_have_account))
-            Text(
-                text = stringResource(id = R.string.login),
-                color = MaterialTheme.colors.primary,
-                modifier = Modifier.clickable { onLoginCLick() })
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center
+        ) {
+            Row {
+                Text(text = stringResource(id = R.string.already_have_account))
+                Text(
+                    text = stringResource(id = R.string.login),
+                    color = MaterialTheme.colors.primary,
+                    modifier = Modifier.clickable { onLoginCLick() }
+                )
+            }
+        }
+        if (showError) {
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ){Text(
+                text = "All fields must be filled",
+                color = Color.Red,
+                style = MaterialTheme.typography.caption
+            )
+            }
+
         }
         LogRegButton(
             text = stringResource(R.string.register),
             onClick = {
-                val userData = UserData(name, email, password)
-                onRegisterClick(userData)
+                if (name.isNotBlank() && email.isNotBlank() && password.isNotBlank()) {
+                    val userData = UserData(name, email, password)
+                    showError = false
+                    onRegisterClick(userData)
+                } else {
+                    showError = true
+                }
             },
             modifier = Modifier.fillMaxWidth()
         )

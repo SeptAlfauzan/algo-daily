@@ -9,6 +9,7 @@ import com.septalfauzan.algotrack.data.source.remote.apiInterfaces.AlgoTrackApiI
 import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import javax.inject.Inject
 
 class MainRepository @Inject constructor(
@@ -19,7 +20,7 @@ class MainRepository @Inject constructor(
     suspend fun registerUserRawJson(userData: UserData): RegisterResponse {
         val gson = Gson()
         val userDataJson = gson.toJson(userData)
-        val requestBody = RequestBody.create("application/json".toMediaTypeOrNull(), userDataJson)
+        val requestBody = userDataJson.toRequestBody("application/json".toMediaTypeOrNull())
         return apiServices.register(requestBody)
     }
 }
