@@ -19,11 +19,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -36,19 +32,32 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.septalfauzan.algotrack.R
+import com.septalfauzan.algotrack.data.event.MyEvent
 import com.septalfauzan.algotrack.data.model.UserData
 import com.septalfauzan.algotrack.helper.RegistrationStatus
 import com.septalfauzan.algotrack.ui.component.Header
 import com.septalfauzan.algotrack.ui.component.LogRegButton
 import com.septalfauzan.algotrack.ui.component.RoundedTextInput
+import kotlinx.coroutines.flow.Flow
 
 @Composable
 fun RegisterScreen(
     modifier: Modifier = Modifier,
     RegisterAction: (UserData) -> Unit,
     LoginAction: () -> Unit,
+    eventMessage: Flow<MyEvent>,
     registrationStatus: RegistrationStatus?,
 ){
+
+    val context = LocalContext.current
+    LaunchedEffect(Unit){
+        eventMessage.collect { event ->
+            when(event) {
+                is MyEvent.MessageEvent -> Toast.makeText( context, event.message, Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
     Column(
         modifier
             .fillMaxSize()
@@ -69,20 +78,20 @@ fun RegisterScreen(
             onRegisterClick = RegisterAction,
             onLoginCLick = LoginAction
         )
-        registrationStatus?.let {
-            when (it) {
-                is RegistrationStatus.Success -> {
-                    LoginAction()
-                }
-                is RegistrationStatus.Error -> {
-                    Toast.makeText(
-                        LocalContext.current,
-                        "Registration failed: ${it.errorMessage}",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            }
-        }
+//        registrationStatus?.let {
+//            when (it) {
+//                is RegistrationStatus.Success -> {
+//                    LoginAction()
+//                }
+//                is RegistrationStatus.Error -> {
+//                    Toast.makeText(
+//                        LocalContext.current,
+//                        "Registration failed: ${it.errorMessage}",
+//                        Toast.LENGTH_SHORT
+//                    ).show()
+//                }
+//            }
+//        }
     }
 }
 

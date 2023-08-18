@@ -3,10 +3,12 @@ package com.septalfauzan.algotrack.viewmodels
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.septalfauzan.algotrack.data.event.MyEvent
 import com.septalfauzan.algotrack.data.model.AuthData
 import com.septalfauzan.algotrack.data.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -32,6 +34,9 @@ class AuthViewModel @Inject constructor(private val authRepository: AuthReposito
 
     private val _formUiState = MutableStateFlow(AuthFormUIState())
     val formUiState: StateFlow<AuthFormUIState> = _formUiState.asStateFlow()
+
+    private val eventChannel = Channel<MyEvent>()
+    val eventFlow = eventChannel.receiveAsFlow()
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -79,7 +84,9 @@ class AuthViewModel @Inject constructor(private val authRepository: AuthReposito
                     withContext(Dispatchers.Main) { onSuccess() }
                 }
             } catch (e: Exception) {
+                Log.d("TAG", "login error: ${e.message}")
                 e.printStackTrace()
+                eventChannel.send(MyEvent.MessageEvent("error login: ${e.message}"))
             }
         }
     }

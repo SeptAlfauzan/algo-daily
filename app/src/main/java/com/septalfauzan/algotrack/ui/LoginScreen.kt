@@ -2,6 +2,7 @@
 
 package com.septalfauzan.algotrack.ui
 
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
@@ -15,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -24,10 +26,12 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.septalfauzan.algotrack.R
+import com.septalfauzan.algotrack.data.event.MyEvent
 import com.septalfauzan.algotrack.ui.component.Header
 import com.septalfauzan.algotrack.ui.component.LogRegButton
 import com.septalfauzan.algotrack.ui.component.RoundedTextInput
 import com.septalfauzan.algotrack.viewmodels.AuthFormUIState
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
 @Composable
@@ -37,9 +41,19 @@ fun LoginScreen(
     updateEmail: (String) -> Unit,
     updatePassword: (String) -> Unit,
     formUIStateFlow: StateFlow<AuthFormUIState>,
+    eventMessage: Flow<MyEvent>,
     loginAction: () -> Unit,
 ) {
     val formUiState by formUIStateFlow.collectAsState()
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit){
+        eventMessage.collect { event ->
+            when(event) {
+                is MyEvent.MessageEvent -> Toast.makeText( context, event.message, Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
     Column(
         modifier
             .fillMaxSize()
@@ -80,6 +94,7 @@ private fun LoginForm(
 
     val keyboardController = LocalSoftwareKeyboardController.current
 
+
     Column(
         modifier = Modifier.padding(horizontal = 76.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -93,10 +108,12 @@ private fun LoginForm(
             errorText = formUiState.emailError,
             keyboardType = KeyboardType.Email,
             imeAction = ImeAction.Next,
-            modifier = Modifier.fillMaxWidth().onFocusChanged {
-                if (it.isFocused && !emailBlur) emailBlur = true
-                if (!it.isFocused && emailBlur) updateEmail(formUiState.email)
-            }
+            modifier = Modifier
+                .fillMaxWidth()
+                .onFocusChanged {
+                    if (it.isFocused && !emailBlur) emailBlur = true
+                    if (!it.isFocused && emailBlur) updateEmail(formUiState.email)
+                }
         )
         RoundedTextInput(
             label = "Password",

@@ -45,6 +45,7 @@ fun AlgoTrackApp(
                     updateEmail = {authViewModel.updateEmail(it)},
                     updatePassword = {authViewModel.updatePassword(it)},
                     formUIStateFlow = authViewModel.formUiState,
+                    eventMessage = authViewModel.eventFlow,
                     loginAction = { authViewModel.login(onSuccess = { navigateToHome() }) },
                     navController = navController
                 )
@@ -55,9 +56,10 @@ fun AlgoTrackApp(
 
                 RegisterScreen(
                     RegisterAction = { userData ->
-                        registerViewModel.registerUser(userData)
+                        registerViewModel.registerUser(userData, onSuccess = { navigateToLogin() })
                     },
                     LoginAction = { navigateToLogin() },
+                    eventMessage = registerViewModel.eventFlow,
                     registrationStatus = registrationStatus
                 )
             }
