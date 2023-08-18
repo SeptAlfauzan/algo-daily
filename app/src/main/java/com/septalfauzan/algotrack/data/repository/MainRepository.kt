@@ -20,7 +20,6 @@ class MainRepository @Inject constructor(
         val gson = Gson()
         val userDataJson = gson.toJson(userData)
         val requestBody = RequestBody.create("application/json".toMediaTypeOrNull(), userDataJson)
-
         return apiServices.register(requestBody)
     }
 }

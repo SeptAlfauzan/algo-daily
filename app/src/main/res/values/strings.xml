@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Algo Track</string>
+    <string name="app_name">Algo Daily</string>
     <string name="login_form_title">Masuk ke akun anda</string>
     <string name="register_form_title">Buat Akun Anda</string>
     <string name="login">Login</string>
