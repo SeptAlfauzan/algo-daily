@@ -135,12 +135,17 @@ private fun LoginForm(
                 }
         )
         Spacer(modifier = Modifier.weight(1f))
-        Row {
-            Text(text = stringResource(id = R.string.dont_have_account))
-            Text(
-                text = stringResource(id = R.string.register),
-                color = MaterialTheme.colors.primary,
-                modifier = Modifier.clickable { onRegisterClick() })
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center
+        ) {
+            Row {
+                Text(text = stringResource(id = R.string.dont_have_account))
+                Text(
+                    text = stringResource(id = R.string.register),
+                    color = MaterialTheme.colors.primary,
+                    modifier = Modifier.clickable { onRegisterClick() })
+            }
         }
         LogRegButton(
             text = stringResource(id = R.string.login),

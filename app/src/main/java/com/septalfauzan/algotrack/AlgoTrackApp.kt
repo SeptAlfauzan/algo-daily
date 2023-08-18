@@ -51,8 +51,11 @@ fun AlgoTrackApp(
                 )
             }
             composable(Screen.Register.route) {
-                fun navigateToLogin() = navController.navigate(Screen.Login.route)
-                val registrationStatus: RegistrationStatus? by registerViewModel.registrationStatusFlow.collectAsState()
+                fun navigateToLogin() = navController.navigate(Screen.Login.route){
+                    popUpTo(Screen.Register.route) {
+                        inclusive = true
+                    }
+                }
 
                 RegisterScreen(
                     RegisterAction = { userData ->
@@ -60,7 +63,6 @@ fun AlgoTrackApp(
                     },
                     LoginAction = { navigateToLogin() },
                     eventMessage = registerViewModel.eventFlow,
-                    registrationStatus = registrationStatus
                 )
             }
             composable(Screen.Home.route) {

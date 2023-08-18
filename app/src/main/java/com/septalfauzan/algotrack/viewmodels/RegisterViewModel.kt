@@ -30,7 +30,6 @@ class RegisterViewModel @Inject constructor(private val repository: MainReposito
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val registerResponse = repository.registerUserRawJson(userData)
-//                _registrationStatusFlow.value = RegistrationStatus.Success(registerResponse.data)
                 if (registerResponse.data != null) {
                     withContext(Dispatchers.Main) { onSuccess() }
                 } else eventChannel.send(
