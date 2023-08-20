@@ -28,7 +28,7 @@ import androidx.navigation.NavController
 import com.septalfauzan.algotrack.R
 import com.septalfauzan.algotrack.data.event.MyEvent
 import com.septalfauzan.algotrack.ui.component.Header
-import com.septalfauzan.algotrack.ui.component.LogRegButton
+import com.septalfauzan.algotrack.ui.component.RoundedButton
 import com.septalfauzan.algotrack.ui.component.RoundedTextInput
 import com.septalfauzan.algotrack.viewmodels.AuthFormUIState
 import kotlinx.coroutines.flow.Flow
@@ -147,7 +147,7 @@ private fun LoginForm(
                     modifier = Modifier.clickable { onRegisterClick() })
             }
         }
-        LogRegButton(
+        RoundedButton(
             text = stringResource(id = R.string.login),
             onClick = { onLoginCLick() },
             modifier = Modifier.fillMaxWidth()

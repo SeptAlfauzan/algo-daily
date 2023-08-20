@@ -14,6 +14,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.septalfauzan.algotrack.ui.theme.AlgoTrackTheme
 import com.septalfauzan.algotrack.viewmodels.AuthViewModel
 import com.septalfauzan.algotrack.viewmodels.RegisterViewModel
+import com.septalfauzan.algotrack.viewmodels.TimerViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -22,8 +23,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         val authViewModel: AuthViewModel by viewModels()
         val registerViewModel: RegisterViewModel by viewModels()
+        val timerViewModel: TimerViewModel by viewModels()
 
-        installSplashScreen().setKeepOnScreenCondition{//splash screen will disapprear whenever already check auth token
+        installSplashScreen().setKeepOnScreenCondition {//splash screen will disapprear whenever already check auth token
             authViewModel.isLoadingSplash.value
         }
 
@@ -35,7 +37,12 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    AlgoTrackApp(isLogged = isLogged, authViewModel = authViewModel, registerViewModel = registerViewModel)
+                    AlgoTrackApp(
+                        isLogged = isLogged,
+                        authViewModel = authViewModel,
+                        registerViewModel = registerViewModel,
+                        timerViewModel = timerViewModel,
+                    )
                 }
             }
         }
