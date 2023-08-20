@@ -24,7 +24,7 @@ enum class ButtonType {
  * @param modifier to overwrite button compose modifier
  */
 @Composable
-fun LogRegButton(
+fun RoundedButton(
     text: String,
     onClick: () -> Unit,
     buttonType: ButtonType = ButtonType.PRIMARY,
@@ -52,8 +52,8 @@ private fun Preview() {
     AlgoTrackTheme() {
         Surface() {
             Column() {
-                LogRegButton("Login", onClick = {}, modifier = Modifier.fillMaxWidth())
-                LogRegButton("Login", onClick = {}, buttonType = ButtonType.SECONDARY)
+                RoundedButton("Login", onClick = {}, modifier = Modifier.fillMaxWidth())
+                RoundedButton("Login", onClick = {}, buttonType = ButtonType.SECONDARY)
             }
         }
     }

@@ -37,7 +37,7 @@ import com.septalfauzan.algotrack.R
 import com.septalfauzan.algotrack.data.event.MyEvent
 import com.septalfauzan.algotrack.data.model.UserData
 import com.septalfauzan.algotrack.ui.component.Header
-import com.septalfauzan.algotrack.ui.component.LogRegButton
+import com.septalfauzan.algotrack.ui.component.RoundedButton
 import com.septalfauzan.algotrack.ui.component.RoundedTextInput
 import kotlinx.coroutines.flow.Flow
 
@@ -150,7 +150,7 @@ private fun RegisterForm(onRegisterClick: (UserData) -> Unit, onLoginCLick: () -
             }
 
         }
-        LogRegButton(
+        RoundedButton(
             text = stringResource(R.string.register),
             onClick = {
                 if (name.isNotBlank() && email.isNotBlank() && password.isNotBlank()) {

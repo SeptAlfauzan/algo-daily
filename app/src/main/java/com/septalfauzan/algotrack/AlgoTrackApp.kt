@@ -3,20 +3,18 @@ package com.septalfauzan.algotrack
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.septalfauzan.algotrack.helper.RegistrationStatus
 import com.septalfauzan.algotrack.navigation.Screen
 import com.septalfauzan.algotrack.ui.HomeScreen
 import com.septalfauzan.algotrack.ui.LoginScreen
 import com.septalfauzan.algotrack.ui.RegisterScreen
 import com.septalfauzan.algotrack.viewmodels.AuthViewModel
 import com.septalfauzan.algotrack.viewmodels.RegisterViewModel
+import com.septalfauzan.algotrack.viewmodels.TimerViewModel
 
 @Composable
 fun AlgoTrackApp(
@@ -25,6 +23,7 @@ fun AlgoTrackApp(
     registerViewModel: RegisterViewModel,
     isLogged: Boolean,
     modifier: Modifier = Modifier,
+    timerViewModel: TimerViewModel,
 ) {
     Scaffold(
         modifier = modifier,
@@ -42,8 +41,8 @@ fun AlgoTrackApp(
                 }
 
                 LoginScreen(
-                    updateEmail = {authViewModel.updateEmail(it)},
-                    updatePassword = {authViewModel.updatePassword(it)},
+                    updateEmail = { authViewModel.updateEmail(it) },
+                    updatePassword = { authViewModel.updatePassword(it) },
                     formUIStateFlow = authViewModel.formUiState,
                     eventMessage = authViewModel.eventFlow,
                     loginAction = { authViewModel.login(onSuccess = { navigateToHome() }) },
@@ -51,7 +50,7 @@ fun AlgoTrackApp(
                 )
             }
             composable(Screen.Register.route) {
-                fun navigateToLogin() = navController.navigate(Screen.Login.route){
+                fun navigateToLogin() = navController.navigate(Screen.Login.route) {
                     popUpTo(Screen.Register.route) {
                         inclusive = true
                     }
@@ -75,7 +74,9 @@ fun AlgoTrackApp(
                 HomeScreen(
                     logout = {
                         authViewModel.logout(onSuccess = { navigateToLogin() })
-                    })
+                    },
+                    timerState = timerViewModel.timerState
+                )
             }
         }
     }

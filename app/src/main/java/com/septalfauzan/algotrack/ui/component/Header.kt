@@ -13,15 +13,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.septalfauzan.algotrack.R
 
 /**
- * @param painter used to give painter value of drawable image
+ * @param imagePainter used to give painter value of drawable image
  */
 @Composable
-fun Header(painter: Painter, modifier: Modifier = Modifier){
+fun Header(imagePainter: Painter, modifier: Modifier = Modifier){
     Box(
         modifier
             .fillMaxWidth()
@@ -30,7 +28,7 @@ fun Header(painter: Painter, modifier: Modifier = Modifier){
             .background(MaterialTheme.colors.secondary)
     ) {
         Image(
-            painter = painter,
+            painter = imagePainter,
             contentDescription = "login illustration",
             modifier = Modifier
                 .align(Alignment.Center)

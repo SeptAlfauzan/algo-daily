@@ -7,4 +7,5 @@
     <string name="already_have_account">Already Have Account, </string>
     <string name="dont_have_account">Dont Have Account, </string>
     <string name="attendance_text_workday">Absen selanjutnya</string>
+    <string name="your_stats">Statistik anda</string>
 </resources>
