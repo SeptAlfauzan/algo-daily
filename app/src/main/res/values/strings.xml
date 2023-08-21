@@ -20,4 +20,5 @@
     <string name="edit_profile_pic">edit profile pic</string>
     <string name="setting">Pengaturan</string>
     <string name="icon_desc">%1$s icon</string>
+    <string name="title_activity_maps">MapsActivity</string>
 </resources>
