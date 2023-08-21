@@ -23,8 +23,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.septalfauzan.algotrack.R
 import com.septalfauzan.algotrack.data.model.UserStats
+import com.septalfauzan.algotrack.navigation.Screen
 import com.septalfauzan.algotrack.ui.component.*
 import com.septalfauzan.algotrack.ui.theme.AlgoTrackTheme
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,7 +37,8 @@ import java.util.Date
 
 @Composable
 fun HomeScreen(
-    logout: () -> Unit,
+    userId: String = "1",
+    navHostController: NavHostController,
     timerState: StateFlow<Long>,
     modifier: Modifier = Modifier
 ) {
@@ -49,20 +53,18 @@ fun HomeScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(32.dp)
     ) {
-
-
         Row(Modifier.fillMaxWidth()) {
             Text(
-                text = "Good morning", style = MaterialTheme.typography.h3.copy(
+                text = stringResource(R.string.greeting, "Pagi"), style = MaterialTheme.typography.h3.copy(
                     fontWeight = FontWeight.Bold
                 ), modifier = Modifier.weight(1f)
             )
             Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.TopEnd) {
-                AvatarProfile()
+                AvatarProfile(onClick = { navHostController.navigate(Screen.Profile.createRoute(userId)) })
             }
         }
         TimerBanner(timer = timerState.collectAsState().value, isWorkDay = true)
-        VacationBanner()
+        VacationBanner(onCreateVacation = {})
         Statistic()
     }
 }
@@ -75,25 +77,26 @@ private fun Statistic(modifier: Modifier = Modifier) {
                 fontWeight = FontWeight(300),
             ), color = MaterialTheme.colors.onSurface.copy(alpha = 0.3f)
         )
-        LazyRow(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)){
+        LazyRow(modifier = Modifier.fillMaxWidth().padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)){
             item{
-                StatsCard(data = UserStats(description = "Tepat waktu hari ini", value = 9), icon = Icons.Default.CalendarToday)
+                StatsCard(data = UserStats(description = stringResource(R.string.ontime_stats), value = 9), icon = Icons.Default.CalendarToday)
             }
             item{
-                StatsCard(data = UserStats(description = "Telat hari ini", value = 0), icon = Icons.Outlined.Timer)
+                StatsCard(data = UserStats(description = stringResource(R.string.late_stats), value = 0), icon = Icons.Outlined.Timer)
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
-        WeekSummaryStatsCard()
+        WeekSummaryStatsCard(80)
     }
 }
 
 @Preview(showBackground = true, device = Devices.PIXEL_4)
 @Composable
 private fun HomeScreenPreview() {
+    val navHostController = rememberNavController()
     AlgoTrackTheme() {
         Surface() {
-            HomeScreen(logout = { /*TODO*/ }, MutableStateFlow(100L))
+            HomeScreen(userId = "", navHostController = navHostController, MutableStateFlow(100L))
         }
     }
 }

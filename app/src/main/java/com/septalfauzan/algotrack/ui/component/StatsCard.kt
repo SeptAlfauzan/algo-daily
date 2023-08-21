@@ -34,19 +34,23 @@ fun StatsCard(data: UserStats, icon: ImageVector, modifier: Modifier = Modifier)
             Box(
                 modifier = Modifier
                     .background(BlueSecondary.copy(alpha = 0.3f))
-                    .width(64.dp)
+                    .width(56.dp)
                     .height(68.dp)
                     .clip(shape), contentAlignment = Alignment.Center
             ) {
                 Icon(imageVector = icon, contentDescription = "icon stats")
             }
-            Column(Modifier.weight(1f).padding(vertical = 4.dp, horizontal = 8.dp)) {
+            Column(
+                Modifier
+                    .weight(1f)
+                    .padding(vertical = 8.dp, horizontal = 16.dp)) {
                 Text(
                     text = data.description, style = MaterialTheme.typography.caption.copy(
                         fontSize = 12.sp,
                         fontWeight = FontWeight(300)
                     )
                 )
+                Spacer(modifier = Modifier.weight(1f))
                 Text(
                     text = data.value.toString(), style = MaterialTheme.typography.h5.copy(
                         fontWeight = FontWeight.Bold,
