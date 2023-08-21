@@ -22,7 +22,6 @@ class TimerViewModel @Inject constructor(private val repository: MainRepository)
         viewModelScope.launch(Dispatchers.IO) {
             initTimer(totalTimer).onCompletion { _timerState.emit(totalTimer) }.collect {
                 _timerState.value = it
-                Log.d("TAG", ": ${timerState.value} ")
             }
         }
     }

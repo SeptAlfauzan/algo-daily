@@ -89,6 +89,8 @@ dependencies {
     //coil
     implementation "io.coil-kt:coil-compose:2.4.0"
 
+    //accompanist
+    implementation "com.google.accompanist:accompanist-systemuicontroller:0.25.0"
 }
 
 kapt {

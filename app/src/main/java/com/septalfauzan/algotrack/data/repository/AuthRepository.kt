@@ -33,6 +33,8 @@ class AuthRepository @Inject constructor(
 
     suspend fun getAuthToken(): String = dataStorePreference.getAuthToken().first()
 
+    fun getAuthTokenFlow(): Flow<String> = dataStorePreference.getAuthToken()
+
     suspend fun logout(){
         dataStorePreference.setAuthToken("")
     }

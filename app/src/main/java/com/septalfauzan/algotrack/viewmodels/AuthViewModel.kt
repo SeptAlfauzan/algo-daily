@@ -39,12 +39,19 @@ class AuthViewModel @Inject constructor(private val authRepository: AuthReposito
     val eventFlow = eventChannel.receiveAsFlow()
 
     init {
+        // TODO: fix splash screen issue, login screen flash even tho already login 
         viewModelScope.launch(Dispatchers.IO) {
-            val token = authRepository.getAuthToken()
-            _isLogged.value = token.isNotEmpty()
-            Log.d(AuthViewModel::class.java.simpleName, "auth token: $token")
-            delay(1000)
-            _isLoadingSplash.value = false
+            authRepository.getAuthTokenFlow().catch {
+                it.printStackTrace()
+                _isLogged.value = false
+                delay(1000)
+                _isLoadingSplash.value = false
+            }.collect{token ->
+                _isLogged.value = token.isNotEmpty()
+                Log.d(AuthViewModel::class.java.simpleName, "auth token: $token")
+                delay(1000)
+                _isLoadingSplash.value = false
+            }
         }
     }
     fun updateEmail(email: String){

@@ -13,7 +13,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.septalfauzan.algotrack.R
 
 /**
  * @param imagePainter used to give painter value of drawable image
@@ -29,7 +31,7 @@ fun Header(imagePainter: Painter, modifier: Modifier = Modifier){
     ) {
         Image(
             painter = imagePainter,
-            contentDescription = "login illustration",
+            contentDescription = stringResource(R.string.header_illustration_desc),
             modifier = Modifier
                 .align(Alignment.Center)
                 .width(240.dp)

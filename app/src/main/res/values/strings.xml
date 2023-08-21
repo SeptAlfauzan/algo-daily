@@ -7,5 +7,17 @@
     <string name="already_have_account">Already Have Account, </string>
     <string name="dont_have_account">Dont Have Account, </string>
     <string name="attendance_text_workday">Absen selanjutnya</string>
-    <string name="your_stats">Statistik anda</string>
+    <string name="your_stats">Statistik anda hari ini</string>
+    <string name="ask_vacation">Ingin libur hari ini?</string>
+    <string name="create_vacation">ajukan cuti</string>
+    <string name="ontime_stats">Tepat waktu</string>
+    <string name="late_stats">Telat</string>
+    <string name="in_week">Seminggu</string>
+    <string name="ontime_total">Total tepat waktu</string>
+    <string name="with_percent">%1$d%%</string>
+    <string name="greeting">Selamat %1$s</string>
+    <string name="header_illustration_desc">illustration desc</string>
+    <string name="edit_profile_pic">edit profile pic</string>
+    <string name="setting">Pengaturan</string>
+    <string name="icon_desc">%1$s icon</string>
 </resources>

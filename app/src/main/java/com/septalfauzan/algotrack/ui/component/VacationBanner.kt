@@ -11,11 +11,12 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun VacationBanner(modifier: Modifier = Modifier) {
+fun VacationBanner(onCreateVacation: () -> Unit, modifier: Modifier = Modifier) {
     Card(
         modifier = modifier
             .height(136.dp)
@@ -35,12 +36,12 @@ fun VacationBanner(modifier: Modifier = Modifier) {
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "Ingin libur hari ini?",
+                    text = stringResource(R.string.ask_vacation),
                     style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold)
                 )
                 RoundedButton(
-                    text = "ajukan cuti",
-                    onClick = { /*TODO*/ },
+                    text = stringResource(R.string.create_vacation),
+                    onClick = onCreateVacation,
                     buttonType = ButtonType.SECONDARY
                 )
             }
