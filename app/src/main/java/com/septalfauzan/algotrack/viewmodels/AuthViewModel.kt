@@ -39,7 +39,7 @@ class AuthViewModel @Inject constructor(private val authRepository: AuthReposito
     val eventFlow = eventChannel.receiveAsFlow()
 
     init {
-        // TODO: fix splash screen issue, login screen flash even tho already login 
+        // TODO: fix splash screen issue, login screen flash even tho already login  
         viewModelScope.launch(Dispatchers.IO) {
             authRepository.getAuthTokenFlow().catch {
                 it.printStackTrace()

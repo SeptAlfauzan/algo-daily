@@ -18,6 +18,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import androidx.compose.material.MaterialTheme
+import com.septalfauzan.algotrack.ui.theme.AlgoTrackTheme
 
 @Composable
 fun HistoryCard(data: UserAbsen) {
@@ -26,7 +27,7 @@ fun HistoryCard(data: UserAbsen) {
             .fillMaxWidth()
             .padding(16.dp),
         elevation = 4.dp,
-        border = BorderStroke(3.dp, MaterialTheme.colors.primary),
+        border = BorderStroke(1.dp, MaterialTheme.colors.primary),
         shape = RoundedCornerShape(20.dp),
     ) {
         Column(
@@ -39,15 +40,13 @@ fun HistoryCard(data: UserAbsen) {
             ) {
                 Text(
                     text = "Waktu",
-                    color = MaterialTheme.colors.primary,
-                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colors.onSurface.copy(alpha = 0.3f),
                     fontSize = 16.sp,
                     modifier = Modifier.align(Alignment.CenterVertically)
                 )
                 Text(
                     text = if (data.status) "Tepat Waktu" else "Belum Absen",
                     color = if (data.status) Color.Green else Color.Red,
-                    fontWeight = FontWeight.Bold,
                     fontSize = 16.sp
                 )
             }
@@ -74,9 +73,13 @@ fun HistoryCard(data: UserAbsen) {
 @Preview
 @Composable
 fun HistoryCardPreview() {
-    val userData = UserAbsen(
-        tanggal = Date(),
-        status = false
-    )
-    HistoryCard(data = userData)
+    AlgoTrackTheme() {
+        Surface() {
+            val userData = UserAbsen(
+                tanggal = Date(),
+                status = false
+            )
+            HistoryCard(data = userData)
+        }
+    }
 }
