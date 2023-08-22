@@ -3,11 +3,7 @@ package com.septalfauzan.algotrack.ui.screen
 import android.annotation.SuppressLint
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Sort
 import androidx.compose.runtime.Composable
@@ -17,6 +13,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.septalfauzan.algotrack.data.model.UserAbsen
 import com.septalfauzan.algotrack.ui.component.HistoryCard
+import com.septalfauzan.algotrack.ui.theme.AlgoTrackTheme
 import okhttp3.internal.wait
 import java.util.Date
 
@@ -52,5 +49,9 @@ fun HistoryScreenPreview() {
         UserAbsen(Date(), false),
         UserAbsen(Date(), true)
     )
-    HistoryScreen(navController = rememberNavController(), historyList = historyList)
+    AlgoTrackTheme() {
+        Surface() {
+            HistoryScreen(navController = rememberNavController(), historyList = historyList)
+        }
+    }
 }
