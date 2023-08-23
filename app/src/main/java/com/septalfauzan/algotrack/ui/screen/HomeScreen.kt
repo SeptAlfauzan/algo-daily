@@ -12,9 +12,7 @@ import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.Watch
 import androidx.compose.material.icons.outlined.Timer
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -46,6 +44,8 @@ fun HomeScreen(
     val currentDate = Calendar.getInstance()
     currentDate.timeInMillis = timer
 
+    var showAlert by remember { mutableStateOf(false) }
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -55,17 +55,30 @@ fun HomeScreen(
     ) {
         Row(Modifier.fillMaxWidth()) {
             Text(
-                text = stringResource(R.string.greeting, "Pagi"), style = MaterialTheme.typography.h3.copy(
+                text = stringResource(R.string.greeting, "Pagi"),
+                style = MaterialTheme.typography.h3.copy(
                     fontWeight = FontWeight.Bold
-                ), modifier = Modifier.weight(1f)
+                ),
+                modifier = Modifier.weight(1f)
             )
             Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.TopEnd) {
-                AvatarProfile(onClick = { navHostController.navigate(Screen.Profile.createRoute(userId)) })
+                AvatarProfile(onClick = {
+                    navHostController.navigate(
+                        Screen.Profile.createRoute(
+                            userId
+                        )
+                    )
+                })
             }
         }
         TimerBanner(timer = timerState.collectAsState().value, isWorkDay = true)
-        VacationBanner(onCreateVacation = {})
+        VacationBanner(onCreateVacation = { showAlert = true })
         Statistic()
+        AlertModalDialog(
+            isShowed = showAlert,
+            title = "Apakah anda yakin mengajukan cuti hari ini?",
+            text = "Dengan mengajukan cuti hari ini, otomatis timer absen anda akan dinonaktifkan",
+            onStateChange = { showAlert = false })
     }
 }
 
@@ -77,12 +90,26 @@ private fun Statistic(modifier: Modifier = Modifier) {
                 fontWeight = FontWeight(300),
             ), color = MaterialTheme.colors.onSurface.copy(alpha = 0.3f)
         )
-        LazyRow(modifier = Modifier.fillMaxWidth().padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)){
-            item{
-                StatsCard(data = UserStats(description = stringResource(R.string.ontime_stats), value = 9), icon = Icons.Default.CalendarToday)
+        LazyRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            item {
+                StatsCard(
+                    data = UserStats(
+                        description = stringResource(R.string.ontime_stats),
+                        value = 9
+                    ), icon = Icons.Default.CalendarToday
+                )
             }
-            item{
-                StatsCard(data = UserStats(description = stringResource(R.string.late_stats), value = 0), icon = Icons.Outlined.Timer)
+            item {
+                StatsCard(
+                    data = UserStats(
+                        description = stringResource(R.string.late_stats),
+                        value = 0
+                    ), icon = Icons.Outlined.Timer
+                )
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
