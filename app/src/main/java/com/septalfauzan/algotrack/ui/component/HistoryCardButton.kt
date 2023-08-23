@@ -29,7 +29,7 @@ fun HistoryCardButton(
     ) {
         Text(
             text = text,
-            style = MaterialTheme.typography.h6.copy(
+            style = MaterialTheme.typography.caption.copy(
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colors.onPrimary
             ),
