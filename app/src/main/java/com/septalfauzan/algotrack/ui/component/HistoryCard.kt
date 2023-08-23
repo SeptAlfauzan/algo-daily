@@ -19,13 +19,14 @@ import java.util.Date
 import java.util.Locale
 import androidx.compose.material.MaterialTheme
 import com.septalfauzan.algotrack.ui.theme.AlgoTrackTheme
+import com.septalfauzan.algotrack.ui.theme.GreenVariant
+import com.septalfauzan.algotrack.ui.theme.RedAccent
 
 @Composable
 fun HistoryCard(data: UserAbsen) {
     Card(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
+            .fillMaxWidth(),
         elevation = 4.dp,
         border = BorderStroke(1.dp, MaterialTheme.colors.primary),
         shape = RoundedCornerShape(20.dp),
@@ -41,13 +42,13 @@ fun HistoryCard(data: UserAbsen) {
                 Text(
                     text = "Waktu",
                     color = MaterialTheme.colors.onSurface.copy(alpha = 0.3f),
-                    fontSize = 16.sp,
+                    style = MaterialTheme.typography.caption,
                     modifier = Modifier.align(Alignment.CenterVertically)
                 )
                 Text(
                     text = if (data.status) "Tepat Waktu" else "Belum Absen",
-                    color = if (data.status) Color.Green else Color.Red,
-                    fontSize = 16.sp
+                    color = if (data.status) GreenVariant else RedAccent,
+                    style = MaterialTheme.typography.caption
                 )
             }
             Row(
