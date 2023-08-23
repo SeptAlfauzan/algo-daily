@@ -25,9 +25,11 @@ import com.septalfauzan.algotrack.ui.HomeScreen
 import com.septalfauzan.algotrack.ui.LoginScreen
 import com.septalfauzan.algotrack.ui.RegisterScreen
 import com.septalfauzan.algotrack.ui.component.BottomBar
+import com.septalfauzan.algotrack.ui.screen.AttendanceScreen
 import com.septalfauzan.algotrack.ui.screen.HistoryScreen
 import com.septalfauzan.algotrack.ui.screen.MapScreen
 import com.septalfauzan.algotrack.ui.screen.ProfileScreen
+import com.septalfauzan.algotrack.ui.screen.SuccessScreen
 import com.septalfauzan.algotrack.viewmodels.AuthViewModel
 import com.septalfauzan.algotrack.viewmodels.RegisterViewModel
 import com.septalfauzan.algotrack.viewmodels.TimerViewModel
@@ -114,6 +116,12 @@ fun AlgoTrackApp(
             }
             composable(Screen.Map.route) {
                 MapScreen(navController)
+            }
+            composable(Screen.Attendance.route){
+                AttendanceScreen(navController = navController)
+            }
+            composable(Screen.Success.route){
+                SuccessScreen(navController = navController)
             }
             composable(Screen.History.route) {
                 val historyList = listOf(
