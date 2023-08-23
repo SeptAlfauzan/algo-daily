@@ -9,4 +9,6 @@ sealed class Screen(val route: String){
     }
     object Map : Screen( "map" )
     object History : Screen("history")
+    object Attendance : Screen("attandence")
+    object Success : Screen("success")
 }
