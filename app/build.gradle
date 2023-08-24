@@ -98,6 +98,8 @@ dependencies {
 
     //accompanist
     implementation "com.google.accompanist:accompanist-systemuicontroller:0.25.0"
+    def accompanistPermissionsVersion = '0.23.1'
+    implementation "com.google.accompanist:accompanist-permissions:$accompanistPermissionsVersion"
 }
 
 kapt {

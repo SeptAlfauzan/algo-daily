@@ -1,8 +1,6 @@
 package com.septalfauzan.algotrack.ui.screen
 
-import android.annotation.SuppressLint
 import android.app.DatePickerDialog
-import android.app.TimePickerDialog
 import android.widget.DatePicker
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -14,7 +12,6 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Sort
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -24,7 +21,6 @@ import com.septalfauzan.algotrack.R
 import com.septalfauzan.algotrack.data.model.UserAbsen
 import com.septalfauzan.algotrack.ui.component.HistoryCard
 import com.septalfauzan.algotrack.ui.theme.AlgoTrackTheme
-import okhttp3.internal.wait
 import java.util.*
 
 @Composable
@@ -57,7 +53,7 @@ fun HistoryScreen(navController: NavController, historyList: List<UserAbsen>) {
                     }
                 },
                 elevation = 0.dp,
-                backgroundColor = Color.White
+                backgroundColor = MaterialTheme.colors.background
             )
         }
     ) { _ ->
@@ -77,7 +73,7 @@ fun HistoryScreen(navController: NavController, historyList: List<UserAbsen>) {
             }
             LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 items(historyList) { history ->
-                    HistoryCard(data = history)
+                    HistoryCard(data = history, navController = navController)
                 }
             }
         }
