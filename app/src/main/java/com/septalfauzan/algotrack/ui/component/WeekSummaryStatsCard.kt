@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.septalfauzan.algotrack.R
 
@@ -19,16 +20,22 @@ fun WeekSummaryStatsCard(onTimeValuePercent: Int, modifier: Modifier = Modifier)
         shape = RoundedCornerShape(16.dp),
         modifier = modifier
             .fillMaxWidth()
-            .height(80.dp)
+            .height(120.dp)
     ) {
         Row(
             Modifier
                 .fillMaxSize()
+                .height(120.dp)
                 .padding(horizontal = 28.dp, vertical = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Column(Modifier.fillMaxHeight(), verticalArrangement = Arrangement.SpaceBetween) {
+            Column(
+                Modifier
+                    .fillMaxHeight()
+                    .width(120.dp),
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
                 Text(
                     stringResource(R.string.in_week), style = MaterialTheme.typography.caption.copy(
                         fontWeight = FontWeight(300),
@@ -36,16 +43,17 @@ fun WeekSummaryStatsCard(onTimeValuePercent: Int, modifier: Modifier = Modifier)
                     )
                 )
                 Text(
-                    stringResource(R.string.ontime_total), style = MaterialTheme.typography.h5.copy(
-                        fontWeight = FontWeight.Bold,
-                    )
+                    stringResource(R.string.ontime_total), style = MaterialTheme.typography.h5
                 )
             }
             Text(
-                stringResource(R.string.with_percent, onTimeValuePercent), style = MaterialTheme.typography.h6.copy(
+                stringResource(R.string.with_percent, onTimeValuePercent),
+                style = MaterialTheme.typography.h3.copy(
                     fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.End,
                     color = MaterialTheme.colors.primary
-                ), modifier = Modifier.align(Alignment.Bottom)
+                ),
+                modifier = Modifier.weight(1f).align(Alignment.Bottom)
             )
         }
     }

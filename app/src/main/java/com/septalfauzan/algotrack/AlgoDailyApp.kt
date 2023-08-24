@@ -8,6 +8,7 @@ import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -17,6 +18,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.septalfauzan.algotrack.data.model.UserAbsen
 import com.septalfauzan.algotrack.data.ui.BottomBarMenu
@@ -25,24 +27,20 @@ import com.septalfauzan.algotrack.ui.HomeScreen
 import com.septalfauzan.algotrack.ui.LoginScreen
 import com.septalfauzan.algotrack.ui.RegisterScreen
 import com.septalfauzan.algotrack.ui.component.BottomBar
-import com.septalfauzan.algotrack.ui.screen.AttendanceScreen
-import com.septalfauzan.algotrack.ui.screen.HistoryScreen
-import com.septalfauzan.algotrack.ui.screen.MapScreen
-import com.septalfauzan.algotrack.ui.screen.ProfileScreen
-import com.septalfauzan.algotrack.ui.screen.SuccessScreen
-import com.septalfauzan.algotrack.viewmodels.AuthViewModel
-import com.septalfauzan.algotrack.viewmodels.RegisterViewModel
-import com.septalfauzan.algotrack.viewmodels.TimerViewModel
+import com.septalfauzan.algotrack.ui.screen.*
+import com.septalfauzan.algotrack.viewmodels.*
 import java.util.*
 
 @Composable
-fun AlgoTrackApp(
+fun AlgoDailyApp(
     navController: NavHostController = rememberNavController(),
     authViewModel: AuthViewModel,
     registerViewModel: RegisterViewModel,
     isLogged: Boolean,
     modifier: Modifier = Modifier,
     timerViewModel: TimerViewModel,
+    themeViewModel: ThemeViewModel,
+    notificationViewModel: NotificationViewModel,
 ) {
     val systemUiController = rememberSystemUiController()
     val bottomBarMenuItems = listOf<BottomBarMenu>(
@@ -144,12 +142,32 @@ fun AlgoTrackApp(
                         inclusive = true
                     }
                 }
+                systemUiController.setSystemBarsColor(
+                    color = MaterialTheme.colors.background
+                )
                 ProfileScreen(
                     userId = id,
+                    navController = navController,
+                    isNotificationReminderActive = notificationViewModel.isNotificationReminderActive.collectAsState().value,
+                    setNotificationReminder = { notificationViewModel.setNotificationReminder() },
+                    cancelNotificationReminder = { notificationViewModel.cancelNotificationReminder() },
+                    toggleTheme = { themeViewModel.toggleDarkTheme() },
+                    isDarkMode = themeViewModel.isDarkTheme.collectAsState().value,
                     logout = {
                         authViewModel.logout(onSuccess = { navigateToLogin() })
                     },
                 )
+            }
+            composable(
+                route = Screen.Detail.route,
+                deepLinks = listOf(navDeepLink { uriPattern = "https://algodaily/detail/{id}" }),
+                arguments = listOf(navArgument("id"){ type= NavType.StringType }
+            )){
+                val id = it.arguments?.getString("id") ?: ""
+                DetailScreen(attendanceId = id, navController = navController)
+            }
+            composable(route = Screen.ChangePassword.route){
+                ChangePasswordScreen()
             }
         }
     }

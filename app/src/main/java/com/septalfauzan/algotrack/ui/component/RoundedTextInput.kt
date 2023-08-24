@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -52,11 +53,15 @@ fun RoundedTextInput(
     error: Boolean = false,
     errorText: String = "",
     keyboardType: KeyboardType = KeyboardType.Text,
+    withOnBlur: Boolean = false,
     imeAction: ImeAction = ImeAction.Done,
     keyboardAction: KeyboardActions = KeyboardActions.Default,
     modifier: Modifier = Modifier
 ) {
     var peekPassword by remember { mutableStateOf(keyboardType != KeyboardType.Password) }
+
+    var inputBlur by remember {mutableStateOf(false) }
+
 
     Column {
         if(error) Text(text = errorText, style = MaterialTheme.typography.caption.copy(
@@ -64,7 +69,7 @@ fun RoundedTextInput(
         ))
         Box(
             modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.CenterStart
+            contentAlignment = Alignment.Center
         ) {
             OutlinedTextField(
                 isError = error,
@@ -94,7 +99,12 @@ fun RoundedTextInput(
                     focusedBorderColor = MaterialTheme.colors.primary,
                     errorBorderColor = RedAccent
                 ),
-                modifier = modifier.height(60.dp),
+                modifier = modifier.height(60.dp).onFocusChanged {
+                    if(withOnBlur){
+                        if (it.isFocused && !inputBlur) inputBlur = true
+                        if (!it.isFocused && inputBlur) onChange(value)
+                    }
+                },
                 shape = RoundedCornerShape(16.dp),
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = keyboardType,

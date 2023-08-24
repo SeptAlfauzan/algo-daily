@@ -100,7 +100,7 @@ private fun LoginForm(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         RoundedTextInput(
-            label = "Email",
+            label = stringResource(R.string.email),
             icon = Icons.Default.Email,
             onChange = { updateEmail(it) },
             value = formUiState.email,
@@ -108,15 +108,13 @@ private fun LoginForm(
             errorText = formUiState.emailError,
             keyboardType = KeyboardType.Email,
             imeAction = ImeAction.Next,
+            withOnBlur = true,
             modifier = Modifier
                 .fillMaxWidth()
-                .onFocusChanged {
-                    if (it.isFocused && !emailBlur) emailBlur = true
-                    if (!it.isFocused && emailBlur) updateEmail(formUiState.email)
-                }
+
         )
         RoundedTextInput(
-            label = "Password",
+            label = stringResource(R.string.password),
             icon = Icons.Default.Lock,
             onChange = { updatePassword(it) },
             value = formUiState.password,
@@ -127,12 +125,9 @@ private fun LoginForm(
             keyboardAction = KeyboardActions(
                 onDone = { keyboardController?.hide() }
             ),
+            withOnBlur = true,
             modifier = Modifier
                 .fillMaxWidth()
-                .onFocusChanged {
-                    if (it.isFocused && !passwordBlur) passwordBlur = true
-                    if (!it.isFocused && passwordBlur) updatePassword(formUiState.password)
-                }
         )
         Spacer(modifier = Modifier.weight(1f))
         Box(
