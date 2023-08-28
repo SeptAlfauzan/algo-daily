@@ -10,6 +10,12 @@ fun Long.formatMilliseconds(): String{
     return format.format(Date(this))
 }
 
+fun Calendar.getMilliSecFromMinutesSecond(): Long{
+    val currentMinute = this.get(Calendar.MINUTE)
+    val currentSecond = this.get(Calendar.SECOND)
+    return currentMinute * 60 * 1000L + currentSecond * 1000L
+}
+
 fun Context.getCurrentDayCycle():String{
     val format = SimpleDateFormat("HH", Locale.US)
     val hour = format.format(Date())

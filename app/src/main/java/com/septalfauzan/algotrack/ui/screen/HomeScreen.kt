@@ -28,9 +28,9 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.septalfauzan.algotrack.R
-import com.septalfauzan.algotrack.data.model.UserStats
+import com.septalfauzan.algotrack.domain.model.UserStats
 import com.septalfauzan.algotrack.helper.getCurrentDayCycle
-import com.septalfauzan.algotrack.navigation.Screen
+import com.septalfauzan.algotrack.helper.navigation.Screen
 import com.septalfauzan.algotrack.ui.component.*
 import com.septalfauzan.algotrack.ui.theme.AlgoTrackTheme
 import kotlinx.coroutines.flow.MutableStateFlow

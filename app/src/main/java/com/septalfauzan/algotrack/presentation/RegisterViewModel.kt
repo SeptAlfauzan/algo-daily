@@ -1,10 +1,9 @@
-package com.septalfauzan.algotrack.viewmodels
+package com.septalfauzan.algotrack.presentation
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.septalfauzan.algotrack.data.event.MyEvent
-import com.septalfauzan.algotrack.data.model.UserData
+import com.septalfauzan.algotrack.domain.model.UserData
 import com.septalfauzan.algotrack.data.repository.MainRepository
 import com.septalfauzan.algotrack.helper.RegistrationStatus
 import dagger.hilt.android.lifecycle.HiltViewModel

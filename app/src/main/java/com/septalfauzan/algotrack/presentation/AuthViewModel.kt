@@ -1,11 +1,13 @@
-package com.septalfauzan.algotrack.viewmodels
+package com.septalfauzan.algotrack.presentation
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.septalfauzan.algotrack.data.event.MyEvent
-import com.septalfauzan.algotrack.data.model.AuthData
+import com.septalfauzan.algotrack.domain.model.AuthData
 import com.septalfauzan.algotrack.data.repository.AuthRepository
+import com.septalfauzan.algotrack.data.ui.AuthFormUIState
+import com.septalfauzan.algotrack.domain.usecase.IAuthUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
@@ -15,17 +17,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-data class AuthFormUIState(
-    val email: String = "",
-    val emailBlur: Boolean = false,
-    val emailError: String = "",
-    val password: String = "",
-    val passwordBlur: Boolean = false,
-    val passwordError: String = "",
-)
 
 @HiltViewModel
-class AuthViewModel @Inject constructor(private val authRepository: AuthRepository) : ViewModel() {
+class AuthViewModel @Inject constructor(private val authUseCase: IAuthUseCase) : ViewModel() {
 
     private val _isLogged: MutableStateFlow<Boolean> = MutableStateFlow(false)
     private val _isLoadingSplash: MutableStateFlow<Boolean> = MutableStateFlow(true)
@@ -41,7 +35,7 @@ class AuthViewModel @Inject constructor(private val authRepository: AuthReposito
     init {
         // TODO: fix splash screen issue, login screen flash even tho already login  
         viewModelScope.launch(Dispatchers.IO) {
-            authRepository.getAuthTokenFlow().catch {
+            authUseCase.getAuthToken().catch {
                 it.printStackTrace()
                 _isLogged.value = false
                 delay(1000)
@@ -75,21 +69,15 @@ class AuthViewModel @Inject constructor(private val authRepository: AuthReposito
     fun login(onSuccess: () -> Unit) {
         updateEmail(_formUiState.value.email)
         updatePassword(_formUiState.value.password)
-
-        _formUiState.value.let {
-            if(it.emailError.isNotEmpty() || it.passwordError.isNotEmpty()) return
-        }
-
-        val body = AuthData(email = _formUiState.value.email, password = _formUiState.value.password)
+//        _formUiState.value.let {
+//            if(it.emailError.isNotEmpty() || it.passwordError.isNotEmpty()) return
+//        }
+//
+//        val body = AuthData(email = _formUiState.value.email, password = _formUiState.value.password)
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                authRepository.login(body).catch { error ->
-                    error.printStackTrace()
-                }.collect { response ->
-                    setAuthToken(response.data.token)
-                    withContext(Dispatchers.Main) { onSuccess() }
-                }
+                authUseCase.login(authFormUIState = _formUiState.value, eventChannel = eventChannel, onSuccess = { onSuccess() })
             } catch (e: Exception) {
                 Log.d("TAG", "login error: ${e.message}")
                 e.printStackTrace()
@@ -104,18 +92,7 @@ class AuthViewModel @Inject constructor(private val authRepository: AuthReposito
     fun logout(onSuccess: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                setAuthToken("")
-                withContext(Dispatchers.Main) { onSuccess() }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-    }
-
-    private fun setAuthToken(token: String) {
-        viewModelScope.launch {
-            try {
-                authRepository.setAuthToken(token)
+                authUseCase.logout(eventChannel = eventChannel, onSuccess = { onSuccess() })
             } catch (e: Exception) {
                 e.printStackTrace()
             }

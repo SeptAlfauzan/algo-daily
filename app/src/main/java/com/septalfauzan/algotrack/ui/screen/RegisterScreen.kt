@@ -35,7 +35,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.septalfauzan.algotrack.R
 import com.septalfauzan.algotrack.data.event.MyEvent
-import com.septalfauzan.algotrack.data.model.UserData
+import com.septalfauzan.algotrack.domain.model.UserData
 import com.septalfauzan.algotrack.ui.component.Header
 import com.septalfauzan.algotrack.ui.component.RoundedButton
 import com.septalfauzan.algotrack.ui.component.RoundedTextInput

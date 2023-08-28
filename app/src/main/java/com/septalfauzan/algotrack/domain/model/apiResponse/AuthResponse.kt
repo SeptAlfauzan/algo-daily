@@ -1,4 +1,4 @@
-package com.septalfauzan.algotrack.data.model.apiResponse
+package com.septalfauzan.algotrack.domain.model.apiResponse
 
 import com.google.gson.annotations.SerializedName
 

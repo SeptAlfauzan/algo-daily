@@ -1,14 +1,17 @@
-package com.septalfauzan.algotrack.data.model.apiResponse
+package com.septalfauzan.algotrack.domain.model.apiResponse
 
 import com.google.gson.annotations.SerializedName
 
-data class UpdateUserProfilePictureResponse(
+data class GetProfileResponse(
 
 	@field:SerializedName("data")
-	val data: UpdateUserProfilePicData? = null
+	val data: Data? = null
 )
 
-data class UpdateUserProfilePicData(
+data class Data(
+
+	@field:SerializedName("password")
+	val password: String? = null,
 
 	@field:SerializedName("name")
 	val name: String? = null,

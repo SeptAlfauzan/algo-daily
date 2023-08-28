@@ -1,4 +1,4 @@
-package com.septalfauzan.algotrack.data.model
+package com.septalfauzan.algotrack.domain.model
 
 data class UserStats(
     val description: String,

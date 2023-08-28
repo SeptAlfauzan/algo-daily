@@ -1,29 +1,35 @@
-package com.septalfauzan.algotrack.viewmodels
+package com.septalfauzan.algotrack.presentation
 
-import android.content.Context
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.septalfauzan.algotrack.data.repository.MainRepository
-import com.septalfauzan.algotrack.helper.Notification
+import com.septalfauzan.algotrack.helper.getMilliSecFromMinutesSecond
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
 class TimerViewModel @Inject constructor(private val repository: MainRepository) : ViewModel() {
 
-    private val totalTimer = 600000L
+    private val totalTimer = 3600000L
     private var _timerState = MutableStateFlow(totalTimer)
     val timerState: StateFlow<Long> = _timerState
 
     init {
+        startTimer()
+    }
+
+    private fun startTimer(){
+        val currentDate =  Calendar.getInstance()
+        val currentMinuteSecond = currentDate.getMilliSecFromMinutesSecond()
+        val timerLeft = totalTimer - currentMinuteSecond
+
         viewModelScope.launch(Dispatchers.IO) {
-            initTimer(totalTimer).onCompletion { _timerState.emit(totalTimer) }.collect {
+            initTimer(timerLeft).onCompletion { _timerState.emit(totalTimer) }.collect {
                 _timerState.value = it
             }
         }

@@ -13,7 +13,7 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.septalfauzan.algotrack.data.ui.BottomBarMenu
-import com.septalfauzan.algotrack.navigation.Screen
+import com.septalfauzan.algotrack.helper.navigation.Screen
 
 
 

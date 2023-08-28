@@ -1,4 +1,4 @@
-package com.septalfauzan.algotrack.viewmodels
+package com.septalfauzan.algotrack.presentation
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
@@ -6,7 +6,6 @@ import com.septalfauzan.algotrack.data.repository.MainRepository
 import com.septalfauzan.algotrack.helper.Notification
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 

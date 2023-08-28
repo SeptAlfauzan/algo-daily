@@ -39,7 +39,7 @@ import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.Marker
 import com.google.maps.android.compose.*
 import com.septalfauzan.algotrack.R
-import com.septalfauzan.algotrack.data.model.UserLocation
+import com.septalfauzan.algotrack.domain.model.UserLocation
 import com.septalfauzan.algotrack.ui.component.RoundedButton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

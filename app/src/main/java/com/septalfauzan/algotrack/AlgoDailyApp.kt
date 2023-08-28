@@ -20,15 +20,15 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.septalfauzan.algotrack.data.model.UserAbsen
+import com.septalfauzan.algotrack.domain.model.UserAbsen
 import com.septalfauzan.algotrack.data.ui.BottomBarMenu
-import com.septalfauzan.algotrack.navigation.Screen
+import com.septalfauzan.algotrack.helper.navigation.Screen
 import com.septalfauzan.algotrack.ui.HomeScreen
 import com.septalfauzan.algotrack.ui.LoginScreen
 import com.septalfauzan.algotrack.ui.RegisterScreen
 import com.septalfauzan.algotrack.ui.component.BottomBar
 import com.septalfauzan.algotrack.ui.screen.*
-import com.septalfauzan.algotrack.viewmodels.*
+import com.septalfauzan.algotrack.presentation.*
 import java.util.*
 
 @Composable
@@ -41,6 +41,7 @@ fun AlgoDailyApp(
     timerViewModel: TimerViewModel,
     themeViewModel: ThemeViewModel,
     notificationViewModel: NotificationViewModel,
+    profileViewModel: ProfileViewModel,
 ) {
     val systemUiController = rememberSystemUiController()
     val bottomBarMenuItems = listOf<BottomBarMenu>(
@@ -147,6 +148,8 @@ fun AlgoDailyApp(
                 )
                 ProfileScreen(
                     userId = id,
+                    profileUiState = profileViewModel.profile,
+                    getProfile = { profileViewModel.getProfile() },
                     navController = navController,
                     isNotificationReminderActive = notificationViewModel.isNotificationReminderActive.collectAsState().value,
                     setNotificationReminder = { notificationViewModel.setNotificationReminder() },

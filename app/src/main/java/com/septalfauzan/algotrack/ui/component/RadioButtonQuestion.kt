@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.septalfauzan.algotrack.data.model.AttendanceAnswer
+import com.septalfauzan.algotrack.domain.model.AttendanceAnswer
 import com.septalfauzan.algotrack.ui.theme.AlgoTrackTheme
 
 @Composable

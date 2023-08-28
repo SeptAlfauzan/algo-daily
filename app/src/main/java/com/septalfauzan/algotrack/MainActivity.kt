@@ -12,7 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.septalfauzan.algotrack.ui.theme.AlgoTrackTheme
-import com.septalfauzan.algotrack.viewmodels.*
+import com.septalfauzan.algotrack.presentation.*
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -24,6 +24,7 @@ class MainActivity : ComponentActivity() {
         val timerViewModel: TimerViewModel by viewModels()
         val notificationViewModel: NotificationViewModel by viewModels()
         val themeViewModel: ThemeViewModel by viewModels()
+        val profileViewModel: ProfileViewModel by viewModels()
 
         installSplashScreen().setKeepOnScreenCondition {//splash screen will disapprear whenever already check auth token
             authViewModel.isLoadingSplash.value
@@ -44,6 +45,7 @@ class MainActivity : ComponentActivity() {
                         timerViewModel = timerViewModel,
                         themeViewModel = themeViewModel,
                         notificationViewModel = notificationViewModel,
+                        profileViewModel = profileViewModel,
                     )
                 }
             }

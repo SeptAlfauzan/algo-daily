@@ -1,4 +1,4 @@
-package com.septalfauzan.algotrack.navigation
+package com.septalfauzan.algotrack.helper.navigation
 
 sealed class Screen(val route: String){
     object Login : Screen("login")

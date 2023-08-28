@@ -10,14 +10,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.septalfauzan.algotrack.data.model.UserAbsen
+import com.septalfauzan.algotrack.domain.model.UserAbsen
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import androidx.compose.material.MaterialTheme
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.septalfauzan.algotrack.navigation.Screen
+import com.septalfauzan.algotrack.helper.navigation.Screen
 import com.septalfauzan.algotrack.ui.theme.AlgoTrackTheme
 import com.septalfauzan.algotrack.ui.theme.GreenVariant
 import com.septalfauzan.algotrack.ui.theme.RedAccent

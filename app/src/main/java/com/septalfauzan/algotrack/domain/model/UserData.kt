@@ -1,4 +1,4 @@
-package com.septalfauzan.algotrack.data.model
+package com.septalfauzan.algotrack.domain.model
 
 data class UserData(
     val name: String,

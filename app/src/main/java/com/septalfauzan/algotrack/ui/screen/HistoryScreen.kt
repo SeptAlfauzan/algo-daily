@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.septalfauzan.algotrack.R
-import com.septalfauzan.algotrack.data.model.UserAbsen
+import com.septalfauzan.algotrack.domain.model.UserAbsen
 import com.septalfauzan.algotrack.ui.component.HistoryCard
 import com.septalfauzan.algotrack.ui.theme.AlgoTrackTheme
 import java.util.*

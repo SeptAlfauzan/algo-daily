@@ -17,54 +17,67 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.septalfauzan.algotrack.R
-import com.septalfauzan.algotrack.navigation.Screen
+import com.septalfauzan.algotrack.data.ui.UiState
+import com.septalfauzan.algotrack.domain.model.apiResponse.GetProfileResponse
+import com.septalfauzan.algotrack.helper.navigation.Screen
 import com.septalfauzan.algotrack.ui.component.AlertModalDialog
 import com.septalfauzan.algotrack.ui.component.AvatarProfile
 import com.septalfauzan.algotrack.ui.component.AvatarProfileType
 import com.septalfauzan.algotrack.ui.component.SwitchButton
 import com.septalfauzan.algotrack.ui.theme.AlgoTrackTheme
 import com.septalfauzan.algotrack.ui.utils.bottomBorder
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 fun ProfileScreen(
     userId: String,
     logout: () -> Unit,
     toggleTheme: () -> Unit,
-    modifier: Modifier = Modifier,
     isDarkMode: Boolean,
     isNotificationReminderActive: Boolean,
     setNotificationReminder: () -> Unit,
     navController: NavHostController,
     cancelNotificationReminder: () -> Unit,
+    profileUiState: StateFlow<UiState<GetProfileResponse>>,
+    getProfile: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier
             .fillMaxSize()
             .padding(horizontal = 16.dp, vertical = 42.dp)
     ) {
-        Row(modifier = Modifier.fillMaxWidth()) {
-            AvatarProfile(onClick = { /*edit view*/ }, type = AvatarProfileType.WITH_EDIT)
-            Spacer(modifier = Modifier.width(12.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = "Nama", style = MaterialTheme.typography.subtitle2.copy(
-                        fontWeight = FontWeight(300)
-                    )
-                )
-                Text(
-                    text = "Username", style = MaterialTheme.typography.subtitle2.copy(
-                        fontWeight = FontWeight(300)
-                    )
-                )
-                Text(
-                    text = "user@email.com", style = MaterialTheme.typography.subtitle2.copy(
-                        fontWeight = FontWeight(300)
-                    )
-                )
+    profileUiState.collectAsState(initial = UiState.Loading).value.let { uiData ->
+        when(uiData){
+            is UiState.Loading -> {
+                CircularProgressIndicator()
+                getProfile()
+            }
+            is UiState.Success -> {
+                val result = uiData.data
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        AvatarProfile(onClick = { /*edit view*/ }, type = AvatarProfileType.WITH_EDIT)
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = result.data?.name ?: "", style = MaterialTheme.typography.subtitle2.copy(
+                                    fontWeight = FontWeight(300)
+                                )
+                            )
+                            Text(
+                                text = result.data?.email ?: "noemail@email.com", style = MaterialTheme.typography.subtitle2.copy(
+                                    fontWeight = FontWeight(300)
+                                )
+                            )
+                        }
+                    }
+            }
+            is UiState.Error -> {
+                Text("error: ${uiData.errorMessage}")
             }
         }
         Spacer(modifier = Modifier.height(36.dp))
@@ -77,6 +90,7 @@ fun ProfileScreen(
             navController = navController,
             isNotificationReminderActive = isNotificationReminderActive
         )
+    }
     }
 }
 
@@ -136,7 +150,8 @@ private fun SettingMenu(
                 contentDescription = null
             )
         }
-        SettingItem(text = "Ganti password", icon = Icons.Default.Key, onClick = { navController.navigate(Screen.ChangePassword.route) }) {
+        SettingItem(text = "Ganti password", icon = Icons.Default.Key, onClick = { navController.navigate(
+            Screen.ChangePassword.route) }) {
             Icon(
                 imageVector = Icons.Default.ChevronRight,
                 contentDescription = null
@@ -215,6 +230,8 @@ private fun Preview() {
                 setNotificationReminder = { },
                 navController = rememberNavController(),
                 cancelNotificationReminder = {},
+                getProfile = {},
+                profileUiState = MutableStateFlow(UiState.Loading),
             )
         }
     }

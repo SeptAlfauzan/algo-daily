@@ -11,25 +11,18 @@ import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.net.toUri
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDeepLinkBuilder
 import com.septalfauzan.algotrack.MainActivity
 import com.septalfauzan.algotrack.R
+import com.septalfauzan.algotrack.presentation.AttendanceViewModel
 import com.septalfauzan.algotrack.util.NOTIFICATION_CHANNEL_ID
 import com.septalfauzan.algotrack.util.NOTIFICATION_CHANNEL_NAME
 import com.septalfauzan.algotrack.util.NOTIFICATION_ID
 import com.septalfauzan.algotrack.util.executeThread
+import dagger.hilt.android.AndroidEntryPoint
 
 class AttendanceReminder : BroadcastReceiver() {
-
-
-//    override fun onReceive(context: Context, intent: Intent) {
-//        // This method is called when the BroadcastReceiver is receiving an Intent broadcast.
-//        TODO("AttendanceReminder.onReceive() is not implemented")
-//        executeThread {
-//            showNotification(context, "dummy_id")
-//        }
-//    }
-
     private fun showNotification(context: Context, id: String) {
         //TODO 13 : Show today schedules in inbox style notification & open HomeActivity when notification tapped
         val notificationStyle = NotificationCompat.InboxStyle()
