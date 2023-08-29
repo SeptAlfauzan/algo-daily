@@ -6,9 +6,7 @@ import com.septalfauzan.algotrack.data.ui.UiState
 import com.septalfauzan.algotrack.domain.model.apiResponse.GetProfileResponse
 import com.septalfauzan.algotrack.domain.repository.IProfileRepository
 import com.septalfauzan.algotrack.helper.NetworkCall
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 
 class ProfileRepository @Inject constructor(
@@ -16,14 +14,12 @@ class ProfileRepository @Inject constructor(
     private val dataStorePreference: DataStorePreference
 ) : IProfileRepository {
 
-    override suspend fun getUserProfile(): StateFlow<UiState<GetProfileResponse>> {
+    override suspend fun getUserProfile(): Flow<GetProfileResponse> {
         val token = dataStorePreference.getAuthToken().first()
-        return MutableStateFlow(
-            NetworkCall<GetProfileResponse>().makeCall(
-                apiService.getUserProfile(
-                    token
-                )
-            )
-        )
+        try {
+            return flowOf(apiService.getUserProfile(token))
+        } catch (e: Exception){
+            throw e
+        }
     }
 }

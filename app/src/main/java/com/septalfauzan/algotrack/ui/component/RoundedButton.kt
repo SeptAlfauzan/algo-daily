@@ -1,11 +1,11 @@
 package com.septalfauzan.algotrack.ui.component
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -21,6 +21,7 @@ enum class ButtonType {
  * @param text to display in the button content
  * @param onClick action when button is clicked
  * @param buttonType for button style type (primary or secondary) by default is primary
+ * @param icon for icon placed before text
  * @param modifier to overwrite button compose modifier
  */
 @Composable
@@ -28,6 +29,7 @@ fun RoundedButton(
     text: String,
     onClick: () -> Unit,
     buttonType: ButtonType = ButtonType.PRIMARY,
+    icon: ImageVector? = null,
     modifier: Modifier = Modifier
 ) {
     Button(
@@ -36,6 +38,14 @@ fun RoundedButton(
         modifier = modifier,
         colors = ButtonDefaults.buttonColors(backgroundColor = if (buttonType == ButtonType.PRIMARY) MaterialTheme.colors.primary else MaterialTheme.colors.secondary)
     ) {
+        icon?.let {
+            Icon(
+                imageVector = it,
+                contentDescription = "trail icon",
+                modifier = Modifier.size(24.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+        }
         Text(
             text = text,
             style = MaterialTheme.typography.body1.copy(

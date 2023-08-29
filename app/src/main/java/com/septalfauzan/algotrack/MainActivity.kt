@@ -25,6 +25,7 @@ class MainActivity : ComponentActivity() {
         val notificationViewModel: NotificationViewModel by viewModels()
         val themeViewModel: ThemeViewModel by viewModels()
         val profileViewModel: ProfileViewModel by viewModels()
+        val historyAttendanceViewModel: HistoryAttendanceViewModel by viewModels()
 
         installSplashScreen().setKeepOnScreenCondition {//splash screen will disapprear whenever already check auth token
             authViewModel.isLoadingSplash.value
@@ -46,6 +47,7 @@ class MainActivity : ComponentActivity() {
                         themeViewModel = themeViewModel,
                         notificationViewModel = notificationViewModel,
                         profileViewModel = profileViewModel,
+                        historyAttendanceViewModel = historyAttendanceViewModel
                     )
                 }
             }

@@ -20,5 +20,5 @@ interface AlgoTrackApiInterfaces {
     suspend fun register(@Body userData: RequestBody) : RegisterResponse
 
     @GET("users/profile")
-    fun getUserProfile(@Header("Authorization") authToken: String) : Call<GetProfileResponse>
+    suspend fun getUserProfile(@Header("Authorization") authToken: String) : GetProfileResponse
 }

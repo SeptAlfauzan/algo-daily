@@ -1,12 +1,8 @@
 package com.septalfauzan.algotrack.domain.model.apiResponse
 
-import android.os.Parcelable
-import androidx.annotation.NonNull
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
-import kotlinx.parcelize.Parcelize
+import com.septalfauzan.algotrack.data.source.local.dao.AttendanceEntity
+import com.septalfauzan.algotrack.data.source.local.dao.AttendanceStatus
 
 data class AttendanceResponse(
 
@@ -14,34 +10,38 @@ data class AttendanceResponse(
 	val data: AttendanceResponseData? = null
 )
 
-@Parcelize
-@Entity(tableName = "attendance")
 data class AttendanceResponseData(
 
 	@field:SerializedName("id")
-	@PrimaryKey
-	@NonNull
-	@ColumnInfo(name="id", typeAffinity = ColumnInfo.TEXT)
 	val id: String,
 
-	@field:SerializedName("attended")
-	@ColumnInfo(name="attended", typeAffinity = ColumnInfo.INTEGER)
-	val attended: Boolean? = null,
+	@field:SerializedName("status")
+	val status: String,
 
 	@field:SerializedName("reason")
-	@ColumnInfo(name="reason", typeAffinity = ColumnInfo.TEXT)
 	val reason: String? = null,
 
-
-	@field:SerializedName("timestamp")
-	@ColumnInfo(name="timestamp", typeAffinity = ColumnInfo.TEXT)
-	val timestamp: String? = null,
-
 	@field:SerializedName("latitude")
-	@ColumnInfo(name="latitude", typeAffinity = ColumnInfo.REAL)
-	val latitude: Double? = null,
+	val latitude: Double,
 
 	@field:SerializedName("longitude")
-	@ColumnInfo(name="longitude", typeAffinity = ColumnInfo.REAL)
-	val longitude: Double? = null
-) : Parcelable
+	val longitude: Double,
+
+	@field:SerializedName("timestamp")
+	val timestamp: String,
+
+	@field:SerializedName("created_at")
+	val createdAt: String,
+)
+
+fun AttendanceResponseData.toAttendanceEntity(): AttendanceEntity{
+	return AttendanceEntity(
+		id = this.id,
+		status = AttendanceStatus.valueOf(this.status),
+		reason = this.reason,
+		latitude = this.latitude,
+		longitude = this.longitude,
+		timestamp = this.timestamp,
+		createdAt = this.createdAt
+	)
+}

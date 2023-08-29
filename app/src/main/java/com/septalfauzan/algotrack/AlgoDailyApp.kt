@@ -20,31 +20,29 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.septalfauzan.algotrack.domain.model.UserAbsen
 import com.septalfauzan.algotrack.data.ui.BottomBarMenu
 import com.septalfauzan.algotrack.helper.navigation.Screen
-import com.septalfauzan.algotrack.ui.HomeScreen
 import com.septalfauzan.algotrack.ui.LoginScreen
 import com.septalfauzan.algotrack.ui.RegisterScreen
 import com.septalfauzan.algotrack.ui.component.BottomBar
 import com.septalfauzan.algotrack.ui.screen.*
 import com.septalfauzan.algotrack.presentation.*
-import java.util.*
 
 @Composable
 fun AlgoDailyApp(
+    modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
     authViewModel: AuthViewModel,
     registerViewModel: RegisterViewModel,
     isLogged: Boolean,
-    modifier: Modifier = Modifier,
     timerViewModel: TimerViewModel,
     themeViewModel: ThemeViewModel,
     notificationViewModel: NotificationViewModel,
     profileViewModel: ProfileViewModel,
+    historyAttendanceViewModel: HistoryAttendanceViewModel,
 ) {
     val systemUiController = rememberSystemUiController()
-    val bottomBarMenuItems = listOf<BottomBarMenu>(
+    val bottomBarMenuItems = listOf(
         BottomBarMenu(screen = Screen.Home, icon = Icons.Default.Home),
         BottomBarMenu(screen = Screen.History, icon = Icons.Default.History),
         BottomBarMenu(screen = Screen.Map, icon = Icons.Default.Map),
@@ -110,34 +108,28 @@ fun AlgoDailyApp(
                 HomeScreen(
                     timerState = timerViewModel.timerState,
                     navHostController = navController,
-                    userId = "1"
                 )
             }
             composable(Screen.Map.route) {
                 MapScreen(navController)
             }
-            composable(Screen.Attendance.route){
+            composable(Screen.Attendance.route) {
                 AttendanceScreen(navController = navController)
             }
-            composable(Screen.Success.route){
+            composable(Screen.Success.route) {
                 SuccessScreen(navController = navController)
             }
             composable(Screen.History.route) {
-                val historyList = listOf(
-                    UserAbsen(Date(), true),
-                    UserAbsen(Date(), false),
-                    UserAbsen(Date(), true)
+                AttendanceHistoryScreen(
+                    navController,
+                    getHistory = { date -> historyAttendanceViewModel.getHistory(date) },
+                    reloadHistory = { historyAttendanceViewModel.reloadHistory() },
+                    historyUiState = historyAttendanceViewModel.result
                 )
-
-                HistoryScreen(navController, historyList)
             }
             composable(
                 route = Screen.Profile.route,
-                arguments = listOf(
-                    navArgument("id") { type = NavType.StringType }
-                )
             ) {
-                val id = it.arguments?.getString("id") ?: ""
                 fun navigateToLogin() = navController.navigate(Screen.Login.route) {
                     popUpTo(Screen.Home.route) {
                         inclusive = true
@@ -147,7 +139,6 @@ fun AlgoDailyApp(
                     color = MaterialTheme.colors.background
                 )
                 ProfileScreen(
-                    userId = id,
                     profileUiState = profileViewModel.profile,
                     getProfile = { profileViewModel.getProfile() },
                     navController = navController,
@@ -164,12 +155,12 @@ fun AlgoDailyApp(
             composable(
                 route = Screen.Detail.route,
                 deepLinks = listOf(navDeepLink { uriPattern = "https://algodaily/detail/{id}" }),
-                arguments = listOf(navArgument("id"){ type= NavType.StringType }
-            )){
+                arguments = listOf(navArgument("id") { type = NavType.StringType }
+                )) {
                 val id = it.arguments?.getString("id") ?: ""
                 DetailScreen(attendanceId = id, navController = navController)
             }
-            composable(route = Screen.ChangePassword.route){
+            composable(route = Screen.ChangePassword.route) {
                 ChangePasswordScreen()
             }
         }

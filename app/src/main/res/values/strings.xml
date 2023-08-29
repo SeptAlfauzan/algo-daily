@@ -34,4 +34,5 @@
     <string name="afternoon">Siang</string>
     <string name="evening">Sore</string>
     <string name="night">Malam</string>
+    <string name="reload">Muat ulang</string>
 </resources>
