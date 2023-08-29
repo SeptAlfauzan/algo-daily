@@ -21,4 +21,17 @@
     <string name="setting">Pengaturan</string>
     <string name="icon_desc">%1$s icon</string>
     <string name="title_activity_maps">MapsActivity</string>
+    <string name="change_pw_screen_img_desc">change password illustration</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="confirm_password">Konfirmasi Password</string>
+    <string name="save">Simpan</string>
+    <string name="change_pw_question">Apakah anda yakin ingin mengganti password anda?</string>
+    <string name="change_pw_question_desc">Dengan mengklik ya, password akun anda akan diganti oleh sistem.</string>
+    <string name="logout_alert_question">Apakah anda yakin ingin logout?</string>
+    <string name="logout_alert_desc">Dengan logout, otomatis akun anda akan keluar dari aplikasi.</string>
+    <string name="morning">Pagi</string>
+    <string name="afternoon">Siang</string>
+    <string name="evening">Sore</string>
+    <string name="night">Malam</string>
 </resources>

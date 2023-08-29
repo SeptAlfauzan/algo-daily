@@ -12,9 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.septalfauzan.algotrack.ui.theme.AlgoTrackTheme
-import com.septalfauzan.algotrack.viewmodels.AuthViewModel
-import com.septalfauzan.algotrack.viewmodels.RegisterViewModel
-import com.septalfauzan.algotrack.viewmodels.TimerViewModel
+import com.septalfauzan.algotrack.viewmodels.*
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -24,24 +22,28 @@ class MainActivity : ComponentActivity() {
         val authViewModel: AuthViewModel by viewModels()
         val registerViewModel: RegisterViewModel by viewModels()
         val timerViewModel: TimerViewModel by viewModels()
+        val notificationViewModel: NotificationViewModel by viewModels()
+        val themeViewModel: ThemeViewModel by viewModels()
 
         installSplashScreen().setKeepOnScreenCondition {//splash screen will disapprear whenever already check auth token
             authViewModel.isLoadingSplash.value
         }
 
         setContent {
-            AlgoTrackTheme {
+            AlgoTrackTheme(darkTheme = themeViewModel.isDarkTheme.collectAsState().value) {
                 val isLogged by authViewModel.isLogged.collectAsState()
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    AlgoTrackApp(
+                    AlgoDailyApp(
                         isLogged = isLogged,
                         authViewModel = authViewModel,
                         registerViewModel = registerViewModel,
                         timerViewModel = timerViewModel,
+                        themeViewModel = themeViewModel,
+                        notificationViewModel = notificationViewModel,
                     )
                 }
             }

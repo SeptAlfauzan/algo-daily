@@ -1,8 +1,11 @@
 package com.septalfauzan.algotrack.ui
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -15,6 +18,7 @@ import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -25,6 +29,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.septalfauzan.algotrack.R
 import com.septalfauzan.algotrack.data.model.UserStats
+import com.septalfauzan.algotrack.helper.getCurrentDayCycle
 import com.septalfauzan.algotrack.navigation.Screen
 import com.septalfauzan.algotrack.ui.component.*
 import com.septalfauzan.algotrack.ui.theme.AlgoTrackTheme
@@ -40,22 +45,24 @@ fun HomeScreen(
     timerState: StateFlow<Long>,
     modifier: Modifier = Modifier
 ) {
+    var showAlert by remember { mutableStateOf(false) }
     val timer = System.currentTimeMillis()
     val currentDate = Calendar.getInstance()
     currentDate.timeInMillis = timer
-
-    var showAlert by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     Column(
         modifier = modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 16.dp, vertical = 32.dp)
+        ,
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(32.dp)
     ) {
         Row(Modifier.fillMaxWidth()) {
             Text(
-                text = stringResource(R.string.greeting, "Pagi"),
+                text = stringResource(R.string.greeting, context.getCurrentDayCycle()),
                 style = MaterialTheme.typography.h3.copy(
                     fontWeight = FontWeight.Bold
                 ),

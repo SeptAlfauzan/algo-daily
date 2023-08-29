@@ -1,12 +1,7 @@
 package com.septalfauzan.algotrack.ui.screen
 
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -16,17 +11,18 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.septalfauzan.algotrack.R
+import com.septalfauzan.algotrack.navigation.Screen
+import com.septalfauzan.algotrack.ui.component.AlertModalDialog
 import com.septalfauzan.algotrack.ui.component.AvatarProfile
 import com.septalfauzan.algotrack.ui.component.AvatarProfileType
 import com.septalfauzan.algotrack.ui.component.SwitchButton
@@ -37,7 +33,13 @@ import com.septalfauzan.algotrack.ui.utils.bottomBorder
 fun ProfileScreen(
     userId: String,
     logout: () -> Unit,
-    modifier: Modifier = Modifier
+    toggleTheme: () -> Unit,
+    modifier: Modifier = Modifier,
+    isDarkMode: Boolean,
+    isNotificationReminderActive: Boolean,
+    setNotificationReminder: () -> Unit,
+    navController: NavHostController,
+    cancelNotificationReminder: () -> Unit,
 ) {
     Column(
         modifier
@@ -66,14 +68,32 @@ fun ProfileScreen(
             }
         }
         Spacer(modifier = Modifier.height(36.dp))
-        SettingMenu(logout = logout)
+        SettingMenu(
+            logout = logout,
+            toggleTheme = toggleTheme,
+            isDarkMode = isDarkMode,
+            setNoficationReminder = setNotificationReminder,
+            cancelNotificationReminder = cancelNotificationReminder,
+            navController = navController,
+            isNotificationReminderActive = isNotificationReminderActive
+        )
     }
 }
 
 @Composable
-private fun SettingMenu(logout: () -> Unit, modifier: Modifier = Modifier) {
+private fun SettingMenu(
+    logout: () -> Unit,
+    isDarkMode: Boolean,
+    toggleTheme: () -> Unit,
+    setNoficationReminder: () -> Unit,
+    cancelNotificationReminder: () -> Unit,
+    isNotificationReminderActive: Boolean,
+    navController: NavHostController,
+    modifier: Modifier = Modifier,
+) {
     var onDuty by rememberSaveable { mutableStateOf(true) }
     var notification by rememberSaveable { mutableStateOf(true) }
+    var logoutAlertShowed by remember { mutableStateOf(false) }
 
     Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         SettingItem(
@@ -96,8 +116,19 @@ private fun SettingMenu(logout: () -> Unit, modifier: Modifier = Modifier) {
         )
         SettingItem(text = "Notifikasi", icon = Icons.Default.NotificationsNone) {
             SwitchButton(
-                isChecked = notification,
-                onClick = { notification = !notification })
+                isChecked = isNotificationReminderActive,
+                onClick = {
+                    when(isNotificationReminderActive){
+                        true -> cancelNotificationReminder()
+                        else -> setNoficationReminder()
+                    }
+                })
+        }
+        SettingItem(text = "Mode malam", icon = Icons.Default.NotificationsNone) {
+            SwitchButton(
+                isChecked = isDarkMode,
+                onClick = toggleTheme
+            )
         }
         SettingItem(text = "Bahasa", icon = Icons.Default.Language) {
             Icon(
@@ -105,18 +136,30 @@ private fun SettingMenu(logout: () -> Unit, modifier: Modifier = Modifier) {
                 contentDescription = null
             )
         }
-        SettingItem(text = "Ganti password", icon = Icons.Default.Key) {
+        SettingItem(text = "Ganti password", icon = Icons.Default.Key, onClick = { navController.navigate(Screen.ChangePassword.route) }) {
             Icon(
                 imageVector = Icons.Default.ChevronRight,
                 contentDescription = null
             )
         }
-        SettingItem(text = "Logout", icon = Icons.Default.Logout, onClick = logout) {
+        SettingItem(
+            text = "Logout",
+            icon = Icons.Default.Logout,
+            onClick = { logoutAlertShowed = true }) {
             Icon(
                 imageVector = Icons.Default.ChevronRight,
                 contentDescription = null
             )
         }
+        AlertModalDialog(
+            isShowed = logoutAlertShowed,
+            title = stringResource(R.string.logout_alert_question),
+            text = stringResource(
+                R.string.logout_alert_desc
+            ),
+            onStateChange = { logoutAlertShowed = it },
+            onConfirmYes = logout
+        )
     }
 }
 
@@ -163,7 +206,16 @@ private fun SettingItem(
 private fun Preview() {
     AlgoTrackTheme {
         Surface() {
-            ProfileScreen(userId = "1", logout = {})
+            ProfileScreen(
+                userId = "1",
+                logout = {},
+                toggleTheme = { },
+                isDarkMode = false,
+                isNotificationReminderActive = false,
+                setNotificationReminder = { },
+                navController = rememberNavController(),
+                cancelNotificationReminder = {},
+            )
         }
     }
 }

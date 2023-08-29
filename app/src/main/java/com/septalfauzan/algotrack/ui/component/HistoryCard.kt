@@ -8,22 +8,22 @@ import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.septalfauzan.algotrack.data.model.UserAbsen
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import androidx.compose.material.MaterialTheme
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.septalfauzan.algotrack.navigation.Screen
 import com.septalfauzan.algotrack.ui.theme.AlgoTrackTheme
 import com.septalfauzan.algotrack.ui.theme.GreenVariant
 import com.septalfauzan.algotrack.ui.theme.RedAccent
 
 @Composable
-fun HistoryCard(data: UserAbsen) {
+fun HistoryCard(data: UserAbsen, navController: NavController) {
     Card(
         modifier = Modifier
             .fillMaxWidth(),
@@ -62,7 +62,7 @@ fun HistoryCard(data: UserAbsen) {
                         .align(Alignment.CenterVertically)
                 )
                 if (data.status) {
-                    HistoryCardButton(text = "detail", onClick = { /*TODO*/ })
+                    HistoryCardButton(text = "detail", onClick = { navController.navigate(Screen.Detail.createRoute("dummy_id")) })
                 } else {
                     HistoryCardButton(text = "attend", onClick = { /*TODO*/ })
                 }
@@ -80,7 +80,7 @@ fun HistoryCardPreview() {
                 tanggal = Date(),
                 status = false
             )
-            HistoryCard(data = userData)
+            HistoryCard(data = userData, navController = rememberNavController())
         }
     }
 }
