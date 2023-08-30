@@ -10,20 +10,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.septalfauzan.algotrack.data.model.UserAbsen
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 import androidx.compose.material.MaterialTheme
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.septalfauzan.algotrack.navigation.Screen
+import com.septalfauzan.algotrack.data.source.local.dao.AttendanceEntity
+import com.septalfauzan.algotrack.data.source.local.dao.AttendanceStatus
+import com.septalfauzan.algotrack.domain.model.apiResponse.AttendanceResponseData
+import com.septalfauzan.algotrack.domain.model.apiResponse.toAttendanceEntity
+import com.septalfauzan.algotrack.helper.formatTimeStampDatasource
+import com.septalfauzan.algotrack.helper.navigation.Screen
 import com.septalfauzan.algotrack.ui.theme.AlgoTrackTheme
 import com.septalfauzan.algotrack.ui.theme.GreenVariant
 import com.septalfauzan.algotrack.ui.theme.RedAccent
 
 @Composable
-fun HistoryCard(data: UserAbsen, navController: NavController) {
+fun HistoryCard(data: AttendanceEntity, navController: NavController) {
     Card(
         modifier = Modifier
             .fillMaxWidth(),
@@ -46,8 +47,8 @@ fun HistoryCard(data: UserAbsen, navController: NavController) {
                     modifier = Modifier.align(Alignment.CenterVertically)
                 )
                 Text(
-                    text = if (data.status) "Tepat Waktu" else "Belum Absen",
-                    color = if (data.status) GreenVariant else RedAccent,
+                    text = if (data.status == AttendanceStatus.ON_DUTY) "Tepat Waktu" else "Belum Absen",
+                    color = if (data.status == AttendanceStatus.ON_DUTY) GreenVariant else RedAccent,
                     style = MaterialTheme.typography.caption
                 )
             }
@@ -56,13 +57,13 @@ fun HistoryCard(data: UserAbsen, navController: NavController) {
                 horizontalArrangement = Arrangement.SpaceBetween
             ){
                 Text(
-                    text = SimpleDateFormat("hh:mm a, dd MMM yyyy", Locale.getDefault()).format(data.tanggal),
+                    text = data.timestamp.formatTimeStampDatasource(),
                     modifier = Modifier
                         .padding(bottom = 8.dp)
                         .align(Alignment.CenterVertically)
                 )
-                if (data.status) {
-                    HistoryCardButton(text = "detail", onClick = { navController.navigate(Screen.Detail.createRoute("dummy_id")) })
+                if (data.status != AttendanceStatus.NOT_FILLED) {
+                    HistoryCardButton(text = "detail", onClick = { navController.navigate(Screen.Detail.createRoute(data.id)) })
                 } else {
                     HistoryCardButton(text = "attend", onClick = { /*TODO*/ })
                 }
@@ -76,11 +77,16 @@ fun HistoryCard(data: UserAbsen, navController: NavController) {
 fun HistoryCardPreview() {
     AlgoTrackTheme() {
         Surface() {
-            val userData = UserAbsen(
-                tanggal = Date(),
-                status = false
+            val userData = AttendanceResponseData(
+                id = "",
+                timestamp = "2023-08-29T05:55:21.071Z",
+                createdAt = "2023-08-29T05:55:21.071Z",
+                status = AttendanceStatus.ON_DUTY.toString(),
+                reason = "",
+                latitude = 0.0,
+                longitude = 0.0,
             )
-            HistoryCard(data = userData, navController = rememberNavController())
+            HistoryCard(data = userData.toAttendanceEntity(), navController = rememberNavController())
         }
     }
 }

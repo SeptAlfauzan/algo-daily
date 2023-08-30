@@ -13,15 +13,8 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.septalfauzan.algotrack.data.ui.BottomBarMenu
-import com.septalfauzan.algotrack.navigation.Screen
+import com.septalfauzan.algotrack.helper.navigation.Screen
 
-
-
-private val dummyMenu = listOf(
-    BottomBarMenu(screen = Screen.Home, icon = Icons.Default.Home),
-    BottomBarMenu(screen = Screen.History, icon = Icons.Default.History),
-    BottomBarMenu(screen = Screen.Map, icon = Icons.Default.Map),
-)
 
 @Composable
 fun BottomBar(

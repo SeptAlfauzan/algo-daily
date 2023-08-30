@@ -2,6 +2,7 @@ package com.septalfauzan.algotrack.ui.screen
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -17,54 +18,74 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.septalfauzan.algotrack.R
-import com.septalfauzan.algotrack.navigation.Screen
-import com.septalfauzan.algotrack.ui.component.AlertModalDialog
-import com.septalfauzan.algotrack.ui.component.AvatarProfile
-import com.septalfauzan.algotrack.ui.component.AvatarProfileType
-import com.septalfauzan.algotrack.ui.component.SwitchButton
+import com.septalfauzan.algotrack.data.ui.UiState
+import com.septalfauzan.algotrack.domain.model.apiResponse.GetProfileResponse
+import com.septalfauzan.algotrack.helper.navigation.Screen
+import com.septalfauzan.algotrack.ui.component.*
 import com.septalfauzan.algotrack.ui.theme.AlgoTrackTheme
 import com.septalfauzan.algotrack.ui.utils.bottomBorder
+import com.septalfauzan.algotrack.ui.utils.shimmer
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 fun ProfileScreen(
-    userId: String,
     logout: () -> Unit,
     toggleTheme: () -> Unit,
-    modifier: Modifier = Modifier,
     isDarkMode: Boolean,
     isNotificationReminderActive: Boolean,
     setNotificationReminder: () -> Unit,
     navController: NavHostController,
     cancelNotificationReminder: () -> Unit,
+    profileUiState: StateFlow<UiState<GetProfileResponse>>,
+    getProfile: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier
             .fillMaxSize()
             .padding(horizontal = 16.dp, vertical = 42.dp)
     ) {
-        Row(modifier = Modifier.fillMaxWidth()) {
-            AvatarProfile(onClick = { /*edit view*/ }, type = AvatarProfileType.WITH_EDIT)
-            Spacer(modifier = Modifier.width(12.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = "Nama", style = MaterialTheme.typography.subtitle2.copy(
-                        fontWeight = FontWeight(300)
-                    )
-                )
-                Text(
-                    text = "Username", style = MaterialTheme.typography.subtitle2.copy(
-                        fontWeight = FontWeight(300)
-                    )
-                )
-                Text(
-                    text = "user@email.com", style = MaterialTheme.typography.subtitle2.copy(
-                        fontWeight = FontWeight(300)
-                    )
-                )
+        profileUiState.collectAsState(initial = UiState.Loading).value.let { uiData ->
+            when (uiData) {
+                is UiState.Loading -> {
+                    ShimmerLoading()
+                    getProfile()
+                }
+                is UiState.Success -> {
+                    val result = uiData.data
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        AvatarProfile(
+                            imageUri = result.data.photoUrl ?: "",
+                            onClick = { /*edit view*/ },
+                            type = AvatarProfileType.WITH_EDIT
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Column(
+                            modifier = Modifier.weight(1f),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Text(
+                                text = result.data?.name ?: "",
+                                style = MaterialTheme.typography.subtitle2.copy(
+                                    fontWeight = FontWeight(600)
+                                )
+                            )
+                            Text(
+                                text = result.data?.email ?: "noemail@email.com",
+                                style = MaterialTheme.typography.subtitle2.copy(
+                                    fontWeight = FontWeight(300)
+                                )
+                            )
+                        }
+                    }
+                }
+                is UiState.Error -> {
+                    Text("error: ${uiData.errorMessage}")
+                }
             }
         }
         Spacer(modifier = Modifier.height(36.dp))
@@ -77,6 +98,38 @@ fun ProfileScreen(
             navController = navController,
             isNotificationReminderActive = isNotificationReminderActive
         )
+    }
+}
+
+@Composable
+private fun ShimmerLoading() {
+    Row(Modifier.fillMaxWidth()) {
+        Box(
+            modifier = Modifier
+                .size(AvatarProfileSize.large)
+                .clip(
+                    CircleShape
+                )
+                .shimmer(true)
+        )
+        Spacer(modifier = Modifier.width(12.dp))
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .width(56.dp)
+                    .height(16.dp)
+                    .shimmer(showShimmer = true)
+            )
+            Box(
+                modifier = Modifier
+                    .width(124.dp)
+                    .height(16.dp)
+                    .shimmer(showShimmer = true)
+            )
+        }
     }
 }
 
@@ -95,7 +148,10 @@ private fun SettingMenu(
     var notification by rememberSaveable { mutableStateOf(true) }
     var logoutAlertShowed by remember { mutableStateOf(false) }
 
-    Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
         SettingItem(
             text = "On duty",
             icon = Icons.Default.Work,
@@ -118,7 +174,7 @@ private fun SettingMenu(
             SwitchButton(
                 isChecked = isNotificationReminderActive,
                 onClick = {
-                    when(isNotificationReminderActive){
+                    when (isNotificationReminderActive) {
                         true -> cancelNotificationReminder()
                         else -> setNoficationReminder()
                     }
@@ -136,7 +192,11 @@ private fun SettingMenu(
                 contentDescription = null
             )
         }
-        SettingItem(text = "Ganti password", icon = Icons.Default.Key, onClick = { navController.navigate(Screen.ChangePassword.route) }) {
+        SettingItem(text = "Ganti password", icon = Icons.Default.Key, onClick = {
+            navController.navigate(
+                Screen.ChangePassword.route
+            )
+        }) {
             Icon(
                 imageVector = Icons.Default.ChevronRight,
                 contentDescription = null
@@ -207,7 +267,6 @@ private fun Preview() {
     AlgoTrackTheme {
         Surface() {
             ProfileScreen(
-                userId = "1",
                 logout = {},
                 toggleTheme = { },
                 isDarkMode = false,
@@ -215,6 +274,8 @@ private fun Preview() {
                 setNotificationReminder = { },
                 navController = rememberNavController(),
                 cancelNotificationReminder = {},
+                getProfile = {},
+                profileUiState = MutableStateFlow(UiState.Loading),
             )
         }
     }

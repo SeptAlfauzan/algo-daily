@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -26,6 +27,10 @@ enum class AvatarProfileType {
     NORMAL,
     WITH_EDIT
 }
+object AvatarProfileSize{
+    val large = 76.dp
+    val normal = 58.dp
+}
 
 /**
  * @param onClick is action when user tap the avatar
@@ -34,12 +39,13 @@ enum class AvatarProfileType {
 @Composable
 fun AvatarProfile(
     onClick: () -> Unit,
+    imageUri: String,
     type: AvatarProfileType = AvatarProfileType.NORMAL,
     modifier: Modifier = Modifier
 ) {
     Box(
-        modifier = modifier
-            .size(if(type == AvatarProfileType.NORMAL) 58.dp else 76.dp)
+        modifier = Modifier
+            .size(if(type == AvatarProfileType.NORMAL) AvatarProfileSize.normal else AvatarProfileSize.large)
     ) {
         if(type == AvatarProfileType.WITH_EDIT) Icon(
             imageVector = Icons.Default.Edit,
@@ -59,11 +65,13 @@ fun AvatarProfile(
                 .zIndex(2f)
         )
         AsyncImage(
-            model = "https://avatars.githubusercontent.com/u/48860168?v=4",
+            model = imageUri,
             contentDescription = "avatar profile",
+            error = painterResource(id = R.drawable.ic_launcher_foreground),
             modifier = Modifier
                 .fillMaxSize()
                 .clip(CircleShape)
+                .background(MaterialTheme.colors.onSurface.copy(alpha = 0.3f))
                 .clickable { if (type == AvatarProfileType.NORMAL) onClick() },
             contentScale = ContentScale.Crop
         )

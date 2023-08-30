@@ -1,25 +1,19 @@
-package com.septalfauzan.algotrack.ui
+package com.septalfauzan.algotrack.ui.screen
 
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarToday
-import androidx.compose.material.icons.filled.Timer
-import androidx.compose.material.icons.filled.Watch
 import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Devices
@@ -28,19 +22,17 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.septalfauzan.algotrack.R
-import com.septalfauzan.algotrack.data.model.UserStats
+import com.septalfauzan.algotrack.domain.model.UserStats
 import com.septalfauzan.algotrack.helper.getCurrentDayCycle
-import com.septalfauzan.algotrack.navigation.Screen
+import com.septalfauzan.algotrack.helper.navigation.Screen
 import com.septalfauzan.algotrack.ui.component.*
 import com.septalfauzan.algotrack.ui.theme.AlgoTrackTheme
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import java.util.Calendar
-import java.util.Date
 
 @Composable
 fun HomeScreen(
-    userId: String = "1",
     navHostController: NavHostController,
     timerState: StateFlow<Long>,
     modifier: Modifier = Modifier
@@ -69,11 +61,9 @@ fun HomeScreen(
                 modifier = Modifier.weight(1f)
             )
             Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.TopEnd) {
-                AvatarProfile(onClick = {
+                AvatarProfile(imageUri = "", onClick = {
                     navHostController.navigate(
-                        Screen.Profile.createRoute(
-                            userId
-                        )
+                        Screen.Profile.route
                     )
                 })
             }
@@ -128,9 +118,9 @@ private fun Statistic(modifier: Modifier = Modifier) {
 @Composable
 private fun HomeScreenPreview() {
     val navHostController = rememberNavController()
-    AlgoTrackTheme() {
-        Surface() {
-            HomeScreen(userId = "", navHostController = navHostController, MutableStateFlow(100L))
+    AlgoTrackTheme {
+        Surface {
+            HomeScreen(navHostController = navHostController, MutableStateFlow(100L))
         }
     }
 }

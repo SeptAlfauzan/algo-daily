@@ -18,7 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.septalfauzan.algotrack.data.model.UserStats
+import com.septalfauzan.algotrack.domain.model.UserStats
 import com.septalfauzan.algotrack.ui.theme.BlueSecondary
 
 @Composable
