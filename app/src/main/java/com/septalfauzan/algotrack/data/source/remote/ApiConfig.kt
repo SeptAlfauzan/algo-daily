@@ -18,7 +18,7 @@ class ApiConfig{
             .build()
 
         private val retrofit = Retrofit.Builder().apply {
-            baseUrl("https://algotrackapi-1-t4449346.deta.app/api/")// TODO: change base url api
+            baseUrl("https://algotrackapi-1-t4449346.deta.app/api/")
             addConverterFactory(GsonConverterFactory.create())
             client(client)
         }.build()

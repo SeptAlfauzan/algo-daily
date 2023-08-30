@@ -7,16 +7,10 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
 
-enum class AttendanceStatus{
-    ON_DUTY,
-    PERMIT,
-    NOT_FILLED,
-    OFF_DUTY
-}
 
 @Parcelize
-@Entity(tableName = "attendance")
-data class AttendanceEntity(
+@Entity(tableName = "pending_attendance")
+data class PendingAttendanceEntity(
     @PrimaryKey
     @NonNull
     @ColumnInfo(name = "id", typeAffinity = ColumnInfo.TEXT)

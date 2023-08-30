@@ -63,7 +63,7 @@ fun HistoryCard(data: AttendanceEntity, navController: NavController) {
                         .align(Alignment.CenterVertically)
                 )
                 if (data.status != AttendanceStatus.NOT_FILLED) {
-                    HistoryCardButton(text = "detail", onClick = { navController.navigate(Screen.Detail.createRoute("dummy_id")) })
+                    HistoryCardButton(text = "detail", onClick = { navController.navigate(Screen.Detail.createRoute(data.id)) })
                 } else {
                     HistoryCardButton(text = "attend", onClick = { /*TODO*/ })
                 }

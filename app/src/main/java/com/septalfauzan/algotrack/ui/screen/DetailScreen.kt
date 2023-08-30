@@ -7,6 +7,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
@@ -20,17 +21,23 @@ import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.maps.android.compose.*
-import com.septalfauzan.algotrack.R
+import com.septalfauzan.algotrack.data.source.local.dao.AttendanceEntity
+import com.septalfauzan.algotrack.data.ui.UiState
+import com.septalfauzan.algotrack.helper.formatTimeStampDatasource
+import com.septalfauzan.algotrack.ui.component.ErrorHandler
 import com.septalfauzan.algotrack.ui.theme.AlgoTrackTheme
 import com.septalfauzan.algotrack.ui.utils.bottomBorder
+import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 fun DetailScreen(
     navController: NavHostController,
     modifier: Modifier = Modifier,
-    attendanceId: String
+    attendanceId: String,
+    loadDetail: (String) -> Unit,
+    reloadDetail: () -> Unit,
+    detailStateUi: StateFlow<UiState<AttendanceEntity>>
 ) {
     val context = LocalContext.current
     val textStyle: TextStyle = MaterialTheme.typography.body1
@@ -52,72 +59,86 @@ fun DetailScreen(
             )
         },
     ) { _ ->
-        Column(
-            modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Text(text = "Rincian", style = MaterialTheme.typography.h6)
-            DetailScreenItem(
-                label = "Apakah anda sedang bekerja?",
-                text = "Tidak",
-                textStyle = textStyle
-            )
-            DetailScreenItem(
-                label = "Alasan tidak bekerja",
-                text = "Sakit Perut",
-                textStyle = textStyle
-            )
-            DetailScreenItem(
-                label = "Timestamp",
-                text = "10.10.2020",
-                textStyle = textStyle,
-            )
-            Box(
-                modifier = Modifier
-                    .padding(vertical = 16.dp)
-                    .fillMaxWidth()
-                    .bottomBorder(
-                        width = 1.dp,
-                        borderColor = MaterialTheme.colors.onSurface.copy(alpha = 0.3f)
-                    )
-            )
+        detailStateUi.collectAsState(initial = UiState.Loading).value.let { uiState ->
+            when(uiState){
+                is UiState.Loading -> {
+                    CircularProgressIndicator()
+                    loadDetail(attendanceId)
+                }
+                is UiState.Success -> {
+                    Column(
+                        modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(text = "Rincian", style = MaterialTheme.typography.h6)
+                        DetailScreenItem(
+                            label = "Apakah anda sedang bekerja?",
+                            text = uiState.data.status.toString(),
+                            textStyle = textStyle
+                        )
+                        DetailScreenItem(
+                            label = "Alasan tidak bekerja",
+                            text =  uiState.data.reason ?: "-",
+                            textStyle = textStyle
+                        )
+                        DetailScreenItem(
+                            label = "Timestamp",
+                            text = uiState.data.timestamp.formatTimeStampDatasource(),
+                            textStyle = textStyle,
+                        )
+                        Box(
+                            modifier = Modifier
+                                .padding(vertical = 16.dp)
+                                .fillMaxWidth()
+                                .bottomBorder(
+                                    width = 1.dp,
+                                    borderColor = MaterialTheme.colors.onSurface.copy(alpha = 0.3f)
+                                )
+                        )
 
-            Text(
-                text = "Lokasi",
-                style = textStyle,
-                color = MaterialTheme.colors.onSurface.copy(alpha = 0.3f)
-            )
-            Box(
-                modifier = Modifier
-                    .padding(top = 8.dp)
-                    .height(248.dp)
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(MaterialTheme.colors.onSurface.copy(alpha = 0.3f))
-            ) {
-                GoogleMap(
-                    modifier = Modifier.fillMaxSize(),
-                    cameraPositionState = cameraPositionState,
-                    uiSettings = MapUiSettings(
-                        myLocationButtonEnabled = true,
-                        compassEnabled = true,
-                        zoomControlsEnabled = false,
-                        zoomGesturesEnabled = false,
-                        scrollGesturesEnabled = false,
-                        scrollGesturesEnabledDuringRotateOrZoom = false,
-                    ),
-                    properties = MapProperties(isMyLocationEnabled = false),
-                ){
-                    Marker(
-                        state = MarkerState(position = mapPosition),
-                        icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN),
-                    )
+                        Text(
+                            text = "Lokasi",
+                            style = textStyle,
+                            color = MaterialTheme.colors.onSurface.copy(alpha = 0.3f)
+                        )
+                        Box(
+                            modifier = Modifier
+                                .padding(top = 8.dp)
+                                .height(248.dp)
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(16.dp))
+                                .background(MaterialTheme.colors.onSurface.copy(alpha = 0.3f))
+                        ) {
+                            GoogleMap(
+                                modifier = Modifier.fillMaxSize(),
+                                cameraPositionState = cameraPositionState,
+                                uiSettings = MapUiSettings(
+                                    myLocationButtonEnabled = true,
+                                    compassEnabled = true,
+                                    zoomControlsEnabled = false,
+                                    zoomGesturesEnabled = false,
+                                    scrollGesturesEnabled = false,
+                                    scrollGesturesEnabledDuringRotateOrZoom = false,
+                                ),
+                                properties = MapProperties(isMyLocationEnabled = false),
+                            ){
+                                Marker(
+                                    state = MarkerState(position = mapPosition),
+                                    icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN),
+                                )
 //                    Circle(center = mapPosition, radius = pulse.toDouble(), fillColor = MaterialTheme.colors.secondary.copy(alpha = 0.3f), strokeColor = MaterialTheme.colors.primary, strokeWidth = 0f)
+                            }
+                        }
+                    }
+                }
+                is UiState.Error -> {
+                    ErrorHandler(reload = reloadDetail, errorMessage = uiState.errorMessage)
                 }
             }
         }
+
     }
 }
 
@@ -143,12 +164,18 @@ private fun DetailScreenItem(
     }
 }
 
-@Preview(showBackground = true, device = Devices.PIXEL_4)
-@Composable
-private fun Preview() {
-    AlgoTrackTheme() {
-        Surface {
-            DetailScreen(attendanceId = "id", navController = rememberNavController())
-        }
-    }
-}
+//@Preview(showBackground = true, device = Devices.PIXEL_4)
+//@Composable
+//private fun Preview() {
+//    AlgoTrackTheme() {
+//        Surface {
+//            DetailScreen(
+//                navController = rememberNavController(),
+//                attendanceId = "id",
+//                loadDetail = { id -> historyAttendanceViewModel.getDetail(id) },
+//                reloadDetail = { historyAttendanceViewModel.reloadDetail() },
+//                detailStateUi = historyAttendanceViewModel.detail
+//            )
+//        }
+//    }
+//}

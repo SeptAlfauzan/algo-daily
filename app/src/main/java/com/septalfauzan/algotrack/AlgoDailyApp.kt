@@ -76,7 +76,6 @@ fun AlgoDailyApp(
                         inclusive = true
                     }
                 }
-
                 LoginScreen(
                     updateEmail = { authViewModel.updateEmail(it) },
                     updatePassword = { authViewModel.updatePassword(it) },
@@ -158,7 +157,13 @@ fun AlgoDailyApp(
                 arguments = listOf(navArgument("id") { type = NavType.StringType }
                 )) {
                 val id = it.arguments?.getString("id") ?: ""
-                DetailScreen(attendanceId = id, navController = navController)
+                DetailScreen(
+                    attendanceId = id,
+                    navController = navController,
+                    detailStateUi = historyAttendanceViewModel.detail,
+                    loadDetail = { id -> historyAttendanceViewModel.getDetail(id) },
+                    reloadDetail = { historyAttendanceViewModel.reloadDetail() }
+                )
             }
             composable(route = Screen.ChangePassword.route) {
                 ChangePasswordScreen()

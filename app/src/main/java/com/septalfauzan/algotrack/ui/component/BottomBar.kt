@@ -16,13 +16,6 @@ import com.septalfauzan.algotrack.data.ui.BottomBarMenu
 import com.septalfauzan.algotrack.helper.navigation.Screen
 
 
-
-private val dummyMenu = listOf(
-    BottomBarMenu(screen = Screen.Home, icon = Icons.Default.Home),
-    BottomBarMenu(screen = Screen.History, icon = Icons.Default.History),
-    BottomBarMenu(screen = Screen.Map, icon = Icons.Default.Map),
-)
-
 @Composable
 fun BottomBar(
     bottomBarMenu: List<BottomBarMenu>,

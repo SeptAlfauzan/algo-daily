@@ -7,4 +7,6 @@ import java.util.Calendar
 
 interface IHistoryAttendanceUseCase {
     suspend fun getHistory(date: String) : StateFlow<UiState<List<AttendanceEntity>>>
+
+    suspend fun getDetail(id: String) : StateFlow<UiState<AttendanceEntity>>
 }

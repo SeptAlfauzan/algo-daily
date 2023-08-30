@@ -6,8 +6,8 @@ import com.septalfauzan.algotrack.data.source.local.dao.AttendanceStatus
 
 data class AttendanceResponse(
 
-	@field:SerializedName("attendance_response_data")
-	val data: AttendanceResponseData? = null
+	@field:SerializedName("data")
+	val data: AttendanceResponseData
 )
 
 data class AttendanceResponseData(
@@ -22,10 +22,10 @@ data class AttendanceResponseData(
 	val reason: String? = null,
 
 	@field:SerializedName("latitude")
-	val latitude: Double,
+	val latitude: Double?,
 
 	@field:SerializedName("longitude")
-	val longitude: Double,
+	val longitude: Double?,
 
 	@field:SerializedName("timestamp")
 	val timestamp: String,

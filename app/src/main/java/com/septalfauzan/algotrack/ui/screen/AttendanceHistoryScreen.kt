@@ -2,7 +2,8 @@ package com.septalfauzan.algotrack.ui.screen
 
 import android.app.DatePickerDialog
 import android.widget.DatePicker
-import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -13,9 +14,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Sort
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -84,11 +90,14 @@ fun AttendanceHistoryScreen(
         historyUiState.collectAsState(initial = UiState.Loading).value.let { uiState ->
             when (uiState) {
                 is UiState.Loading -> {
-                    ShimmerLoading(modifier = Modifier.padding(paddingValues))
+                    ShimmerLoading(showShimmer = true, modifier = Modifier.padding(paddingValues))
                     getHistory(selectedDateText.reverseFormatCalendarDate())
                 }
                 is UiState.Success -> {
-                    Column(Modifier.padding(16.dp)) {
+                    Column(
+                        Modifier
+                            .fillMaxSize()
+                            .padding(16.dp)) {
                         Row(
                             Modifier
                                 .padding(bottom = 16.dp)
@@ -105,7 +114,8 @@ fun AttendanceHistoryScreen(
                                 color = MaterialTheme.colors.onSurface
                             )
                         }
-                        LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxSize()) {
+                            if (uiState.data.isEmpty()) { item { NoAttendanceData() } }
                             items(uiState.data) { history ->
                                 HistoryCard(data = history, navController = navController)
                             }
@@ -113,7 +123,7 @@ fun AttendanceHistoryScreen(
                     }
                 }
                 is UiState.Error -> ErrorHandler(
-                    reload = { /*TODO*/ },
+                    reload = { reloadHistory() },
                     errorMessage = uiState.errorMessage
                 )
             }
@@ -122,23 +132,47 @@ fun AttendanceHistoryScreen(
 }
 
 @Composable
-private fun ShimmerLoading(modifier: Modifier = Modifier) {
+private fun NoAttendanceData(modifier: Modifier = Modifier) {
+    Column(modifier = modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+        Image(
+            painter = painterResource(id = R.drawable.no_attendance_data),
+            contentDescription = stringResource(
+                R.string.no_attendance_data_image
+            )
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = stringResource(R.string.no_attendance_data),
+            style = MaterialTheme.typography.body1.copy(
+                textAlign = TextAlign.Center
+            )
+        )
+    }
+}
+
+@Composable
+private fun ShimmerLoading(showShimmer: Boolean, modifier: Modifier = Modifier) {
     Column(modifier = modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Box(modifier = Modifier.width(240.dp).height(24.dp).clip(RoundedCornerShape(4.dp))
-            .shimmer(true))
         Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(128.dp)
+                .width(240.dp)
+                .height(24.dp)
                 .clip(RoundedCornerShape(4.dp))
-                .shimmer(showShimmer = true),
+                .shimmer(true)
         )
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(128.dp)
                 .clip(RoundedCornerShape(4.dp))
-                .shimmer(showShimmer = true),
+                .shimmer(showShimmer = showShimmer),
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(128.dp)
+                .clip(RoundedCornerShape(4.dp))
+                .shimmer(showShimmer = showShimmer),
         )
         Box(
             modifier = Modifier

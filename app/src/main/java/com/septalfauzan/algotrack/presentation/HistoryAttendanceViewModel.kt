@@ -21,14 +21,27 @@ class HistoryAttendanceViewModel @Inject constructor(private val historyAttendan
     private val _result = MutableStateFlow<UiState<List<AttendanceEntity>>>(UiState.Loading)
     val result: StateFlow<UiState<List<AttendanceEntity>>> = _result
 
+    private val _detail = MutableStateFlow<UiState<AttendanceEntity>>(UiState.Loading)
+    val detail: StateFlow<UiState<AttendanceEntity>> = _detail
+
+
     fun getHistory(date: String){
         viewModelScope.launch(Dispatchers.IO) {
-            delay(400)
             _result.value = historyAttendanceUseCase.getHistory(date).value
         }
     }
 
     fun reloadHistory(){
         viewModelScope.launch(Dispatchers.IO) { _result.value = UiState.Loading }
+    }
+
+    fun getDetail(id: String){
+        viewModelScope.launch(Dispatchers.IO) {
+            _detail.value = historyAttendanceUseCase.getDetail(id).value
+        }
+    }
+
+    fun reloadDetail(){
+        viewModelScope.launch(Dispatchers.IO) { _detail.value = UiState.Loading }
     }
 }
