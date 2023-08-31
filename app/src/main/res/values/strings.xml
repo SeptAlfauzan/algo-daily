@@ -34,4 +34,7 @@
     <string name="afternoon">Siang</string>
     <string name="evening">Sore</string>
     <string name="night">Malam</string>
+    <string name="reload">Muat ulang</string>
+    <string name="no_attendance_data_image">no attendance data image</string>
+    <string name="no_attendance_data">Tidak ada data riwayat absen untuk hari ini</string>
 </resources>
