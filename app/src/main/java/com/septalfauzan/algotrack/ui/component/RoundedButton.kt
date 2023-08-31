@@ -28,6 +28,7 @@ enum class ButtonType {
 fun RoundedButton(
     text: String,
     onClick: () -> Unit,
+    enabled: Boolean = true,
     buttonType: ButtonType = ButtonType.PRIMARY,
     icon: ImageVector? = null,
     modifier: Modifier = Modifier
@@ -36,6 +37,7 @@ fun RoundedButton(
         onClick = onClick,
         shape = RoundedCornerShape(20.dp),
         modifier = modifier,
+        enabled = enabled,
         colors = ButtonDefaults.buttonColors(backgroundColor = if (buttonType == ButtonType.PRIMARY) MaterialTheme.colors.primary else MaterialTheme.colors.secondary)
     ) {
         icon?.let {

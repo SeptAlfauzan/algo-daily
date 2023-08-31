@@ -40,6 +40,7 @@ fun AlgoDailyApp(
     notificationViewModel: NotificationViewModel,
     profileViewModel: ProfileViewModel,
     historyAttendanceViewModel: HistoryAttendanceViewModel,
+    attendanceViewModel: AttendanceViewModel,
 ) {
     val systemUiController = rememberSystemUiController()
     val bottomBarMenuItems = listOf(
@@ -113,7 +114,7 @@ fun AlgoDailyApp(
                 MapScreen(navController)
             }
             composable(Screen.Attendance.route) {
-                AttendanceScreen(navController = navController)
+                AttendanceScreen(navController = navController, attendanceViewModel)
             }
             composable(Screen.Success.route) {
                 SuccessScreen(navController = navController)
