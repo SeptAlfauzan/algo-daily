@@ -1,6 +1,7 @@
 package com.septalfauzan.algotrack.data.source.remote.apiInterfaces
 
 import com.septalfauzan.algotrack.data.source.local.dao.AttendanceEntity
+import com.septalfauzan.algotrack.domain.model.AttendanceRequestBody
 import com.septalfauzan.algotrack.domain.model.AuthData
 import com.septalfauzan.algotrack.domain.model.apiResponse.*
 import okhttp3.RequestBody
@@ -26,8 +27,16 @@ interface AlgoTrackApiInterfaces {
     @POST("users/attendance")
     suspend fun postAttendance(
         @Header("Authorization") authToken: String,
-        @Body attendance: AttendanceEntity
+        @Body attendance: AttendanceRequestBody
     ) : AttendanceResponse
+
+    @PUT("users/attendance/history/{id}")
+    suspend fun putAttendance(
+        @Header("Authorization") authToken: String,
+        @Path("id") id: String,
+        @Body attendance: AttendanceRequestBody
+    ) : AttendanceResponse
+
 
     @PUT("users/password")
     suspend fun updatePassword()

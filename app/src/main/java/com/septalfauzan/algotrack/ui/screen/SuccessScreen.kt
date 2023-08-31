@@ -76,7 +76,11 @@ fun SuccessScreen(navController: NavController) {
             )
             Spacer(modifier = Modifier.height(32.dp))
             RoundedButton(
-                onClick = { navController.navigate(Screen.Home.route) },
+                onClick = { navController.navigate(Screen.Home.route){
+                    popUpTo(Screen.Success.route) {
+                        inclusive = true
+                    }
+                } },
                 text = "Home",
                 modifier = Modifier.width(150.dp),
                 buttonType = ButtonType.SECONDARY

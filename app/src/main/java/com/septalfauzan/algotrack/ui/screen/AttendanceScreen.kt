@@ -34,12 +34,13 @@ import com.septalfauzan.algotrack.ui.component.RoundedButton
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun AttendanceScreen(navController: NavController, viewModel: AttendanceViewModel) {
+fun AttendanceScreen(id: String, navController: NavController, viewModel: AttendanceViewModel) {
     var currentQuestion by remember { mutableStateOf(1) }
     var selectedAnswer by remember { mutableStateOf("") }
     var reasonNotWork by remember { mutableStateOf("") }
 
-    val offset by animateDpAsState(targetValue = if (currentQuestion == 1) 0.dp else (-1000).dp)
+    val offsetQuestion1 by animateDpAsState(targetValue = if (currentQuestion == 1) 0.dp else (-1000).dp)
+    val offsetQuestion2 by animateDpAsState(targetValue = if (currentQuestion == 2) 0.dp else (1000).dp)
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -49,11 +50,11 @@ fun AttendanceScreen(navController: NavController, viewModel: AttendanceViewMode
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
-                .offset(x = offset)
+                .offset(x = offsetQuestion1)
         ) {
             Text(
                 text = "Attendance",
-                style = MaterialTheme.typography.h4,
+                style = MaterialTheme.typography.h6,
             )
             Text(
                 text = "Question $currentQuestion/2",
@@ -65,21 +66,21 @@ fun AttendanceScreen(navController: NavController, viewModel: AttendanceViewMode
             modifier = Modifier
                 .padding(16.dp)
                 .fillMaxHeight()
-                .offset(x = offset)
+//                .offset(x = offset)
         ) {
-            Text(
-                text = if (currentQuestion == 1) "Apakah anda sedang bekerja?" else "Alasan anda tidak bekerja?",
-                style = MaterialTheme.typography.h4,
-            )
             if (currentQuestion == 1) {
-                Text(
-                    text = "pilih sesuai kondisi anda sekarang",
-                    style = MaterialTheme.typography.h6,
-                    color = Color.Gray,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                Column {
+                Column(modifier = Modifier.offset(x = offsetQuestion1)) {
+                    Text(
+                        text = "Apakah anda sedang bekerja?",
+                        style = MaterialTheme.typography.h5,
+                    )
+                    Text(
+                        text = "pilih sesuai kondisi anda sekarang",
+                        style = MaterialTheme.typography.h6,
+                        color = Color.Gray,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.padding(bottom = 4.dp)
@@ -112,34 +113,40 @@ fun AttendanceScreen(navController: NavController, viewModel: AttendanceViewMode
                             modifier = Modifier.align(Alignment.CenterVertically)
                         )
                     }
+                    Spacer(modifier = Modifier.weight(1f))
+                    RoundedButton(
+                        onClick = { currentQuestion = 2 },
+                        text = "selanjutnya",
+                        buttonType = ButtonType.PRIMARY,
+                        modifier = Modifier.align(Alignment.End),
+                        enabled = selectedAnswer.isNotBlank(),
+                    )
                 }
-                Spacer(modifier = Modifier.weight(1f))
-                RoundedButton(
-                    onClick = { currentQuestion = 2 },
-                    text = "selanjutnya",
-                    buttonType = ButtonType.SECONDARY,
-                    modifier = Modifier.align(Alignment.End),
-                    enabled = selectedAnswer.isNotBlank(),
-                )
             } else if (currentQuestion == 2) {
-                EdtTextAttandence(label = "Ketik Disini", onChange = { reasonNotWork = it }, value = reasonNotWork)
-                Spacer(modifier = Modifier.weight(1f))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    RoundedButton(
-                        onClick = { currentQuestion = 1 },
-                        text = "sebelumnya",
-                        modifier = Modifier.width(150.dp)
+                Column(modifier = Modifier.offset(x = offsetQuestion2)) {
+                    Text(
+                        text = "Alasan anda tidak bekerja?",
+                        style = MaterialTheme.typography.h5,
                     )
-                    RoundedButton(
-                        onClick = { viewModel.postAttendance(selectedAnswer, reasonNotWork, navController)},
-                        text = "kirim",
-                        buttonType = ButtonType.SECONDARY,
-                        modifier = Modifier.width(150.dp),
-                        enabled = reasonNotWork.isNotBlank(),
-                    )
+                    EdtTextAttandence(label = "Ketik Disini", onChange = { reasonNotWork = it }, value = reasonNotWork)
+                    Spacer(modifier = Modifier.weight(1f))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        RoundedButton(
+                            onClick = { currentQuestion = 1 },
+                            text = "sebelumnya",
+                            modifier = Modifier.width(150.dp)
+                        )
+                        RoundedButton(
+                            onClick = { viewModel.updateAttendance(id, selectedAnswer, reasonNotWork, navController)},
+                            text = "kirim",
+                            buttonType = ButtonType.PRIMARY,
+                            modifier = Modifier.width(150.dp),
+                            enabled = reasonNotWork.isNotBlank(),
+                        )
+                    }
                 }
             }
         }

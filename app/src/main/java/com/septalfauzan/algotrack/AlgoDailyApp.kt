@@ -1,5 +1,6 @@
 package com.septalfauzan.algotrack
 
+import android.util.Log
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -11,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -19,6 +21,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
+import androidx.work.WorkManager
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.septalfauzan.algotrack.data.ui.BottomBarMenu
 import com.septalfauzan.algotrack.helper.navigation.Screen
@@ -27,6 +30,8 @@ import com.septalfauzan.algotrack.ui.RegisterScreen
 import com.septalfauzan.algotrack.ui.component.BottomBar
 import com.septalfauzan.algotrack.ui.screen.*
 import com.septalfauzan.algotrack.presentation.*
+import com.septalfauzan.algotrack.service.DailyAttendanceWorker
+import com.septalfauzan.algotrack.util.REMINDER_WORK_MANAGER_TAG
 
 @Composable
 fun AlgoDailyApp(
@@ -42,6 +47,7 @@ fun AlgoDailyApp(
     historyAttendanceViewModel: HistoryAttendanceViewModel,
     attendanceViewModel: AttendanceViewModel,
 ) {
+    val context = LocalContext.current
     val systemUiController = rememberSystemUiController()
     val bottomBarMenuItems = listOf(
         BottomBarMenu(screen = Screen.Home, icon = Icons.Default.Home),
@@ -105,6 +111,14 @@ fun AlgoDailyApp(
                 systemUiController.setSystemBarsColor(
                     color = MaterialTheme.colors.background
                 )
+
+                val workManager = WorkManager.getInstance(context)
+                val workerInSameTag = workManager.getWorkInfosByTag(REMINDER_WORK_MANAGER_TAG).get()
+                Log.d("TAG", "onCreate worker: ${workerInSameTag.size}")
+                if(workerInSameTag.isEmpty()){
+                    workManager.enqueue(DailyAttendanceWorker.periodicWorkRequest)
+                }
+
                 HomeScreen(
                     timerState = timerViewModel.timerState,
                     navHostController = navController,
@@ -113,10 +127,20 @@ fun AlgoDailyApp(
             composable(Screen.Map.route) {
                 MapScreen(navController)
             }
-            composable(Screen.Attendance.route) {
-                AttendanceScreen(navController = navController, attendanceViewModel)
+            composable(
+                route = Screen.Attendance.route,
+                deepLinks = listOf(navDeepLink {
+                    uriPattern = "https://algodaily/attendance/{id}"
+                }),
+                arguments = listOf(navArgument("id") { type = NavType.StringType })
+            ) {
+                val id = it.arguments?.getString("id") ?: ""
+                AttendanceScreen(id = id, navController = navController, attendanceViewModel)
             }
             composable(Screen.Success.route) {
+                systemUiController.setSystemBarsColor(
+                    color = MaterialTheme.colors.primary
+                )
                 SuccessScreen(navController = navController)
             }
             composable(Screen.History.route) {
@@ -154,7 +178,6 @@ fun AlgoDailyApp(
             }
             composable(
                 route = Screen.Detail.route,
-                deepLinks = listOf(navDeepLink { uriPattern = "https://algodaily/detail/{id}" }),
                 arguments = listOf(navArgument("id") { type = NavType.StringType }
                 )) {
                 val id = it.arguments?.getString("id") ?: ""

@@ -29,7 +29,7 @@ class AttendanceReminder : BroadcastReceiver() {
             val notificationStyle = NotificationCompat.InboxStyle()
             val deepLinkIntent = Intent(
                 Intent.ACTION_VIEW,
-                "https://algodaily/detail/$id".toUri(),
+                "https://algodaily/attendance/$id".toUri(),
                 context,
                 MainActivity::class.java
             )
@@ -44,6 +44,7 @@ class AttendanceReminder : BroadcastReceiver() {
             val notification: NotificationCompat.Builder =
                 NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
                     .setSmallIcon(R.drawable.ic_launcher_foreground)
+                    .setAutoCancel(true)
                     .setStyle(notificationStyle)
                     .setContentTitle("Waktunya absen")
                     .setContentText("absen baru sudah tersedia, yuk segera absen")

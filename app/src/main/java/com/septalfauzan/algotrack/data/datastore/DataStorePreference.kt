@@ -13,17 +13,21 @@ import javax.inject.Inject
 class DataStorePreference @Inject constructor(@ApplicationContext private val context: Context){
     private val AUTH_TOKEN = stringPreferencesKey("auth_token")
     private val DARK_THEME = booleanPreferencesKey("dark_theme")
+    private val NOTIFICATION = booleanPreferencesKey("notification")
 
     fun getAuthToken(): Flow<String> = context.datastore.data.map { it[AUTH_TOKEN] ?: "" }
 
     fun getDarkThemeValue(): Flow<Boolean> = context.datastore.data.map { it[DARK_THEME] ?: false }
 
+    fun getNotificationValue(): Flow<Boolean> = context.datastore.data.map { it[NOTIFICATION] ?: false }
     suspend fun setAuthToken(token: String){
         context.datastore.edit { it[AUTH_TOKEN] = token }
     }
-
     suspend fun setDarkTheme(value: Boolean){
         context.datastore.edit { it[DARK_THEME] = value }
+    }
+    suspend fun setNotification(value: Boolean){
+        context.datastore.edit { it[NOTIFICATION] = value }
     }
 
     companion object {

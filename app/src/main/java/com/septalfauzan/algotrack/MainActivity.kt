@@ -2,6 +2,7 @@ package com.septalfauzan.algotrack
 
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -17,6 +18,7 @@ import androidx.work.WorkManager
 import com.septalfauzan.algotrack.ui.theme.AlgoTrackTheme
 import com.septalfauzan.algotrack.presentation.*
 import com.septalfauzan.algotrack.service.DailyAttendanceWorker
+import com.septalfauzan.algotrack.util.REMINDER_WORK_MANAGER_TAG
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -36,10 +38,6 @@ class MainActivity : ComponentActivity() {
         installSplashScreen().setKeepOnScreenCondition {//splash screen will disapprear whenever already check auth token
             authViewModel.isLoadingSplash.value
         }
-
-
-        WorkManager.getInstance(applicationContext).enqueue(DailyAttendanceWorker.periodicWorkRequest)
-
 
         setContent {
             AlgoTrackTheme(darkTheme = themeViewModel.isDarkTheme.collectAsState().value) {

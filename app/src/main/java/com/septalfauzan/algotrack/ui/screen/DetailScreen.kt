@@ -1,5 +1,6 @@
 package com.septalfauzan.algotrack.ui.screen
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -13,11 +14,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -26,10 +24,10 @@ import com.septalfauzan.algotrack.data.source.local.dao.AttendanceEntity
 import com.septalfauzan.algotrack.data.ui.UiState
 import com.septalfauzan.algotrack.helper.formatTimeStampDatasource
 import com.septalfauzan.algotrack.ui.component.ErrorHandler
-import com.septalfauzan.algotrack.ui.theme.AlgoTrackTheme
 import com.septalfauzan.algotrack.ui.utils.bottomBorder
 import kotlinx.coroutines.flow.StateFlow
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun DetailScreen(
     navController: NavHostController,
@@ -58,7 +56,7 @@ fun DetailScreen(
                 },
             )
         },
-    ) { _ ->
+    ) {  _ ->
         detailStateUi.collectAsState(initial = UiState.Loading).value.let { uiState ->
             when(uiState){
                 is UiState.Loading -> {
