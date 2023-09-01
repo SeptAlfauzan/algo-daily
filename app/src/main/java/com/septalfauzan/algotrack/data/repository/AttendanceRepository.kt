@@ -11,6 +11,7 @@ import com.septalfauzan.algotrack.data.source.local.dao.PendingAttendanceEntity
 import com.septalfauzan.algotrack.data.source.remote.apiInterfaces.AlgoTrackApiInterfaces
 import com.septalfauzan.algotrack.domain.model.AttendanceRequestBody
 import com.septalfauzan.algotrack.domain.model.apiResponse.AttendanceResponse
+import com.septalfauzan.algotrack.domain.model.apiResponse.formatTimeToGMT
 import com.septalfauzan.algotrack.domain.model.apiResponse.toAttendanceEntity
 import com.septalfauzan.algotrack.domain.repository.IAttendanceRepository
 import kotlinx.coroutines.Dispatchers
@@ -19,10 +20,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
-import java.time.Instant
-import java.time.format.DateTimeFormatter
-import java.util.Date
-import java.util.UUID
 import javax.inject.Inject
 
 class AttendanceRepository @Inject constructor(
@@ -41,7 +38,8 @@ class AttendanceRepository @Inject constructor(
 
             Log.d(this::class.java.simpleName, "getHistory: $response")
 
-            val apiData = response.data.map { it.toAttendanceEntity() }
+            val dataFormattedToGMT = response.data.map { it.formatTimeToGMT() }
+            val apiData = dataFormattedToGMT.map { it.toAttendanceEntity() }
 
             coroutineScope {
                 launch(Dispatchers.IO) {
@@ -60,7 +58,7 @@ class AttendanceRepository @Inject constructor(
         try {
             val token = dataStorePreference.getAuthToken().first()
             val response = apiService.getDetailHistory(authToken = token, id)
-            return flowOf(response.data.toAttendanceEntity())
+            return flowOf(response.data.formatTimeToGMT().toAttendanceEntity())
         }catch (e: java.lang.Exception){
             throw e
         }
@@ -86,13 +84,13 @@ class AttendanceRepository @Inject constructor(
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    override suspend fun createNewBlankAttendance(data: PendingAttendanceEntity): Flow<AttendanceResponse> {
+    override suspend fun createNewBlankAttendance(): Flow<AttendanceResponse> {
         try {
             val token = dataStorePreference.getAuthToken().first()
 //            val currentTime = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
             val blankAttendance = AttendanceRequestBody(
-                reason = "coba dari workmanager",
                 status = AttendanceStatus.NOT_FILLED,
+                reason = null,
                 latitude = null,
                 longitude = null,
             )

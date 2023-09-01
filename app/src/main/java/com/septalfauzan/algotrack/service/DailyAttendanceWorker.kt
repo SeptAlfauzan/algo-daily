@@ -35,7 +35,7 @@ class DailyAttendanceWorker @AssistedInject constructor(
     CoroutineWorker(context, workerParams) {
     override suspend fun doWork(): Result {
         try {
-            val response = pendingAttendanceUseCase.create(dummy)
+            val response = pendingAttendanceUseCase.create()
             response.value?.let {
                 Log.d("TAG", "doWork: ${it.data}")
                 AttendanceReminder.showNotification(

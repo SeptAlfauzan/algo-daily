@@ -157,16 +157,16 @@ fun MapScreen(navController: NavController) {
     val mapStyle = MapStyleOptions.loadRawResourceStyle(context, R.raw.map_style)
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(text = "Map Screen") },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
-                    }
-                },
-            )
-        },
+//        topBar = {
+//            TopAppBar(
+//                title = { Text(text = "Map Screen") },
+//                navigationIcon = {
+//                    IconButton(onClick = { navController.popBackStack() }) {
+//                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
+//                    }
+//                },
+//            )
+//        },
         content = {
             PermissionsRequired(
                 multiplePermissionsState = permissionsState,

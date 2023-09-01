@@ -42,6 +42,8 @@ fun ProfileScreen(
     cancelNotificationReminder: () -> Unit,
     profileUiState: StateFlow<UiState<GetProfileResponse>>,
     getProfile: () -> Unit,
+    setOnDuty: (Boolean) -> Unit,
+    onDutyState: StateFlow<Boolean>,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -93,6 +95,8 @@ fun ProfileScreen(
             logout = logout,
             toggleTheme = toggleTheme,
             isDarkMode = isDarkMode,
+            onDutyStatusState = onDutyState,
+            setOnDuty = setOnDuty,
             setNoficationReminder = setNotificationReminder,
             cancelNotificationReminder = cancelNotificationReminder,
             navController = navController,
@@ -143,8 +147,10 @@ private fun SettingMenu(
     isNotificationReminderActive: Boolean,
     navController: NavHostController,
     modifier: Modifier = Modifier,
+    onDutyStatusState: StateFlow<Boolean>,
+    setOnDuty: (Boolean) -> Unit,
 ) {
-    var onDuty by rememberSaveable { mutableStateOf(true) }
+//    var onDuty by rememberSaveable { mutableStateOf(true) }
     var notification by rememberSaveable { mutableStateOf(true) }
     var logoutAlertShowed by remember { mutableStateOf(false) }
 
@@ -161,8 +167,9 @@ private fun SettingMenu(
             )
         ) {
             SwitchButton(
-                isChecked = onDuty,
-                onClick = { onDuty = !onDuty })
+                isChecked = onDutyStatusState.collectAsState().value,
+                onClick = { setOnDuty(!onDutyStatusState.value) }
+            )
         }
         Text(
             stringResource(R.string.setting), style = MaterialTheme.typography.h6.copy(
@@ -274,8 +281,10 @@ private fun Preview() {
                 setNotificationReminder = { },
                 navController = rememberNavController(),
                 cancelNotificationReminder = {},
-                getProfile = {},
                 profileUiState = MutableStateFlow(UiState.Loading),
+                getProfile = {},
+                setOnDuty = { },
+                onDutyState = MutableStateFlow(true),
             )
         }
     }

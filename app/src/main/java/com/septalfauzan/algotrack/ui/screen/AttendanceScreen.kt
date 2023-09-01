@@ -114,13 +114,23 @@ fun AttendanceScreen(id: String, navController: NavController, viewModel: Attend
                         )
                     }
                     Spacer(modifier = Modifier.weight(1f))
-                    RoundedButton(
-                        onClick = { currentQuestion = 2 },
-                        text = "selanjutnya",
-                        buttonType = ButtonType.PRIMARY,
-                        modifier = Modifier.align(Alignment.End),
-                        enabled = selectedAnswer.isNotBlank(),
-                    )
+                    if(selectedAnswer == "Yes"){
+                        RoundedButton(
+                            onClick = { viewModel.updateAttendance(id, selectedAnswer, reasonNotWork, navController) },
+                            text = "kirim",
+                            buttonType = ButtonType.PRIMARY,
+                            modifier = Modifier.width(150.dp).align(Alignment.End),
+                            enabled = selectedAnswer.isNotBlank(),
+                        )
+                    }else{
+                        RoundedButton(
+                            onClick = { currentQuestion = 2 },
+                            text = "selanjutnya",
+                            buttonType = ButtonType.PRIMARY,
+                            modifier = Modifier.align(Alignment.End),
+                            enabled = selectedAnswer.isNotBlank(),
+                        )
+                    }
                 }
             } else if (currentQuestion == 2) {
                 Column(modifier = Modifier.offset(x = offsetQuestion2)) {

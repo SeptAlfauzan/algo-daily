@@ -15,5 +15,5 @@ interface IAttendanceRepository {
     suspend fun updateAttendance(id: String, data: AttendanceRequestBody) : Flow<AttendanceResponse>
     suspend fun saveToLocalDB(data: AttendanceEntity) : Flow<Long>
     suspend fun saveBatchToLocalDB(listData: List<AttendanceEntity>) : Flow<List<Long>>
-    suspend fun createNewBlankAttendance(data: PendingAttendanceEntity) : Flow<AttendanceResponse>
+    suspend fun createNewBlankAttendance() : Flow<AttendanceResponse>
 }

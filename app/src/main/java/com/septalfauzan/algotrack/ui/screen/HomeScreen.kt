@@ -35,7 +35,9 @@ import java.util.Calendar
 fun HomeScreen(
     navHostController: NavHostController,
     timerState: StateFlow<Long>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    setOnDuty: (Boolean) -> Unit,
+    onDutyValue: StateFlow<Boolean>
 ) {
     var showAlert by remember { mutableStateOf(false) }
     val timer = System.currentTimeMillis()
@@ -120,7 +122,12 @@ private fun HomeScreenPreview() {
     val navHostController = rememberNavController()
     AlgoTrackTheme {
         Surface {
-            HomeScreen(navHostController = navHostController, MutableStateFlow(100L))
+            HomeScreen(
+                navHostController = navHostController,
+                MutableStateFlow(100L),
+                setOnDuty = {  },
+                onDutyValue = MutableStateFlow(true)
+            )
         }
     }
 }

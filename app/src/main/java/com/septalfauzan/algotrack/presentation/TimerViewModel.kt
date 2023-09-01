@@ -29,7 +29,7 @@ class TimerViewModel @Inject constructor(private val repository: MainRepository)
         val timerLeft = totalTimer - currentMinuteSecond
 
         viewModelScope.launch(Dispatchers.IO) {
-            initTimer(timerLeft).onCompletion { _timerState.emit(totalTimer) }.collect {
+            initTimer(timerLeft).onCompletion { startTimer() }.collect {
                 _timerState.value = it
             }
         }
