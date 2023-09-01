@@ -47,7 +47,12 @@ fun HistoryCard(data: AttendanceEntity, navController: NavController) {
                     modifier = Modifier.align(Alignment.CenterVertically)
                 )
                 Text(
-                    text = if (data.status == AttendanceStatus.ON_DUTY) "Tepat Waktu" else "Belum Absen",
+                    text = when(data.status){
+                        AttendanceStatus.PERMIT -> "Izin"
+                        AttendanceStatus.ON_DUTY -> "Masuk"
+                        AttendanceStatus.OFF_DUTY -> "Cuti"
+                        AttendanceStatus.NOT_FILLED -> "Belum Absen"
+                    },
                     color = if (data.status == AttendanceStatus.ON_DUTY) GreenVariant else RedAccent,
                     style = MaterialTheme.typography.caption
                 )
@@ -62,10 +67,10 @@ fun HistoryCard(data: AttendanceEntity, navController: NavController) {
                         .padding(bottom = 8.dp)
                         .align(Alignment.CenterVertically)
                 )
-                if (data.status != AttendanceStatus.NOT_FILLED) {
-                    HistoryCardButton(text = "detail", onClick = { navController.navigate(Screen.Detail.createRoute(data.id)) })
+                if (data.status == AttendanceStatus.NOT_FILLED) {
+                    HistoryCardButton(text = "absen", onClick = { navController.navigate(Screen.Attendance.createRoute(data.id)) })
                 } else {
-                    HistoryCardButton(text = "attend", onClick = { /*TODO*/ })
+                    HistoryCardButton(text = "detail", onClick = { navController.navigate(Screen.Detail.createRoute(data.id)) })
                 }
             }
         }

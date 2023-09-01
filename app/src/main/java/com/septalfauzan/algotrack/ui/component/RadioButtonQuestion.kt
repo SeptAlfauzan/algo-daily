@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.septalfauzan.algotrack.domain.model.AttendanceAnswer
+import com.septalfauzan.algotrack.domain.model.AttendanceRadioButtonAnswer
 import com.septalfauzan.algotrack.ui.theme.AlgoTrackTheme
 
 @Composable
@@ -49,7 +49,7 @@ fun QuestionItem(
 
 
 @Composable
-fun QuestionsRadioButton(answers: List<AttendanceAnswer>, modifier: Modifier = Modifier) {
+fun QuestionsRadioButton(answers: List<AttendanceRadioButtonAnswer>, modifier: Modifier = Modifier) {
     var selectedIndex: Int? by rememberSaveable {
         mutableStateOf(null)
     }
@@ -73,8 +73,8 @@ private fun Preview() {
     AlgoTrackTheme() {
         Surface() {
             QuestionsRadioButton(answers = listOf(
-                AttendanceAnswer(answer = "Ya", value = true),
-                AttendanceAnswer(answer = "Tidak", value = false),
+                AttendanceRadioButtonAnswer(answer = "Ya", value = true),
+                AttendanceRadioButtonAnswer(answer = "Tidak", value = false),
             ))
         }
     }

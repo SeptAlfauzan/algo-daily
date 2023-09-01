@@ -97,7 +97,8 @@ fun AttendanceHistoryScreen(
                     Column(
                         Modifier
                             .fillMaxSize()
-                            .padding(16.dp)) {
+                            .padding(16.dp)
+                    ) {
                         Row(
                             Modifier
                                 .padding(bottom = 16.dp)
@@ -114,10 +115,16 @@ fun AttendanceHistoryScreen(
                                 color = MaterialTheme.colors.onSurface
                             )
                         }
-                        LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxSize()) {
-                            if (uiState.data.isEmpty()) { item { NoAttendanceData() } }
-                            items(uiState.data) { history ->
-                                HistoryCard(data = history, navController = navController)
+                        LazyColumn(
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            if (uiState.data.isEmpty()) {
+                                item { NoAttendanceData() }
+                            } else {
+                                items(uiState.data) { history ->
+                                    HistoryCard(data = history, navController = navController)
+                                }
                             }
                         }
                     }
@@ -133,7 +140,11 @@ fun AttendanceHistoryScreen(
 
 @Composable
 private fun NoAttendanceData(modifier: Modifier = Modifier) {
-    Column(modifier = modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+    Column(
+        modifier = modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
         Image(
             painter = painterResource(id = R.drawable.no_attendance_data),
             contentDescription = stringResource(

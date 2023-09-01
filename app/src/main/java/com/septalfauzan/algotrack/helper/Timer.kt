@@ -29,6 +29,35 @@ fun String.formatTimeStampDatasource(): String{
     }
 }
 
+fun String.formatToLocaleGMT() : String{
+    return try {
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
+        inputFormat.timeZone = TimeZone.getTimeZone("UTC")
+        val data = inputFormat.parse(this)
+
+        val outputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+
+        outputFormat.format(data)
+    }catch (e: java.lang.Exception){
+        e.printStackTrace()
+        this
+    }
+}
+
+
+fun String.formatTimeStampDatasourceHourMinute(): String{
+    return try {
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
+        val outputFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
+        val data = inputFormat.parse(this)
+
+        outputFormat.format(data)
+    }catch (e: java.lang.Exception){
+        e.printStackTrace()
+        this
+    }
+}
+
 fun String.formatCalendarDate(): String{
     return try {
         val inputFormat = SimpleDateFormat("dd/MM/yyyy", Locale.US)

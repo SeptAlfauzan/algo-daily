@@ -3,6 +3,7 @@ package com.septalfauzan.algotrack.domain.model.apiResponse
 import com.google.gson.annotations.SerializedName
 import com.septalfauzan.algotrack.data.source.local.dao.AttendanceEntity
 import com.septalfauzan.algotrack.data.source.local.dao.AttendanceStatus
+import com.septalfauzan.algotrack.helper.formatToLocaleGMT
 
 data class AttendanceResponse(
 
@@ -45,3 +46,16 @@ fun AttendanceResponseData.toAttendanceEntity(): AttendanceEntity{
 		createdAt = this.createdAt
 	)
 }
+
+fun AttendanceResponseData.formatTimeToGMT(): AttendanceResponseData{
+	return AttendanceResponseData(
+		id = this.id,
+		status = this.status,
+		reason = this.reason,
+		latitude = this.latitude,
+		longitude = this.longitude,
+		timestamp = this.timestamp.formatToLocaleGMT(),
+		createdAt = this.createdAt.formatToLocaleGMT()
+	)
+}
+

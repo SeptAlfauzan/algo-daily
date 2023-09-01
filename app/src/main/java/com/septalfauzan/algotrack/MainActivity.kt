@@ -1,7 +1,9 @@
 package com.septalfauzan.algotrack
 
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -12,11 +14,14 @@ import androidx.compose.material.Surface
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.work.WorkManager
 import com.septalfauzan.algotrack.ui.theme.AlgoTrackTheme
 import com.septalfauzan.algotrack.presentation.*
 import com.septalfauzan.algotrack.service.DailyAttendanceWorker
+import com.septalfauzan.algotrack.util.REMINDER_WORK_MANAGER_TAG
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -33,13 +38,16 @@ class MainActivity : ComponentActivity() {
         val historyAttendanceViewModel: HistoryAttendanceViewModel by viewModels()
         val attendanceViewModel: AttendanceViewModel by viewModels()
 
-        installSplashScreen().setKeepOnScreenCondition {//splash screen will disapprear whenever already check auth token
+        installSplashScreen().setKeepOnScreenCondition {
             authViewModel.isLoadingSplash.value
         }
 
 
-        WorkManager.getInstance(applicationContext).enqueue(DailyAttendanceWorker.periodicWorkRequest)
 
+        val workManager = WorkManager.getInstance(applicationContext)
+//        val workerInSameTag = workManager.getWorkInfosByTag(REMINDER_WORK_MANAGER_TAG).get()
+        workManager.cancelAllWorkByTag(REMINDER_WORK_MANAGER_TAG)
+        workManager.enqueue(DailyAttendanceWorker.periodicWorkRequest)
 
         setContent {
             AlgoTrackTheme(darkTheme = themeViewModel.isDarkTheme.collectAsState().value) {

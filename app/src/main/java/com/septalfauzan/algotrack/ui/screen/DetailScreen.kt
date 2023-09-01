@@ -1,35 +1,35 @@
 package com.septalfauzan.algotrack.ui.screen
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.*
 import com.septalfauzan.algotrack.data.source.local.dao.AttendanceEntity
+import com.septalfauzan.algotrack.data.source.local.dao.AttendanceStatus
 import com.septalfauzan.algotrack.data.ui.UiState
 import com.septalfauzan.algotrack.helper.formatTimeStampDatasource
+import com.septalfauzan.algotrack.helper.formatTimeStampDatasourceHourMinute
 import com.septalfauzan.algotrack.ui.component.ErrorHandler
-import com.septalfauzan.algotrack.ui.theme.AlgoTrackTheme
 import com.septalfauzan.algotrack.ui.utils.bottomBorder
 import kotlinx.coroutines.flow.StateFlow
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun DetailScreen(
     navController: NavHostController,
@@ -42,15 +42,14 @@ fun DetailScreen(
     val context = LocalContext.current
     val textStyle: TextStyle = MaterialTheme.typography.body1
     val mapPosition = LatLng( 37.3875,  -122.0575)
-    val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(mapPosition, 40f)
-    }
+    var attendanceDate by rememberSaveable{ mutableStateOf("") }
+    val cameraPositionState = rememberCameraPositionState { position = CameraPosition.fromLatLngZoom(mapPosition, 40f) }
+    fun updateAttendanceDateTimeTitle(data: AttendanceEntity){ attendanceDate = data.timestamp.formatTimeStampDatasourceHourMinute()  }
 //    val mapStyle = MapStyleOptions.loadRawResourceStyle(context, R.raw.map_style)
-
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "Detail $attendanceId") },
+                title = { Text(text = "Detail Absen $attendanceDate") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
@@ -58,7 +57,7 @@ fun DetailScreen(
                 },
             )
         },
-    ) { _ ->
+    ) {  _ ->
         detailStateUi.collectAsState(initial = UiState.Loading).value.let { uiState ->
             when(uiState){
                 is UiState.Loading -> {
@@ -66,6 +65,7 @@ fun DetailScreen(
                     loadDetail(attendanceId)
                 }
                 is UiState.Success -> {
+                    updateAttendanceDateTimeTitle(uiState.data)
                     Column(
                         modifier
                             .fillMaxSize()
@@ -75,14 +75,21 @@ fun DetailScreen(
                         Text(text = "Rincian", style = MaterialTheme.typography.h6)
                         DetailScreenItem(
                             label = "Apakah anda sedang bekerja?",
-                            text = uiState.data.status.toString(),
+                            text = when(uiState.data.status){
+                                AttendanceStatus.PERMIT -> "Izin"
+                                AttendanceStatus.ON_DUTY -> "Masuk"
+                                AttendanceStatus.OFF_DUTY -> "Cuti"
+                                AttendanceStatus.NOT_FILLED -> "Belum Absen"
+                            },
                             textStyle = textStyle
                         )
-                        DetailScreenItem(
-                            label = "Alasan tidak bekerja",
-                            text =  uiState.data.reason ?: "-",
-                            textStyle = textStyle
-                        )
+                        uiState.data.reason?.let{
+                            DetailScreenItem(
+                                label = "Alasan tidak bekerja",
+                                text =  it,
+                                textStyle = textStyle
+                            )
+                        }
                         DetailScreenItem(
                             label = "Timestamp",
                             text = uiState.data.timestamp.formatTimeStampDatasource(),
@@ -97,7 +104,6 @@ fun DetailScreen(
                                     borderColor = MaterialTheme.colors.onSurface.copy(alpha = 0.3f)
                                 )
                         )
-
                         Text(
                             text = "Lokasi",
                             style = textStyle,

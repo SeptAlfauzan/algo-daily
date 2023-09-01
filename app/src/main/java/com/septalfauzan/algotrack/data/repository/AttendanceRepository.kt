@@ -1,12 +1,17 @@
 package com.septalfauzan.algotrack.data.repository
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import com.septalfauzan.algotrack.data.datastore.DataStorePreference
 import com.septalfauzan.algotrack.data.source.local.MainDatabase
 import com.septalfauzan.algotrack.data.source.local.dao.AttendanceEntity
+import com.septalfauzan.algotrack.data.source.local.dao.AttendanceStatus
 import com.septalfauzan.algotrack.data.source.local.dao.PendingAttendanceEntity
 import com.septalfauzan.algotrack.data.source.remote.apiInterfaces.AlgoTrackApiInterfaces
+import com.septalfauzan.algotrack.domain.model.AttendanceRequestBody
 import com.septalfauzan.algotrack.domain.model.apiResponse.AttendanceResponse
+import com.septalfauzan.algotrack.domain.model.apiResponse.formatTimeToGMT
 import com.septalfauzan.algotrack.domain.model.apiResponse.toAttendanceEntity
 import com.septalfauzan.algotrack.domain.repository.IAttendanceRepository
 import kotlinx.coroutines.Dispatchers
@@ -33,7 +38,8 @@ class AttendanceRepository @Inject constructor(
 
             Log.d(this::class.java.simpleName, "getHistory: $response")
 
-            val apiData = response.data.map { it.toAttendanceEntity() }
+            val dataFormattedToGMT = response.data.map { it.formatTimeToGMT() }
+            val apiData = dataFormattedToGMT.map { it.toAttendanceEntity() }
 
             coroutineScope {
                 launch(Dispatchers.IO) {
@@ -52,17 +58,17 @@ class AttendanceRepository @Inject constructor(
         try {
             val token = dataStorePreference.getAuthToken().first()
             val response = apiService.getDetailHistory(authToken = token, id)
-            return flowOf(response.data.toAttendanceEntity())
+            return flowOf(response.data.formatTimeToGMT().toAttendanceEntity())
         }catch (e: java.lang.Exception){
             throw e
         }
 
     }
 
-    override suspend fun updateAttendance(data: AttendanceEntity): Flow<AttendanceResponse> {
+    override suspend fun updateAttendance(id: String, data: AttendanceRequestBody): Flow<AttendanceResponse> {
         try {
             val token = dataStorePreference.getAuthToken().first()
-            val response = apiService.postAttendance(authToken = token, attendance = data)
+            val response = apiService.putAttendance(authToken = token, attendance = data, id = id)
             return flowOf(response)
         } catch (e: Exception) {
             throw e
@@ -77,7 +83,21 @@ class AttendanceRepository @Inject constructor(
         return flowOf(appDatabase.attendanceDao().insertBatch(listData))
     }
 
-    override suspend fun createNewBlankAttendance(data: PendingAttendanceEntity): Flow<Long> {
-        return flowOf(appDatabase.pendingAttendanceDao().insert(data))
+    @RequiresApi(Build.VERSION_CODES.O)
+    override suspend fun createNewBlankAttendance(): Flow<AttendanceResponse> {
+        try {
+            val token = dataStorePreference.getAuthToken().first()
+//            val currentTime = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
+            val blankAttendance = AttendanceRequestBody(
+                status = AttendanceStatus.NOT_FILLED,
+                reason = null,
+                latitude = null,
+                longitude = null,
+            )
+            val response = apiService.postAttendance(authToken = token, attendance = blankAttendance)
+            return flowOf(response)
+        }catch (e: Exception){
+            throw e
+        }
     }
 }

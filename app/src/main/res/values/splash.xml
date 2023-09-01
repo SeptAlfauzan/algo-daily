@@ -2,7 +2,7 @@
 <resources>
     <style name="Theme.AlgoTrack.Splash" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">#FF0193EB</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/logo_white</item>
         <item name="postSplashScreenTheme">@style/Theme.AlgoTrack</item>
     </style>
 </resources>
