@@ -12,6 +12,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -47,61 +48,84 @@ fun ProfileScreen(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp, vertical = 42.dp)
+        modifier.fillMaxSize()
     ) {
-        profileUiState.collectAsState(initial = UiState.Loading).value.let { uiData ->
-            when (uiData) {
-                is UiState.Loading -> {
-                    ShimmerLoading()
-                    getProfile()
+        TopAppBar(
+            title = {
+                Text(
+                    text = "Profile",
+                    style = MaterialTheme.typography.h6,
+                )
+            },
+            navigationIcon = {
+                IconButton(
+                    onClick = { navController.popBackStack() }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Back",
+                    )
                 }
-                is UiState.Success -> {
-                    val result = uiData.data
-                    Row(modifier = Modifier.fillMaxWidth()) {
-                        AvatarProfile(
-                            imageUri = result.data.photoUrl ?: "",
-                            onClick = { /*edit view*/ },
-                            type = AvatarProfileType.WITH_EDIT
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Column(
-                            modifier = Modifier.weight(1f),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            Text(
-                                text = result.data?.name ?: "",
-                                style = MaterialTheme.typography.subtitle2.copy(
-                                    fontWeight = FontWeight(600)
-                                )
+            },
+            backgroundColor = Color.White,
+        )
+        Column(
+            modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp, vertical = 42.dp)
+        ) {
+            profileUiState.collectAsState(initial = UiState.Loading).value.let { uiData ->
+                when (uiData) {
+                    is UiState.Loading -> {
+                        ShimmerLoading()
+                        getProfile()
+                    }
+                    is UiState.Success -> {
+                        val result = uiData.data
+                        Row(modifier = Modifier.fillMaxWidth()) {
+                            AvatarProfile(
+                                imageUri = result.data.photoUrl ?: "",
+                                onClick = { /*edit view*/ },
+                                type = AvatarProfileType.WITH_EDIT
                             )
-                            Text(
-                                text = result.data?.email ?: "noemail@email.com",
-                                style = MaterialTheme.typography.subtitle2.copy(
-                                    fontWeight = FontWeight(300)
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Column(
+                                modifier = Modifier.weight(1f),
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Text(
+                                    text = result.data?.name ?: "",
+                                    style = MaterialTheme.typography.subtitle2.copy(
+                                        fontWeight = FontWeight(600)
+                                    )
                                 )
-                            )
+                                Text(
+                                    text = result.data?.email ?: "noemail@email.com",
+                                    style = MaterialTheme.typography.subtitle2.copy(
+                                        fontWeight = FontWeight(300)
+                                    )
+                                )
+                            }
                         }
                     }
-                }
-                is UiState.Error -> {
-                    Text("error: ${uiData.errorMessage}")
+                    is UiState.Error -> {
+                        Text("error: ${uiData.errorMessage}")
+                    }
                 }
             }
+            Spacer(modifier = Modifier.height(36.dp))
+            SettingMenu(
+                logout = logout,
+                toggleTheme = toggleTheme,
+                isDarkMode = isDarkMode,
+                onDutyStatusState = onDutyState,
+                setOnDuty = setOnDuty,
+                setNoficationReminder = setNotificationReminder,
+                cancelNotificationReminder = cancelNotificationReminder,
+                navController = navController,
+                isNotificationReminderActive = isNotificationReminderActive
+            )
         }
-        Spacer(modifier = Modifier.height(36.dp))
-        SettingMenu(
-            logout = logout,
-            toggleTheme = toggleTheme,
-            isDarkMode = isDarkMode,
-            onDutyStatusState = onDutyState,
-            setOnDuty = setOnDuty,
-            setNoficationReminder = setNotificationReminder,
-            cancelNotificationReminder = cancelNotificationReminder,
-            navController = navController,
-            isNotificationReminderActive = isNotificationReminderActive
-        )
     }
 }
 
