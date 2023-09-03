@@ -52,6 +52,7 @@ fun AttendanceHistoryScreen(
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
 
+    var dropdownExpanded by remember { mutableStateOf(false) }
     var selectedDateText by remember { mutableStateOf("") }
 
 // Fetching current year, month and day
@@ -78,8 +79,19 @@ fun AttendanceHistoryScreen(
             TopAppBar(
                 title = { Text(text = "History") },
                 actions = {
-                    IconButton(onClick = { /* Handle sorting action */ }) {
+                    IconButton(onClick = { dropdownExpanded = !dropdownExpanded }) {
                         Icon(imageVector = Icons.Default.Sort, contentDescription = null)
+                    }
+                    DropdownMenu(
+                        expanded = dropdownExpanded,
+                        onDismissRequest = { dropdownExpanded = false }
+                    ) {
+                        DropdownMenuItem(onClick = {  }) {
+                            Text(text = "Waktu")
+                        }
+                        DropdownMenuItem(onClick = {  }) {
+                            Text(text = "Status")
+                        }
                     }
                 },
                 elevation = 0.dp,
