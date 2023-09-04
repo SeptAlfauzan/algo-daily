@@ -1,4 +1,4 @@
-package com.septalfauzan.algotrack.helper
+package com.septalfauzan.algotrack.util
 
 import android.app.AlarmManager
 import android.app.PendingIntent
@@ -6,10 +6,8 @@ import android.content.Context
 import android.content.Intent
 import android.icu.util.Calendar
 import android.os.Build
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import com.septalfauzan.algotrack.service.AttendanceReminder
-import com.septalfauzan.algotrack.util.ID_REPEATING
 
 object Notification {
     @RequiresApi(Build.VERSION_CODES.N)
@@ -18,13 +16,22 @@ object Notification {
         val intent = Intent(context, AttendanceReminder::class.java)
         val pendingIntent = PendingIntent.getBroadcast(context, ID_REPEATING, intent, PendingIntent.FLAG_IMMUTABLE)
 
-        val calendar = Calendar.getInstance()
-        calendar.set(Calendar.HOUR_OF_DAY, 8)
-        calendar.set(Calendar.MINUTE, 0)
+        val workDays = listOf(
+            Calendar.MONDAY,
+            Calendar.TUESDAY,
+            Calendar.WEDNESDAY,
+            Calendar.THURSDAY,
+            Calendar.FRIDAY,
+        )
 
-        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, AlarmManager.INTERVAL_FIFTEEN_MINUTES, pendingIntent)
+        workDays.map { day ->
+            val calendar = Calendar.getInstance()
+            calendar.set(Calendar.HOUR_OF_DAY, 8)
+            calendar.set(Calendar.MINUTE, 0)
+            calendar.set(Calendar.DAY_OF_WEEK, day)
 
-        Toast.makeText(context, "Daily reminder is active", Toast.LENGTH_SHORT).show()
+            alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, AlarmManager.INTERVAL_FIFTEEN_MINUTES, pendingIntent)
+        }
     }
 
     fun cancelAlarm(context: Context) {
@@ -34,6 +41,6 @@ object Notification {
 
         alarmManager.cancel(pendingIntent)
         pendingIntent.cancel()
-        Toast.makeText(context, "Daily reminder is stopped", Toast.LENGTH_SHORT).show()
+//        Toast.makeText(context, "Daily reminder is stopped", Toast.LENGTH_SHORT).show()
     }
 }

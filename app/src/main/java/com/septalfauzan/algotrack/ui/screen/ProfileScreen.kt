@@ -67,7 +67,8 @@ fun ProfileScreen(
                     )
                 }
             },
-            backgroundColor = Color.White,
+            backgroundColor = Color.Transparent,
+            elevation = 0.dp
         )
         Column(
             modifier

@@ -3,7 +3,6 @@ package com.septalfauzan.algotrack.ui.screen
 import android.app.DatePickerDialog
 import android.widget.DatePicker
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -11,13 +10,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDownward
+import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Sort
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -27,6 +27,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.septalfauzan.algotrack.R
+import com.septalfauzan.algotrack.data.datastore.SortBy
+import com.septalfauzan.algotrack.data.datastore.SortType
 import com.septalfauzan.algotrack.data.source.local.dao.AttendanceEntity
 import com.septalfauzan.algotrack.data.source.local.dao.AttendanceStatus
 import com.septalfauzan.algotrack.data.ui.UiState
@@ -47,6 +49,9 @@ fun AttendanceHistoryScreen(
     navController: NavController,
     getHistory: (String) -> Unit,
     reloadHistory: () -> Unit,
+    setSortingBy: (SortBy, SortType) -> Unit,
+    timestampSortType: StateFlow<SortType>,
+    statusSortType: StateFlow<SortType>,
     historyUiState: StateFlow<UiState<List<AttendanceEntity>>>
 ) {
     val context = LocalContext.current
@@ -82,17 +87,12 @@ fun AttendanceHistoryScreen(
                     IconButton(onClick = { dropdownExpanded = !dropdownExpanded }) {
                         Icon(imageVector = Icons.Default.Sort, contentDescription = null)
                     }
-                    DropdownMenu(
-                        expanded = dropdownExpanded,
-                        onDismissRequest = { dropdownExpanded = false }
-                    ) {
-                        DropdownMenuItem(onClick = {  }) {
-                            Text(text = "Waktu")
-                        }
-                        DropdownMenuItem(onClick = {  }) {
-                            Text(text = "Status")
-                        }
-                    }
+                    DropdownSortMenu(
+                        setSortingBy = setSortingBy,
+                        timestampSortType = timestampSortType,
+                        statusSortType = statusSortType,
+                        dropdownExpanded = dropdownExpanded,
+                        onDismiss = { dropdownExpanded = false })
                 },
                 elevation = 0.dp,
                 backgroundColor = MaterialTheme.colors.background
@@ -131,12 +131,12 @@ fun AttendanceHistoryScreen(
                             verticalArrangement = Arrangement.spacedBy(8.dp),
                             modifier = Modifier.fillMaxSize()
                         ) {
-                            if (uiState.data.isEmpty()) {
-                                item { NoAttendanceData() }
-                            } else {
+                            if (uiState.data.isNotEmpty()) {
                                 items(uiState.data) { history ->
                                     HistoryCard(data = history, navController = navController)
                                 }
+                            } else {
+                                item { NoAttendanceData() }
                             }
                         }
                     }
@@ -145,6 +145,63 @@ fun AttendanceHistoryScreen(
                     reload = { reloadHistory() },
                     errorMessage = uiState.errorMessage
                 )
+            }
+        }
+    }
+}
+
+@Composable
+private fun DropdownSortMenu(
+    dropdownExpanded: Boolean,
+    setSortingBy: (SortBy, SortType) -> Unit,
+    timestampSortType: StateFlow<SortType>,
+    statusSortType: StateFlow<SortType>,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    DropdownMenu(
+        modifier = modifier,
+        expanded = dropdownExpanded,
+        onDismissRequest = onDismiss
+    ) {
+        DropdownMenuItem(onClick = {
+            setSortingBy(
+                SortBy.CREATED_AT, when (timestampSortType.value) {
+                    SortType.ASC -> SortType.DESC
+                    SortType.DESC -> SortType.ASC
+                }
+            )
+        }) {
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Icon(
+                    imageVector = when (timestampSortType.collectAsState().value) {
+                        SortType.ASC -> Icons.Default.ArrowUpward
+                        SortType.DESC -> Icons.Default.ArrowDownward
+                    },
+                    contentDescription = stringResource(R.string.sorting_arrow_ic),
+                    tint = MaterialTheme.colors.primary
+                )
+                Text(text = "Waktu")
+            }
+        }
+        DropdownMenuItem(onClick = {
+            setSortingBy(
+                SortBy.STATUS, when (statusSortType.value) {
+                    SortType.ASC -> SortType.DESC
+                    SortType.DESC -> SortType.ASC
+                }
+            )
+        }) {
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Icon(
+                    imageVector = when (statusSortType.collectAsState().value) {
+                        SortType.ASC -> Icons.Default.ArrowUpward
+                        SortType.DESC -> Icons.Default.ArrowDownward
+                    },
+                    contentDescription = stringResource(R.string.sorting_arrow_ic),
+                    tint = MaterialTheme.colors.primary
+                )
+                Text(text = "Status Absen")
             }
         }
     }
@@ -213,8 +270,8 @@ fun HistoryScreenPreview() {
     val historyList = listOf(
         AttendanceResponseData(
             id = "",
-            timestamp = Date().toString(),
-            createdAt = Date().toString(),
+            timestamp = "-",
+            createdAt = "-",
             reason = "",
             status = AttendanceStatus.ON_DUTY.toString(),
             longitude = 0.0,
@@ -222,8 +279,8 @@ fun HistoryScreenPreview() {
         ),
         AttendanceResponseData(
             id = "",
-            timestamp = Date().toString(),
-            createdAt = Date().toString(),
+            timestamp = "-",
+            createdAt = "-",
             reason = "",
             status = AttendanceStatus.ON_DUTY.toString(),
             longitude = 0.0,
@@ -236,6 +293,9 @@ fun HistoryScreenPreview() {
                 navController = rememberNavController(),
                 getHistory = {},
                 reloadHistory = {},
+                setSortingBy = { _, _ -> },
+                timestampSortType = MutableStateFlow(SortType.ASC),
+                statusSortType = MutableStateFlow(SortType.ASC),
                 historyUiState = MutableStateFlow(UiState.Success(historyList.map { it.toAttendanceEntity() }))
             )
         }

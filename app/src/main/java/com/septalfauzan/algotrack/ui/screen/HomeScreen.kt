@@ -37,6 +37,7 @@ fun HomeScreen(
     timerState: StateFlow<Long>,
     modifier: Modifier = Modifier,
     setOnDuty: (Boolean) -> Unit,
+    getHomeStateFlow: () -> Unit,
     onDutyValue: StateFlow<Boolean>
 ) {
     var showAlert by remember { mutableStateOf(false) }
@@ -126,6 +127,7 @@ private fun HomeScreenPreview() {
                 navHostController = navHostController,
                 MutableStateFlow(100L),
                 setOnDuty = {  },
+                getHomeStateFlow = {  },
                 onDutyValue = MutableStateFlow(true)
             )
         }

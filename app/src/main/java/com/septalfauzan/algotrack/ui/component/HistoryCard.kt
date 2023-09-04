@@ -62,15 +62,15 @@ fun HistoryCard(data: AttendanceEntity, navController: NavController) {
                 horizontalArrangement = Arrangement.SpaceBetween
             ){
                 Text(
-                    text = data.timestamp.formatTimeStampDatasource(),
+                    text = data.createdAt.formatTimeStampDatasource(),
                     modifier = Modifier
                         .padding(bottom = 8.dp)
                         .align(Alignment.CenterVertically)
                 )
                 if (data.status == AttendanceStatus.NOT_FILLED) {
-                    HistoryCardButton(text = "absen", onClick = { navController.navigate(Screen.Attendance.createRoute(data.id)) })
+                    HistoryCardButton(text = "absen", isAttended = false, onClick = { navController.navigate(Screen.Attendance.createRoute(data.id)) })
                 } else {
-                    HistoryCardButton(text = "detail", onClick = { navController.navigate(Screen.Detail.createRoute(data.id)) })
+                    HistoryCardButton(text = "detail", isAttended = true, onClick = { navController.navigate(Screen.Detail.createRoute(data.id)) })
                 }
             }
         }

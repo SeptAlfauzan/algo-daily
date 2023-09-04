@@ -18,6 +18,7 @@ import com.septalfauzan.algotrack.ui.theme.AlgoTrackTheme
 @Composable
 fun HistoryCardButton(
     text: String,
+    isAttended: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ){
@@ -25,7 +26,7 @@ fun HistoryCardButton(
         onClick = onClick,
         shape = RoundedCornerShape(20.dp),
         modifier = modifier,
-        colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.primary)
+        colors = ButtonDefaults.buttonColors(backgroundColor = if(!isAttended) MaterialTheme.colors.primary else MaterialTheme.colors.secondary)
     ) {
         Text(
             text = text,
@@ -43,7 +44,7 @@ private fun Preview() {
     AlgoTrackTheme() {
         Surface() {
             Column() {
-                HistoryCardButton("detail", onClick = {}, modifier = Modifier.fillMaxWidth())
+                HistoryCardButton("detail", onClick = {}, isAttended = true, modifier = Modifier.fillMaxWidth())
             }
         }
     }

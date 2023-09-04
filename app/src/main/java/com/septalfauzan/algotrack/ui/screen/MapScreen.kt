@@ -77,25 +77,8 @@ fun MapScreen(navController: NavController) {
         )
     )
 
-
     val permissionsState =
         rememberMultiplePermissionsState(permissions = if (Build.VERSION.SDK_INT > 28) locationPermissions28Above else locationPermissions)
-
-
-    val requestPermissionLauncher =
-        rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-            if (isGranted) {
-                try {
-                    fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-                        location?.let {
-                            userLocation = UserLocation(it.latitude, it.longitude)
-                        }
-                    }
-                } catch (securityException: SecurityException) {
-                    Log.d("Error in Permission Lanuncher", "$userLocation")
-                }
-            }
-        }
 
     val locationRequest = LocationRequest.create().apply {
         interval = 10000 // Update interval in milliseconds (e.g., every 10 seconds)
