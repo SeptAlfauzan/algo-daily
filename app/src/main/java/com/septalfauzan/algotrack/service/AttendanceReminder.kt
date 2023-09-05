@@ -11,12 +11,11 @@ import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.net.toUri
+import androidx.work.WorkManager
 import com.septalfauzan.algotrack.MainActivity
 import com.septalfauzan.algotrack.R
-import com.septalfauzan.algotrack.util.NOTIFICATION_CHANNEL_ID
-import com.septalfauzan.algotrack.util.NOTIFICATION_CHANNEL_NAME
-import com.septalfauzan.algotrack.util.NOTIFICATION_ID
-import com.septalfauzan.algotrack.util.executeThread
+import com.septalfauzan.algotrack.util.*
+import java.util.*
 
 class AttendanceReminder : BroadcastReceiver() {
     companion object{
@@ -69,9 +68,14 @@ class AttendanceReminder : BroadcastReceiver() {
 
     override fun onReceive(context: Context?, intent: Intent?) {
         executeThread {
-            Log.d(AttendanceReminder::class.java.simpleName, "onReceive: reminder")
             context?.let {
-                showNotification(context, "dummy_id")
+                val calendar = Calendar.getInstance()
+                val currentHour = calendar.get(Calendar.HOUR_OF_DAY)
+                val currentMinute = calendar.get(Calendar.MINUTE)
+                if(currentHour > 16 && currentMinute > 5) return@executeThread
+
+                val workManager = WorkManager.getInstance(context)
+                workManager.enqueue(DailyAttendanceWorker.oneTImeWorkRequest)
             }
         }
     }

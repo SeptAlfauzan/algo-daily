@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.work.WorkManager
 import com.septalfauzan.algotrack.data.repository.MainRepository
-import com.septalfauzan.algotrack.helper.Notification
 import com.septalfauzan.algotrack.service.DailyAttendanceWorker
 import com.septalfauzan.algotrack.util.REMINDER_WORK_MANAGER_TAG
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,7 +20,6 @@ class NotificationViewModel @Inject constructor(@ApplicationContext private val 
     fun setNotificationReminder(){
         try {
             _isNotificationReminderActive.value = true
-            WorkManager.getInstance().enqueue(DailyAttendanceWorker.periodicWorkRequest)
 //            Notification.setDailyReminder(context)
         }catch (e: Exception){
             _isNotificationReminderActive.value = false

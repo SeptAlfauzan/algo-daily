@@ -21,6 +21,7 @@ import androidx.work.WorkManager
 import com.septalfauzan.algotrack.ui.theme.AlgoTrackTheme
 import com.septalfauzan.algotrack.presentation.*
 import com.septalfauzan.algotrack.service.DailyAttendanceWorker
+import com.septalfauzan.algotrack.util.Notification
 import com.septalfauzan.algotrack.util.REMINDER_WORK_MANAGER_TAG
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -42,12 +43,10 @@ class MainActivity : ComponentActivity() {
             authViewModel.isLoadingSplash.value
         }
 
+        Notification.setDailyReminder(this)
 
-
-        val workManager = WorkManager.getInstance(applicationContext)
-//        val workerInSameTag = workManager.getWorkInfosByTag(REMINDER_WORK_MANAGER_TAG).get()
-        workManager.cancelAllWorkByTag(REMINDER_WORK_MANAGER_TAG)
-        workManager.enqueue(DailyAttendanceWorker.periodicWorkRequest)
+        val workManager = WorkManager.getInstance(this)
+        workManager.enqueue(DailyAttendanceWorker.oneTImeWorkRequest)
 
         setContent {
             AlgoTrackTheme(darkTheme = themeViewModel.isDarkTheme.collectAsState().value) {

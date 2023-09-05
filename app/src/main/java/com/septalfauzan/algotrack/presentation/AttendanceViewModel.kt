@@ -21,7 +21,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AttendanceViewModel @Inject constructor(private val repository: AttendanceRepository, private val onDutyUseCase: IOnDutyUseCase) : ViewModel() {
-    private var userLocation: UserLocation? = null
     private var _onDutyStatus: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val onDutyStatus: StateFlow<Boolean> = _onDutyStatus
     init {
@@ -32,14 +31,16 @@ class AttendanceViewModel @Inject constructor(private val repository: Attendance
         id: String,
         selectedAnswer: String,
         reasonNotWork: String,
+        latitude: Double,
+        longitude: Double,
         navController: NavController
     ) {
         val status = if (selectedAnswer == "Yes") AttendanceStatus.ON_DUTY else AttendanceStatus.PERMIT
         val attendanceEntity = AttendanceRequestBody(
             status = status,
             reason = if (selectedAnswer == "No") reasonNotWork else null,
-            latitude = userLocation?.latitude,
-            longitude = userLocation?.longitude,
+            latitude = latitude,
+            longitude = longitude,
         )
 
         viewModelScope.launch {

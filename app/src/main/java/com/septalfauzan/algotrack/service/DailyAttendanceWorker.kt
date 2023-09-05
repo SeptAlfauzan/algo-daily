@@ -11,6 +11,7 @@ import com.septalfauzan.algotrack.domain.usecase.IPendingAttendanceUseCase
 import com.septalfauzan.algotrack.util.REMINDER_WORK_MANAGER_TAG
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.flow.first
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -36,12 +37,12 @@ class DailyAttendanceWorker @AssistedInject constructor(
     override suspend fun doWork(): Result {
         try {
             val response = pendingAttendanceUseCase.create()
+            val isOnDuty = dataStorePreference.getOnDutyValue().first()
+
             response.value?.let {
-                Log.d("TAG", "doWork: ${it.data}")
-                AttendanceReminder.showNotification(
-                    applicationContext,
-                    it.data.id
-                )
+                if(isOnDuty){
+                    AttendanceReminder.showNotification(applicationContext, it.data.id)
+                }
                 return Result.success()
             }
             return Result.retry()
@@ -55,6 +56,12 @@ class DailyAttendanceWorker @AssistedInject constructor(
         private val networkConstraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
         val periodicWorkRequest =
             PeriodicWorkRequestBuilder<DailyAttendanceWorker>(5, TimeUnit.MINUTES)
+                .addTag(REMINDER_WORK_MANAGER_TAG)
+                .setConstraints(networkConstraints)
+                .build()
+
+        val oneTImeWorkRequest =
+            OneTimeWorkRequestBuilder<DailyAttendanceWorker>()
                 .addTag(REMINDER_WORK_MANAGER_TAG)
                 .setConstraints(networkConstraints)
                 .build()

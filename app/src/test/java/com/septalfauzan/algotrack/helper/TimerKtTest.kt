@@ -59,7 +59,4 @@ internal class TimerKtTest {
         assertEquals(expected, rawTimeStamp.formatTimeStampDatasource())
     }
 
-    @Test
-    fun getCurrentDayCycle() {
-    }
 }

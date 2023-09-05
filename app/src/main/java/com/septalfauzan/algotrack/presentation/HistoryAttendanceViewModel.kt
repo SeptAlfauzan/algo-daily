@@ -2,6 +2,8 @@ package com.septalfauzan.algotrack.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.septalfauzan.algotrack.data.datastore.SortBy
+import com.septalfauzan.algotrack.data.datastore.SortType
 import com.septalfauzan.algotrack.data.source.local.dao.AttendanceEntity
 import com.septalfauzan.algotrack.data.ui.UiState
 import com.septalfauzan.algotrack.domain.model.apiResponse.AttendanceHistoryResponse
@@ -12,6 +14,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import javax.inject.Inject
@@ -24,10 +28,27 @@ class HistoryAttendanceViewModel @Inject constructor(private val historyAttendan
     private val _detail = MutableStateFlow<UiState<AttendanceEntity>>(UiState.Loading)
     val detail: StateFlow<UiState<AttendanceEntity>> = _detail
 
+    private val _timestampSortType = MutableStateFlow<SortType>(SortType.ASC)
+    private val _statusSortType = MutableStateFlow<SortType>(SortType.ASC)
+
+    val timestampSortType: StateFlow<SortType> = _timestampSortType
+    val statusSortType: StateFlow<SortType> = _statusSortType
+
+    init {
+        getSortType()
+    }
 
     fun getHistory(date: String){
         viewModelScope.launch(Dispatchers.IO) {
-            _result.value = historyAttendanceUseCase.getHistory(date).value
+            try {
+                historyAttendanceUseCase.getHistory(date).catch { e->
+                    _result.value = UiState.Error(e.message.toString())
+                }.collect{data ->
+                    _result.value = UiState.Success(data)
+                }
+            }catch (e: Exception){
+                _result.value = UiState.Error(e.message.toString())
+            }
         }
     }
 
@@ -37,7 +58,30 @@ class HistoryAttendanceViewModel @Inject constructor(private val historyAttendan
 
     fun getDetail(id: String){
         viewModelScope.launch(Dispatchers.IO) {
-            _detail.value = historyAttendanceUseCase.getDetail(id).value
+            try {
+                historyAttendanceUseCase.getDetail(id).catch { e ->
+                    _detail.value = UiState.Error(e.message.toString())
+                }.collect{   data ->
+                    _detail.value = UiState.Success(data)
+                }
+            } catch (e: Exception){
+                _detail.value = UiState.Error(e.message.toString())
+            }
+        }
+    }
+
+    fun sortBy(column: SortBy, sortType: SortType){
+        viewModelScope.launch(Dispatchers.IO) {
+            historyAttendanceUseCase.setSortByAndType(column, sortType)
+            getSortType()
+            reloadHistory()
+        }
+    }
+
+    private fun getSortType(){
+        viewModelScope.launch(Dispatchers.IO) {
+            historyAttendanceUseCase.getSortByStatusValue().collect{ _statusSortType.value = it }
+            historyAttendanceUseCase.getSortByTimestampValue().collect{ _timestampSortType.value = it }
         }
     }
 

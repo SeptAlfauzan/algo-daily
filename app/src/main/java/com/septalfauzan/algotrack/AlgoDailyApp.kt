@@ -32,6 +32,7 @@ import com.septalfauzan.algotrack.presentation.*
 
 
 val permission33APIBelow = listOf(
+    android.Manifest.permission.POST_NOTIFICATIONS,
     android.Manifest.permission.ACCESS_COARSE_LOCATION,
     android.Manifest.permission.ACCESS_FINE_LOCATION,
 )
@@ -146,6 +147,7 @@ fun AlgoDailyApp(
                     HomeScreen(
                         timerState = timerViewModel.timerState,
                         navHostController = navController,
+                        getHomeStateFlow = {},
                         setOnDuty = { value -> attendanceViewModel.setOnDutyValue(value) },
                         onDutyValue = attendanceViewModel.onDutyStatus
                     )
@@ -174,7 +176,10 @@ fun AlgoDailyApp(
                         navController,
                         getHistory = { date -> historyAttendanceViewModel.getHistory(date) },
                         reloadHistory = { historyAttendanceViewModel.reloadHistory() },
-                        historyUiState = historyAttendanceViewModel.result
+                        historyUiState = historyAttendanceViewModel.result,
+                        setSortingBy = { column, sortType -> historyAttendanceViewModel.sortBy(column, sortType)},
+                        statusSortType = historyAttendanceViewModel.statusSortType,
+                        timestampSortType = historyAttendanceViewModel.timestampSortType,
                     )
                 }
                 composable(

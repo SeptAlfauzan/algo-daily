@@ -3,11 +3,13 @@ package com.septalfauzan.algotrack.data.repository
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.sqlite.db.SimpleSQLiteQuery
 import com.septalfauzan.algotrack.data.datastore.DataStorePreference
+import com.septalfauzan.algotrack.data.datastore.SortBy
+import com.septalfauzan.algotrack.data.datastore.SortType
 import com.septalfauzan.algotrack.data.source.local.MainDatabase
 import com.septalfauzan.algotrack.data.source.local.dao.AttendanceEntity
 import com.septalfauzan.algotrack.data.source.local.dao.AttendanceStatus
-import com.septalfauzan.algotrack.data.source.local.dao.PendingAttendanceEntity
 import com.septalfauzan.algotrack.data.source.remote.apiInterfaces.AlgoTrackApiInterfaces
 import com.septalfauzan.algotrack.domain.model.AttendanceRequestBody
 import com.septalfauzan.algotrack.domain.model.apiResponse.AttendanceResponse
@@ -27,31 +29,30 @@ class AttendanceRepository @Inject constructor(
     private val appDatabase: MainDatabase,
     private val dataStorePreference: DataStorePreference,
 ) : IAttendanceRepository {
-    override suspend fun getHistory(): Flow<List<AttendanceEntity>> {
-        TODO("Not yet implemented")
-    }
 
     override suspend fun getHistory(date: String): Flow<List<AttendanceEntity>> {
-        try {
-            val token = dataStorePreference.getAuthToken().first()
-            val response = apiService.getHistory(authToken = token)
-
-            Log.d(this::class.java.simpleName, "getHistory: $response")
-
-            val dataFormattedToGMT = response.data.map { it.formatTimeToGMT() }
-            val apiData = dataFormattedToGMT.map { it.toAttendanceEntity() }
-
-            coroutineScope {
-                launch(Dispatchers.IO) {
-                    appDatabase.attendanceDao().deleteAll()
-                    saveBatchToLocalDB(apiData)
-                }
-            }
-            return flowOf(appDatabase.attendanceDao().getByDate(date))
-        }catch (e: java.lang.Exception){
-            throw e
+        val token = dataStorePreference.getAuthToken().first()
+        val sortBy = dataStorePreference.getSortBy().first().lowercase()
+        val sortType = when (SortBy.valueOf(sortBy.uppercase())) {
+            SortBy.CREATED_AT -> dataStorePreference.getSortByTimeType().first()
+            SortBy.STATUS -> dataStorePreference.getSortByStatusType().first()
         }
 
+        val query = SimpleSQLiteQuery("SELECT * FROM attendance WHERE strftime('%d/%m/%Y', datetime(timestamp, 'utc'))  = '$date' ORDER BY $sortBy $sortType")
+
+        try {
+            val response = apiService.getHistory(authToken = token)
+            val dataFormattedToGMT = response.data.map { it.formatTimeToGMT() }
+            val apiData = dataFormattedToGMT.map { it.toAttendanceEntity() }
+            appDatabase.attendanceDao().deleteAll()
+            saveBatchToLocalDB(apiData)
+
+            val sorted = appDatabase.attendanceDao().getHistory(query)
+            Log.d("TAG", "getHistory: $sorted")
+            return flowOf(sorted)
+        } catch (e: java.lang.Exception) {
+            throw e
+        }
     }
 
     override suspend fun getDetail(id: String): Flow<AttendanceEntity> {
@@ -59,13 +60,15 @@ class AttendanceRepository @Inject constructor(
             val token = dataStorePreference.getAuthToken().first()
             val response = apiService.getDetailHistory(authToken = token, id)
             return flowOf(response.data.formatTimeToGMT().toAttendanceEntity())
-        }catch (e: java.lang.Exception){
+        } catch (e: java.lang.Exception) {
             throw e
         }
-
     }
 
-    override suspend fun updateAttendance(id: String, data: AttendanceRequestBody): Flow<AttendanceResponse> {
+    override suspend fun updateAttendance(
+        id: String,
+        data: AttendanceRequestBody
+    ): Flow<AttendanceResponse> {
         try {
             val token = dataStorePreference.getAuthToken().first()
             val response = apiService.putAttendance(authToken = token, attendance = data, id = id)
@@ -87,17 +90,39 @@ class AttendanceRepository @Inject constructor(
     override suspend fun createNewBlankAttendance(): Flow<AttendanceResponse> {
         try {
             val token = dataStorePreference.getAuthToken().first()
+            val isOnDuty = dataStorePreference.getOnDutyValue().first()
 //            val currentTime = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
             val blankAttendance = AttendanceRequestBody(
-                status = AttendanceStatus.NOT_FILLED,
+                status = if (isOnDuty) AttendanceStatus.NOT_FILLED else AttendanceStatus.OFF_DUTY,
                 reason = null,
                 latitude = null,
                 longitude = null,
             )
-            val response = apiService.postAttendance(authToken = token, attendance = blankAttendance)
+            val response =
+                apiService.postAttendance(authToken = token, attendance = blankAttendance)
             return flowOf(response)
-        }catch (e: Exception){
+        } catch (e: Exception) {
             throw e
         }
     }
+
+    override suspend fun setSortByAndType(column: SortBy, sortType: SortType) {
+        when (column) {
+            SortBy.CREATED_AT -> {
+                dataStorePreference.setSortBy(column)
+                dataStorePreference.setSortByTimestampType(sortType)
+            }
+            SortBy.STATUS -> {
+                dataStorePreference.setSortBy(column)
+                dataStorePreference.setSortByStatusType(sortType)
+            }
+        }
+    }
+
+    override suspend fun getSortByTimestampValue(): Flow<SortType> =
+        flowOf(SortType.valueOf(dataStorePreference.getSortByTimeType().first()))
+
+    override suspend fun getSortByStatusValue(): Flow<SortType> =
+        flowOf(SortType.valueOf(dataStorePreference.getSortByStatusType().first()))
+
 }

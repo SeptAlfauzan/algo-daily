@@ -25,10 +25,12 @@ import com.septalfauzan.algotrack.R
 
 enum class AvatarProfileType {
     NORMAL,
-    WITH_EDIT
+    WITH_EDIT,
+    WITH_EDIT_LARGE,
 }
 object AvatarProfileSize{
     val large = 76.dp
+    val extraLarge = 204.dp
     val normal = 58.dp
 }
 
@@ -45,9 +47,15 @@ fun AvatarProfile(
 ) {
     Box(
         modifier = Modifier
-            .size(if(type == AvatarProfileType.NORMAL) AvatarProfileSize.normal else AvatarProfileSize.large)
+            .size(
+                when(type){
+                    AvatarProfileType.NORMAL -> AvatarProfileSize.normal
+                    AvatarProfileType.WITH_EDIT -> AvatarProfileSize.large
+                    AvatarProfileType.WITH_EDIT_LARGE -> AvatarProfileSize.extraLarge
+                }
+            )
     ) {
-        if(type == AvatarProfileType.WITH_EDIT) Icon(
+        if(type != AvatarProfileType.NORMAL) Icon(
             imageVector = Icons.Default.Edit,
             tint = MaterialTheme.colors.background,
             contentDescription = stringResource(R.string.edit_profile_pic),
