@@ -33,7 +33,6 @@ class MainActivity : ComponentActivity() {
         val authViewModel: AuthViewModel by viewModels()
         val registerViewModel: RegisterViewModel by viewModels()
         val timerViewModel: TimerViewModel by viewModels()
-        val notificationViewModel: NotificationViewModel by viewModels()
         val themeViewModel: ThemeViewModel by viewModels()
         val profileViewModel: ProfileViewModel by viewModels()
         val historyAttendanceViewModel: HistoryAttendanceViewModel by viewModels()
@@ -62,7 +61,6 @@ class MainActivity : ComponentActivity() {
                         registerViewModel = registerViewModel,
                         timerViewModel = timerViewModel,
                         themeViewModel = themeViewModel,
-                        notificationViewModel = notificationViewModel,
                         profileViewModel = profileViewModel,
                         historyAttendanceViewModel = historyAttendanceViewModel,
                         attendanceViewModel = attendanceViewModel,

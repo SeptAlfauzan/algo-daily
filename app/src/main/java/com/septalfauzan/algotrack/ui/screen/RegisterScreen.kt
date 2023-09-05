@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalComposeUiApi::class)
 
-package com.septalfauzan.algotrack.ui
+package com.septalfauzan.algotrack.ui.screen
 
 import android.widget.Toast
 import androidx.compose.foundation.clickable
@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import com.septalfauzan.algotrack.R
 import com.septalfauzan.algotrack.data.event.MyEvent
 import com.septalfauzan.algotrack.domain.model.UserData
+import com.septalfauzan.algotrack.ui.component.BottomSheetErrorHandler
 import com.septalfauzan.algotrack.ui.component.Header
 import com.septalfauzan.algotrack.ui.component.RoundedButton
 import com.septalfauzan.algotrack.ui.component.RoundedTextInput
@@ -47,43 +48,50 @@ fun RegisterScreen(
     RegisterAction: (UserData) -> Unit,
     LoginAction: () -> Unit,
     eventMessage: Flow<MyEvent>,
-){
-
+) {
+    var errorMessage: String? by remember { mutableStateOf(null) }
     val context = LocalContext.current
-    LaunchedEffect(Unit){
+    LaunchedEffect(Unit) {
         eventMessage.collect { event ->
-            when(event) {
-                is MyEvent.MessageEvent -> Toast.makeText( context, event.message, Toast.LENGTH_SHORT).show()
+            when (event) {
+                is MyEvent.MessageEvent -> errorMessage = event.message
             }
         }
     }
 
-    Column(
-        modifier
-            .fillMaxSize()
-            .padding(bottom = 72.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        Header(painterResource(id = R.drawable.login_illustration))
-        Text(
-            text = stringResource(R.string.register_form_title),
-            style = MaterialTheme.typography.h5.copy(
-                color = MaterialTheme.colors.primary,
-                fontWeight = FontWeight.Bold
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier
+                .fillMaxSize()
+                .padding(bottom = 72.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Header(painterResource(id = R.drawable.login_illustration))
+            Text(
+                text = stringResource(R.string.register_form_title),
+                style = MaterialTheme.typography.h5.copy(
+                    color = MaterialTheme.colors.primary,
+                    fontWeight = FontWeight.Bold
+                )
             )
-        )
-        Spacer(modifier = Modifier.size(8.dp))
-        RegisterForm(
-            onRegisterClick = RegisterAction,
-            onLoginCLick = LoginAction
-        )
+            Spacer(modifier = Modifier.size(8.dp))
+            RegisterForm(
+                onRegisterClick = RegisterAction,
+                onLoginCLick = LoginAction
+            )
+        }
+        errorMessage?.let{msg ->
+            BottomSheetErrorHandler(message = msg, retry = {
+                errorMessage = null
+            })
+        }
     }
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-private fun RegisterForm(onRegisterClick: (UserData) -> Unit, onLoginCLick: () -> Unit){
+private fun RegisterForm(onRegisterClick: (UserData) -> Unit, onLoginCLick: () -> Unit) {
 
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -142,11 +150,12 @@ private fun RegisterForm(onRegisterClick: (UserData) -> Unit, onLoginCLick: () -
             Box(
                 modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.Center
-            ){Text(
-                text = "All fields must be filled",
-                color = Color.Red,
-                style = MaterialTheme.typography.caption
-            )
+            ) {
+                Text(
+                    text = "All fields must be filled",
+                    color = Color.Red,
+                    style = MaterialTheme.typography.caption
+                )
             }
 
         }

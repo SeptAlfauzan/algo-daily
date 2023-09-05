@@ -50,8 +50,7 @@ fun HomeScreen(
         modifier = modifier
             .fillMaxWidth()
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp, vertical = 32.dp)
-        ,
+            .padding(horizontal = 16.dp, vertical = 32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(32.dp)
     ) {
@@ -76,8 +75,12 @@ fun HomeScreen(
         Statistic()
         AlertModalDialog(
             isShowed = showAlert,
-            title = "Apakah anda yakin mengajukan cuti hari ini?",
-            text = "Dengan mengajukan cuti hari ini, otomatis timer absen anda akan dinonaktifkan",
+            title = if (onDutyValue.collectAsState().value) stringResource(R.string.change_offduty_title_msg) else stringResource(
+                R.string.change_onduty_title_msg
+            ),
+            text = if (onDutyValue.collectAsState().value) stringResource(R.string.change_offduty_desc_msg) else stringResource(
+                R.string.change_onduty_desc_msg
+            ),
             onStateChange = { showAlert = false })
     }
 }
@@ -126,8 +129,8 @@ private fun HomeScreenPreview() {
             HomeScreen(
                 navHostController = navHostController,
                 MutableStateFlow(100L),
-                setOnDuty = {  },
-                getHomeStateFlow = {  },
+                setOnDuty = { },
+                getHomeStateFlow = { },
                 onDutyValue = MutableStateFlow(true)
             )
         }

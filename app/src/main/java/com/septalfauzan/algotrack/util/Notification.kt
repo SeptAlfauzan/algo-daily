@@ -30,7 +30,7 @@ object Notification {
             calendar.set(Calendar.MINUTE, 0)
             calendar.set(Calendar.DAY_OF_WEEK, day)
 
-            alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, AlarmManager.INTERVAL_FIFTEEN_MINUTES, pendingIntent)
+            alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, AlarmManager.INTERVAL_HOUR, pendingIntent)
         }
     }
 
@@ -41,6 +41,5 @@ object Notification {
 
         alarmManager.cancel(pendingIntent)
         pendingIntent.cancel()
-//        Toast.makeText(context, "Daily reminder is stopped", Toast.LENGTH_SHORT).show()
     }
 }

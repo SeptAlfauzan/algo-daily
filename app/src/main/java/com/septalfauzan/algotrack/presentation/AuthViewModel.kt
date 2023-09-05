@@ -69,12 +69,6 @@ class AuthViewModel @Inject constructor(private val authUseCase: IAuthUseCase) :
     fun login(onSuccess: () -> Unit) {
         updateEmail(_formUiState.value.email)
         updatePassword(_formUiState.value.password)
-//        _formUiState.value.let {
-//            if(it.emailError.isNotEmpty() || it.passwordError.isNotEmpty()) return
-//        }
-//
-//        val body = AuthData(email = _formUiState.value.email, password = _formUiState.value.password)
-
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 authUseCase.login(authFormUIState = _formUiState.value, eventChannel = eventChannel, onSuccess = { onSuccess() })

@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalComposeUiApi::class)
 
-package com.septalfauzan.algotrack.ui
+package com.septalfauzan.algotrack.ui.screen
 
 import android.widget.Toast
 import androidx.compose.foundation.clickable
@@ -27,6 +27,7 @@ import androidx.navigation.NavController
 import com.septalfauzan.algotrack.R
 import com.septalfauzan.algotrack.data.event.MyEvent
 import com.septalfauzan.algotrack.data.ui.AuthFormUIState
+import com.septalfauzan.algotrack.ui.component.BottomSheetErrorHandler
 import com.septalfauzan.algotrack.ui.component.Header
 import com.septalfauzan.algotrack.ui.component.RoundedButton
 import com.septalfauzan.algotrack.ui.component.RoundedTextInput
@@ -45,37 +46,45 @@ fun LoginScreen(
 ) {
     val formUiState by formUIStateFlow.collectAsState()
     val context = LocalContext.current
+    var errorMessage: String? by remember{ mutableStateOf(null) }
 
     LaunchedEffect(Unit){
         eventMessage.collect { event ->
             when(event) {
-                is MyEvent.MessageEvent -> Toast.makeText( context, event.message, Toast.LENGTH_SHORT).show()
+                is MyEvent.MessageEvent -> errorMessage = event.message
             }
         }
     }
-    Column(
-        modifier
-            .fillMaxSize()
-            .padding(bottom = 72.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        Header(painterResource(id = R.drawable.login_illustration))
-        Text(
-            text = stringResource(R.string.login_form_title),
-            style = MaterialTheme.typography.h5.copy(
-                color = MaterialTheme.colors.primary,
-                fontWeight = FontWeight.Bold
+    Box(modifier = Modifier.fillMaxSize()){
+        Column(
+            modifier
+                .fillMaxSize()
+                .padding(bottom = 72.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Header(painterResource(id = R.drawable.login_illustration))
+            Text(
+                text = stringResource(R.string.login_form_title),
+                style = MaterialTheme.typography.h5.copy(
+                    color = MaterialTheme.colors.primary,
+                    fontWeight = FontWeight.Bold
+                )
             )
-        )
-        Spacer(modifier = Modifier.size(8.dp))
-        LoginForm(
-            updateEmail = updateEmail,
-            updatePassword = updatePassword,
-            formUiState = formUiState,
-            onRegisterClick = { navController.navigate("register") },
-            onLoginCLick = loginAction
-        )
+            Spacer(modifier = Modifier.size(8.dp))
+            LoginForm(
+                updateEmail = updateEmail,
+                updatePassword = updatePassword,
+                formUiState = formUiState,
+                onRegisterClick = { navController.navigate("register") },
+                onLoginCLick = loginAction
+            )
+        }
+        errorMessage?.let{msg ->
+            BottomSheetErrorHandler(message = msg, retry = {
+                errorMessage = null
+            })
+        }
     }
 }
 
