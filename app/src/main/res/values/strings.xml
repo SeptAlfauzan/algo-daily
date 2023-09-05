@@ -38,4 +38,11 @@
     <string name="no_attendance_data_image">no attendance data image</string>
     <string name="no_attendance_data">Tidak ada data riwayat absen untuk hari ini</string>
     <string name="sorting_arrow_ic">sorting arrow</string>
+    <string name="change_onduty_desc_msg">Dengan mengubah staus kerja anda hari ini, otomatis timer absen anda akan diaktifkan dan notifikasi absen akan muncul ketika timer habis</string>
+    <string name="change_offduty_desc_msg">Dengan mengajukan izin tidak kerja hari ini, otomatis timer absen anda akan dinonaktifkan</string>
+    <string name="change_onduty_title_msg">Apakah anda yakin mengubah status anda menjadi bekerja untuk ini?</string>
+    <string name="change_offduty_title_msg">Apakah anda yakin mengajukan izin tidak bekerja hari ini?</string>
+    <string name="notification_title">Waktunya absen</string>
+    <string name="notification_text">absen baru sudah tersedia, yuk segera absen</string>
+    <string name="retry">muat ulang</string>
 </resources>

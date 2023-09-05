@@ -24,8 +24,6 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.septalfauzan.algotrack.data.ui.BottomBarMenu
 import com.septalfauzan.algotrack.helper.navigation.Screen
-import com.septalfauzan.algotrack.ui.LoginScreen
-import com.septalfauzan.algotrack.ui.RegisterScreen
 import com.septalfauzan.algotrack.ui.component.BottomBar
 import com.septalfauzan.algotrack.ui.screen.*
 import com.septalfauzan.algotrack.presentation.*
@@ -53,7 +51,6 @@ fun AlgoDailyApp(
     isLogged: Boolean,
     timerViewModel: TimerViewModel,
     themeViewModel: ThemeViewModel,
-    notificationViewModel: NotificationViewModel,
     profileViewModel: ProfileViewModel,
     historyAttendanceViewModel: HistoryAttendanceViewModel,
     attendanceViewModel: AttendanceViewModel,
@@ -74,7 +71,7 @@ fun AlgoDailyApp(
     var showDialog by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         permissionsState.launchMultiplePermissionRequest()
-        if(!permissionsState.allPermissionsGranted) showDialog = true
+        if (!permissionsState.allPermissionsGranted) showDialog = true
     }
 
 
@@ -99,7 +96,7 @@ fun AlgoDailyApp(
 //                    onStateChange = { showDialog = it }
 //                )
             },
-            permissionsNotAvailableContent = { /*TODO*/ }) {
+            permissionsNotAvailableContent = { }) {
             NavHost(
                 navController = navController,
                 startDestination = if (isLogged) Screen.Home.route else Screen.Login.route,
@@ -177,7 +174,12 @@ fun AlgoDailyApp(
                         getHistory = { date -> historyAttendanceViewModel.getHistory(date) },
                         reloadHistory = { historyAttendanceViewModel.reloadHistory() },
                         historyUiState = historyAttendanceViewModel.result,
-                        setSortingBy = { column, sortType -> historyAttendanceViewModel.sortBy(column, sortType)},
+                        setSortingBy = { column, sortType ->
+                            historyAttendanceViewModel.sortBy(
+                                column,
+                                sortType
+                            )
+                        },
                         statusSortType = historyAttendanceViewModel.statusSortType,
                         timestampSortType = historyAttendanceViewModel.timestampSortType,
                     )
@@ -186,9 +188,7 @@ fun AlgoDailyApp(
                     route = Screen.Profile.route,
                 ) {
                     fun navigateToLogin() = navController.navigate(Screen.Login.route) {
-                        popUpTo(Screen.Home.route) {
-                            inclusive = true
-                        }
+                        popUpTo(Screen.Home.route) { inclusive = true }
                     }
                     systemUiController.setSystemBarsColor(
                         color = MaterialTheme.colors.background
@@ -196,17 +196,12 @@ fun AlgoDailyApp(
                     ProfileScreen(
                         profileUiState = profileViewModel.profile,
                         getProfile = { profileViewModel.getProfile() },
-                        setOnDuty = {value -> attendanceViewModel.setOnDutyValue(value)},
+                        setOnDuty = { value -> attendanceViewModel.setOnDutyValue(value) },
                         onDutyState = attendanceViewModel.onDutyStatus,
                         navController = navController,
-                        isNotificationReminderActive = notificationViewModel.isNotificationReminderActive.collectAsState().value,
-                        setNotificationReminder = { notificationViewModel.setNotificationReminder() },
-                        cancelNotificationReminder = { notificationViewModel.cancelNotificationReminder() },
                         toggleTheme = { themeViewModel.toggleDarkTheme() },
                         isDarkMode = themeViewModel.isDarkTheme.collectAsState().value,
-                        logout = {
-                            authViewModel.logout(onSuccess = { navigateToLogin() })
-                        },
+                        logout = { authViewModel.logout(onSuccess = { navigateToLogin() }) },
                     )
                 }
                 composable(
@@ -220,6 +215,13 @@ fun AlgoDailyApp(
                         detailStateUi = historyAttendanceViewModel.detail,
                         loadDetail = { id -> historyAttendanceViewModel.getDetail(id) },
                         reloadDetail = { historyAttendanceViewModel.reloadDetail() }
+                    )
+                }
+                composable(route = Screen.UploadProfilePic.route) {
+                    UserChangeProfilePicScreen(
+                        profileStateFlow = profileViewModel.profile,
+                        getProfile = { profileViewModel.getProfile() },
+                        reloadProfile = { profileViewModel.reloadProfile() },
                     )
                 }
                 composable(route = Screen.ChangePassword.route) {

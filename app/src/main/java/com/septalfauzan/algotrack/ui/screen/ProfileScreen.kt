@@ -37,10 +37,7 @@ fun ProfileScreen(
     logout: () -> Unit,
     toggleTheme: () -> Unit,
     isDarkMode: Boolean,
-    isNotificationReminderActive: Boolean,
-    setNotificationReminder: () -> Unit,
     navController: NavHostController,
-    cancelNotificationReminder: () -> Unit,
     profileUiState: StateFlow<UiState<GetProfileResponse>>,
     getProfile: () -> Unit,
     setOnDuty: (Boolean) -> Unit,
@@ -86,7 +83,7 @@ fun ProfileScreen(
                         Row(modifier = Modifier.fillMaxWidth()) {
                             AvatarProfile(
                                 imageUri = result.data.photoUrl ?: "",
-                                onClick = { /*edit view*/ },
+                                onClick = { navController.navigate(Screen.UploadProfilePic.route) },
                                 type = AvatarProfileType.WITH_EDIT
                             )
                             Spacer(modifier = Modifier.width(12.dp))
@@ -121,10 +118,7 @@ fun ProfileScreen(
                 isDarkMode = isDarkMode,
                 onDutyStatusState = onDutyState,
                 setOnDuty = setOnDuty,
-                setNoficationReminder = setNotificationReminder,
-                cancelNotificationReminder = cancelNotificationReminder,
                 navController = navController,
-                isNotificationReminderActive = isNotificationReminderActive
             )
         }
     }
@@ -167,16 +161,11 @@ private fun SettingMenu(
     logout: () -> Unit,
     isDarkMode: Boolean,
     toggleTheme: () -> Unit,
-    setNoficationReminder: () -> Unit,
-    cancelNotificationReminder: () -> Unit,
-    isNotificationReminderActive: Boolean,
     navController: NavHostController,
     modifier: Modifier = Modifier,
     onDutyStatusState: StateFlow<Boolean>,
     setOnDuty: (Boolean) -> Unit,
 ) {
-//    var onDuty by rememberSaveable { mutableStateOf(true) }
-    var notification by rememberSaveable { mutableStateOf(true) }
     var logoutAlertShowed by remember { mutableStateOf(false) }
 
     Column(
@@ -202,17 +191,7 @@ private fun SettingMenu(
                 color = MaterialTheme.colors.onSurface.copy(alpha = 0.3f)
             )
         )
-        SettingItem(text = "Notifikasi", icon = Icons.Default.NotificationsNone) {
-            SwitchButton(
-                isChecked = isNotificationReminderActive,
-                onClick = {
-                    when (isNotificationReminderActive) {
-                        true -> cancelNotificationReminder()
-                        else -> setNoficationReminder()
-                    }
-                })
-        }
-        SettingItem(text = "Mode malam", icon = Icons.Default.NotificationsNone) {
+        SettingItem(text = "Mode malam", icon = Icons.Default.DarkMode) {
             SwitchButton(
                 isChecked = isDarkMode,
                 onClick = toggleTheme
@@ -302,10 +281,7 @@ private fun Preview() {
                 logout = {},
                 toggleTheme = { },
                 isDarkMode = false,
-                isNotificationReminderActive = false,
-                setNotificationReminder = { },
                 navController = rememberNavController(),
-                cancelNotificationReminder = {},
                 profileUiState = MutableStateFlow(UiState.Loading),
                 getProfile = {},
                 setOnDuty = { },

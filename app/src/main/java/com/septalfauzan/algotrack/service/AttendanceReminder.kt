@@ -24,7 +24,6 @@ class AttendanceReminder : BroadcastReceiver() {
          * @param id id of attendance data
          */
         fun showNotification(context: Context, id: String) {
-            //TODO 13 : Show today schedules in inbox style notification & open HomeActivity when notification tapped
             val notificationStyle = NotificationCompat.InboxStyle()
             val deepLinkIntent = Intent(
                 Intent.ACTION_VIEW,
@@ -42,11 +41,11 @@ class AttendanceReminder : BroadcastReceiver() {
                 context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             val notification: NotificationCompat.Builder =
                 NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
-                    .setSmallIcon(R.drawable.ic_launcher_foreground)
+                    .setSmallIcon(R.drawable.algo_daily_logo_blue)
                     .setAutoCancel(true)
                     .setStyle(notificationStyle)
-                    .setContentTitle("Waktunya absen")
-                    .setContentText("absen baru sudah tersedia, yuk segera absen")
+                    .setContentTitle(context.getString(R.string.notification_title))
+                    .setContentText(context.getString(R.string.notification_text))
                     .setContentIntent(deepLinkPendingIntent)
                     .setPriority(NotificationCompat.PRIORITY_HIGH)
                     .setDefaults(NotificationCompat.DEFAULT_ALL)
