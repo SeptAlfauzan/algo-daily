@@ -1,43 +1,56 @@
 package com.septalfauzan.algotrack.ui.screen
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.capitalize
-import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.septalfauzan.algotrack.R
+import androidx.navigation.NavController
 import com.septalfauzan.algotrack.data.ui.UiState
 import com.septalfauzan.algotrack.domain.model.apiResponse.GetProfileResponse
+import com.septalfauzan.algotrack.helper.uriToFile
 import com.septalfauzan.algotrack.ui.component.AvatarProfile
 import com.septalfauzan.algotrack.ui.component.AvatarProfileType
 import com.septalfauzan.algotrack.ui.component.BottomSheetErrorHandler
 import com.septalfauzan.algotrack.ui.component.RoundedButton
-import com.septalfauzan.algotrack.ui.theme.AlgoTrackTheme
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import java.io.File
 
 @Composable
 fun UserChangeProfilePicScreen(
     profileStateFlow: StateFlow<UiState<GetProfileResponse>>,
     getProfile: () -> Unit,
     reloadProfile: () -> Unit,
+    updatePP: (File?) -> Unit,
+    navController: NavController,
     modifier: Modifier = Modifier,
 ) {
+    val context = LocalContext.current
+    var imageFile by remember { mutableStateOf<File?>(null) }
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        if (uri != null) {
+            imageFile = uriToFile(context, uri)
+        }
+    }
+
     Box(modifier.fillMaxSize()) {
         profileStateFlow.collectAsState(initial = UiState.Error("error")).value.let { uiState ->
             when (uiState) {
@@ -55,15 +68,21 @@ fun UserChangeProfilePicScreen(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         AvatarProfile(
-                            onClick = {},
+                            onClick = { launcher.launch("image/*") },
                             type = AvatarProfileType.WITH_EDIT_LARGE,
                             imageUri = response.data.photoUrl ?: ""
                         )
                         Spacer(modifier = Modifier.height(152.dp))
                         Row(horizontalArrangement = Arrangement.End) {
-                            RoundedButton(text = "batal edit", onClick = { /*TODO*/ })
+                            RoundedButton(text = "batal edit", onClick = {
+                                updatePP(null)
+                                navController.popBackStack()
+                            })
                             Spacer(modifier = Modifier.width(16.dp))
-                            RoundedButton(text = "simpan perubahan", onClick = { /*TODO*/ })
+                            RoundedButton(text = "simpan perubahan", onClick = {
+                                updatePP(imageFile)
+                                navController.popBackStack()
+                            })
                         }
                     }
                 }
@@ -71,20 +90,6 @@ fun UserChangeProfilePicScreen(
                     BottomSheetErrorHandler(message = uiState.errorMessage, retry = reloadProfile)
                 }
             }
-        }
-    }
-}
-
-@Preview(showBackground = true, device = Devices.PIXEL_4)
-@Composable
-private fun Preview() {
-    AlgoTrackTheme {
-        Surface {
-            UserChangeProfilePicScreen(
-                MutableStateFlow(UiState.Error("error")),
-                getProfile = {},
-                reloadProfile = {},
-            )
         }
     }
 }

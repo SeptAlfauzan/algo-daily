@@ -1,9 +1,10 @@
 package com.septalfauzan.algotrack.data.source.remote.apiInterfaces
 
-import com.septalfauzan.algotrack.data.source.local.dao.AttendanceEntity
 import com.septalfauzan.algotrack.domain.model.AttendanceRequestBody
 import com.septalfauzan.algotrack.domain.model.AuthData
+import com.septalfauzan.algotrack.domain.model.UserChangePassword
 import com.septalfauzan.algotrack.domain.model.apiResponse.*
+import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.http.*
 
@@ -37,7 +38,15 @@ interface AlgoTrackApiInterfaces {
         @Body attendance: AttendanceRequestBody
     ) : AttendanceResponse
 
-
     @PUT("users/password")
-    suspend fun updatePassword()
+    suspend fun updatePassword(
+        @Header("Authorization") authToken: String,
+        @Body newPassword : UserChangePassword,
+    ) : RegisterResponse
+
+    @PUT("users/photo")
+    suspend fun updatePP(
+        @Header("Authorization") authToken: String,
+        @Part photo: MultipartBody.Part
+    ) : UpdateUserProfilePicData
 }

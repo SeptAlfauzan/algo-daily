@@ -222,10 +222,19 @@ fun AlgoDailyApp(
                         profileStateFlow = profileViewModel.profile,
                         getProfile = { profileViewModel.getProfile() },
                         reloadProfile = { profileViewModel.reloadProfile() },
+                        updatePP = { selectedImageFile ->
+                            if (selectedImageFile != null) {
+                                profileViewModel.updatePP(selectedImageFile)
+                            }
+                        },
+                        navController = navController,
                     )
                 }
                 composable(route = Screen.ChangePassword.route) {
-                    ChangePasswordScreen()
+                    ChangePasswordScreen(
+                        navController = navController,
+                        changePassword = { userNewPassword -> authViewModel.changePassword(userNewPassword) }
+                    )
                 }
             }
         }

@@ -1,10 +1,10 @@
 package com.septalfauzan.algotrack.domain.usecase
 
-import android.util.Log
-import com.septalfauzan.algotrack.data.ui.UiState
 import com.septalfauzan.algotrack.domain.model.apiResponse.GetProfileResponse
+import com.septalfauzan.algotrack.domain.model.apiResponse.UpdateUserProfilePicData
 import com.septalfauzan.algotrack.domain.repository.IProfileRepository
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import java.io.File
 import javax.inject.Inject
 
 class ProfileUseCase @Inject constructor(private val profileRepository: IProfileRepository) :
@@ -13,8 +13,7 @@ class ProfileUseCase @Inject constructor(private val profileRepository: IProfile
         return profileRepository.getUserProfile()
     }
 
-    override suspend fun updateImageProfile(): Flow<String> {
-        // TODO: implement upload user image profile change
-        return flowOf("")
+    override suspend fun updateImageProfile(imageFile: File): Flow<UpdateUserProfilePicData> {
+        return profileRepository.updatePP(imageFile)
     }
 }

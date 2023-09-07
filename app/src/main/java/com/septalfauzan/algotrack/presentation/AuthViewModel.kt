@@ -4,9 +4,8 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.septalfauzan.algotrack.data.event.MyEvent
-import com.septalfauzan.algotrack.domain.model.AuthData
-import com.septalfauzan.algotrack.data.repository.AuthRepository
 import com.septalfauzan.algotrack.data.ui.AuthFormUIState
+import com.septalfauzan.algotrack.domain.model.UserChangePassword
 import com.septalfauzan.algotrack.domain.usecase.IAuthUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -14,7 +13,6 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
@@ -62,10 +60,6 @@ class AuthViewModel @Inject constructor(private val authUseCase: IAuthUseCase) :
             passwordError = error
         )
     }
-    /**
-     * @see this function doesnt require body of username and password sent through parameter because it state already in viewmodel
-     * @param onSuccess define navigation or anything that should be execute when login is success, this onSuccess is run in main thread
-     */
     fun login(onSuccess: () -> Unit) {
         updateEmail(_formUiState.value.email)
         updatePassword(_formUiState.value.password)
@@ -79,10 +73,15 @@ class AuthViewModel @Inject constructor(private val authUseCase: IAuthUseCase) :
             }
         }
     }
-
-    /**
-     *@param onSuccess define navigation or anything that should be execute when logout is success, this onSuccess is run in main thread
-     */
+    fun changePassword(newPassword: UserChangePassword){
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                authUseCase.changePassword(newPassword, eventChannel)
+            }catch (e:Exception){
+                eventChannel.send(MyEvent.MessageEvent("error login: ${e.message}"))
+            }
+        }
+    }
     fun logout(onSuccess: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
