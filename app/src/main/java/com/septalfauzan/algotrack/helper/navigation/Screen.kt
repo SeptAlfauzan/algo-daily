@@ -15,5 +15,7 @@ sealed class Screen(val route: String){
         fun createRoute(id: String) = "attendance/$id"
     }
     object UploadProfilePic : Screen("profile-change")
-    object Success : Screen("success")
+    object Success : Screen("success/{title}/{desc}"){
+        fun createRoute(title: String, desc: String) = "success/$title/$desc"
+    }
 }

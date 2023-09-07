@@ -32,8 +32,8 @@ import com.septalfauzan.algotrack.data.datastore.SortType
 import com.septalfauzan.algotrack.data.source.local.dao.AttendanceEntity
 import com.septalfauzan.algotrack.data.source.local.dao.AttendanceStatus
 import com.septalfauzan.algotrack.data.ui.UiState
-import com.septalfauzan.algotrack.domain.model.apiResponse.AttendanceResponseData
-import com.septalfauzan.algotrack.domain.model.apiResponse.toAttendanceEntity
+import com.septalfauzan.algotrack.data.source.remote.apiResponse.AttendanceResponseData
+import com.septalfauzan.algotrack.data.source.remote.apiResponse.toAttendanceEntity
 import com.septalfauzan.algotrack.helper.formatCalendarDate
 import com.septalfauzan.algotrack.helper.reverseFormatCalendarDate
 import com.septalfauzan.algotrack.ui.component.ErrorHandler

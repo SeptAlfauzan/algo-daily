@@ -6,7 +6,7 @@ import com.septalfauzan.algotrack.data.datastore.SortBy
 import com.septalfauzan.algotrack.data.datastore.SortType
 import com.septalfauzan.algotrack.data.source.local.dao.AttendanceEntity
 import com.septalfauzan.algotrack.data.ui.UiState
-import com.septalfauzan.algotrack.domain.model.apiResponse.AttendanceHistoryResponse
+import com.septalfauzan.algotrack.data.source.remote.apiResponse.AttendanceHistoryResponse
 import com.septalfauzan.algotrack.domain.usecase.HistoryAttendanceUseCase
 import com.septalfauzan.algotrack.domain.usecase.IHistoryAttendanceUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel

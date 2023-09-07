@@ -23,7 +23,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.septalfauzan.algotrack.R
 import com.septalfauzan.algotrack.data.ui.UiState
-import com.septalfauzan.algotrack.domain.model.apiResponse.GetProfileResponse
+import com.septalfauzan.algotrack.data.source.remote.apiResponse.GetProfileResponse
 import com.septalfauzan.algotrack.helper.navigation.Screen
 import com.septalfauzan.algotrack.ui.component.*
 import com.septalfauzan.algotrack.ui.theme.AlgoTrackTheme

@@ -1,4 +1,4 @@
-package com.septalfauzan.algotrack.domain.model.apiResponse
+package com.septalfauzan.algotrack.data.source.remote.apiResponse
 
 import com.google.gson.annotations.SerializedName
 import com.septalfauzan.algotrack.data.source.local.dao.AttendanceEntity
@@ -47,7 +47,7 @@ fun AttendanceResponseData.toAttendanceEntity(): AttendanceEntity{
 	)
 }
 
-fun AttendanceResponseData.formatTimeToGMT(): AttendanceResponseData{
+fun AttendanceResponseData.formatTimeToGMT(): AttendanceResponseData {
 	return AttendanceResponseData(
 		id = this.id,
 		status = this.status,

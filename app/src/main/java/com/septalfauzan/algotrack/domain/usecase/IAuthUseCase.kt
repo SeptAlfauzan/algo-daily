@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface IAuthUseCase {
     suspend fun login(authFormUIState: AuthFormUIState,eventChannel: Channel<MyEvent>, onSuccess: () -> Unit)
-    suspend fun changePassword(newPassword: UserChangePassword, eventChannel: Channel<MyEvent>)
+    suspend fun changePassword(newPassword: UserChangePassword, eventChannel: Channel<MyEvent>, onSuccess: () -> Unit)
     suspend fun logout(eventChannel: Channel<MyEvent>, onSuccess: () -> Unit)
     suspend fun getAuthToken() : Flow<String>
 }

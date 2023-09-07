@@ -1,4 +1,4 @@
-package com.septalfauzan.algotrack.domain.model.apiResponse
+package com.septalfauzan.algotrack.data.source.remote.apiResponse
 
 import com.google.gson.annotations.SerializedName
 
@@ -17,7 +17,7 @@ data class AuthResponseData(
 data class RegisterResponse(
 
 	@field:SerializedName("data")
-	val data: RegisterData? = null
+	val data: RegisterData
 )
 
 data class RegisterData(

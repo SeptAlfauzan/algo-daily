@@ -1,6 +1,9 @@
 package com.septalfauzan.algotrack.ui.screen
 
+import android.content.ContentResolver
+import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -13,26 +16,24 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.septalfauzan.algotrack.R
+import com.septalfauzan.algotrack.data.event.MyEvent
 import com.septalfauzan.algotrack.data.ui.UiState
-import com.septalfauzan.algotrack.domain.model.apiResponse.GetProfileResponse
-import com.septalfauzan.algotrack.helper.uriToFile
-import com.septalfauzan.algotrack.ui.component.AvatarProfile
-import com.septalfauzan.algotrack.ui.component.AvatarProfileType
-import com.septalfauzan.algotrack.ui.component.BottomSheetErrorHandler
-import com.septalfauzan.algotrack.ui.component.RoundedButton
+import com.septalfauzan.algotrack.data.source.remote.apiResponse.GetProfileResponse
+import com.septalfauzan.algotrack.ui.component.*
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+import java.io.InputStream
 
 @Composable
 fun UserChangeProfilePicScreen(
@@ -41,13 +42,24 @@ fun UserChangeProfilePicScreen(
     reloadProfile: () -> Unit,
     updatePP: (File?) -> Unit,
     navController: NavController,
+    eventMessage: Flow<MyEvent>,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
     var imageFile by remember { mutableStateOf<File?>(null) }
-    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-        if (uri != null) {
-            imageFile = uriToFile(context, uri)
+    var errorMessage: String? by remember{ mutableStateOf(null) }
+    val launcher =
+        rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+            if (uri != null) {
+                imageFile = convertContentUriToImageFile(context, uri)
+                Log.d("TAG", "UserChangeProfilePicScreen: $uri file: $imageFile")
+            }
+        }
+    LaunchedEffect(Unit){
+        eventMessage.collect { event ->
+            when(event) {
+                is MyEvent.MessageEvent -> errorMessage = event.message
+            }
         }
     }
 
@@ -70,19 +82,24 @@ fun UserChangeProfilePicScreen(
                         AvatarProfile(
                             onClick = { launcher.launch("image/*") },
                             type = AvatarProfileType.WITH_EDIT_LARGE,
-                            imageUri = response.data.photoUrl ?: ""
+                            imageUri = if (imageFile != null) imageFile!!.path else response.data.photoUrl ?: ""
                         )
                         Spacer(modifier = Modifier.height(152.dp))
                         Row(horizontalArrangement = Arrangement.End) {
-                            RoundedButton(text = "batal edit", onClick = {
-                                updatePP(null)
-                                navController.popBackStack()
-                            })
+                            RoundedButton(
+                                text = "batal edit",
+                                buttonType = ButtonType.SECONDARY,
+                                enabled = imageFile?.isFile ?: false,
+                                onClick = {
+                                    navController.popBackStack()
+                                })
                             Spacer(modifier = Modifier.width(16.dp))
-                            RoundedButton(text = "simpan perubahan", onClick = {
-                                updatePP(imageFile)
-                                navController.popBackStack()
-                            })
+                            RoundedButton(
+                                text = "simpan perubahan",
+                                enabled = imageFile?.isFile ?: false,
+                                onClick = {
+                                    updatePP(imageFile)
+                                })
                         }
                     }
                 }
@@ -91,5 +108,51 @@ fun UserChangeProfilePicScreen(
                 }
             }
         }
+
+        errorMessage?.let{msg ->
+            BottomSheetErrorHandler(message = msg, dismissLabel = stringResource(R.string.closed), retry = {
+                errorMessage = null
+            })
+        }
     }
+}
+
+private fun convertContentUriToImageFile(context: Context, contentUri: Uri): File? {
+    val contentResolver: ContentResolver = context.contentResolver
+    var inputStream: InputStream? = null
+    var outputStream: FileOutputStream? = null
+    var imageFile: File? = null
+
+    try {
+        // Open an input stream from the content URI
+        inputStream = contentResolver.openInputStream(contentUri)
+
+        if (inputStream != null) {
+            // Create a temporary file to store the image
+            val tempDir = context.cacheDir
+            imageFile = File.createTempFile("image_", ".jpg", tempDir)
+
+            // Open an output stream to the temporary file
+            outputStream = FileOutputStream(imageFile)
+
+            // Read from the input stream and write to the output stream
+            val buffer = ByteArray(4 * 1024)
+            var read: Int
+            while (inputStream.read(buffer).also { read = it } != -1) {
+                outputStream.write(buffer, 0, read)
+            }
+        }
+    } catch (e: IOException) {
+        e.printStackTrace()
+    } finally {
+        try {
+            // Close the input and output streams
+            inputStream?.close()
+            outputStream?.close()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+
+    return imageFile
 }

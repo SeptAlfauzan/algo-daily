@@ -19,7 +19,7 @@ import com.septalfauzan.algotrack.R
 
 
 @Composable
-fun BottomSheetErrorHandler(message: String, retry: () -> Unit = {}, showed: Boolean = true) {
+fun BottomSheetErrorHandler(message: String, retry: () -> Unit = {}, showed: Boolean = true, dismissLabel: String? = null) {
     var showed: Boolean by remember { mutableStateOf(showed) }
     val density = LocalDensity.current
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
@@ -44,7 +44,7 @@ fun BottomSheetErrorHandler(message: String, retry: () -> Unit = {}, showed: Boo
                     ),
                     modifier = Modifier.weight(1f)
                 )
-                Text(text = stringResource(R.string.retry),
+                Text(text = dismissLabel ?: stringResource(R.string.retry),
                     style = MaterialTheme.typography.body1.copy(
                         color = MaterialTheme.colors.onPrimary,
                         textDecoration = TextDecoration.Underline,

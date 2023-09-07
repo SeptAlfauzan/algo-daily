@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.septalfauzan.algotrack.data.ui.UiState
 import com.septalfauzan.algotrack.domain.model.HomeData
-import com.septalfauzan.algotrack.domain.model.apiResponse.GetProfileResponse
+import com.septalfauzan.algotrack.data.source.remote.apiResponse.GetProfileResponse
 import com.septalfauzan.algotrack.domain.usecase.AuthUseCase
 import com.septalfauzan.algotrack.domain.usecase.IAuthUseCase
 import com.septalfauzan.algotrack.domain.usecase.IProfileUseCase
@@ -23,10 +23,6 @@ class HomeViewModel @Inject constructor(private val profileUseCase: IProfileUseC
     val homeData: StateFlow<UiState<HomeData>> = _homeData
 
     fun getHomeData(){
-        viewModelScope.launch(Dispatchers.IO) {
-            profileUseCase.getProfile().combine(authUseCase.getAuthToken()){profile, token ->
-                _homeData.value = UiState.Success(HomeData(profile, token))
-            }
-        }
+
     }
 }

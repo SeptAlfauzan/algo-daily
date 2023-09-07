@@ -45,4 +45,5 @@
     <string name="notification_title">Waktunya absen</string>
     <string name="notification_text">absen baru sudah tersedia, yuk segera absen</string>
     <string name="retry">muat ulang</string>
+    <string name="closed">tutup</string>
 </resources>

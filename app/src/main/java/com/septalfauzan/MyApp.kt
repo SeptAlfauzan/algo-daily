@@ -1,7 +1,6 @@
 package com.septalfauzan
 
 import android.app.Application
-import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import com.septalfauzan.algotrack.di.DailyAttendanceWorkerFactory
 import dagger.hilt.android.HiltAndroidApp

@@ -1,6 +1,7 @@
 package com.septalfauzan.algotrack
 
 import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -29,18 +30,21 @@ import com.septalfauzan.algotrack.ui.screen.*
 import com.septalfauzan.algotrack.presentation.*
 
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 val permission33APIBelow = listOf(
     android.Manifest.permission.POST_NOTIFICATIONS,
     android.Manifest.permission.ACCESS_COARSE_LOCATION,
     android.Manifest.permission.ACCESS_FINE_LOCATION,
 )
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 val permission33APIAbove = listOf(
     android.Manifest.permission.POST_NOTIFICATIONS,
     android.Manifest.permission.ACCESS_COARSE_LOCATION,
     android.Manifest.permission.ACCESS_FINE_LOCATION,
 )
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun AlgoDailyApp(
@@ -73,7 +77,6 @@ fun AlgoDailyApp(
         permissionsState.launchMultiplePermissionRequest()
         if (!permissionsState.allPermissionsGranted) showDialog = true
     }
-
 
     Scaffold(
         modifier = modifier,
@@ -162,11 +165,17 @@ fun AlgoDailyApp(
                     val id = it.arguments?.getString("id") ?: ""
                     AttendanceScreen(id = id, navController = navController, attendanceViewModel)
                 }
-                composable(Screen.Success.route) {
+                composable(
+                    route = Screen.Success.route,
+                    arguments = listOf(navArgument("title") { type = NavType.StringType }, navArgument("desc") { type = NavType.StringType })
+                ) {
                     systemUiController.setSystemBarsColor(
                         color = MaterialTheme.colors.primary
                     )
-                    SuccessScreen(navController = navController)
+                    val title = it.arguments?.getString("title")
+                    val desc = it.arguments?.getString("desc")
+
+                    SuccessScreen(navController = navController, title = title, desc = desc)
                 }
                 composable(Screen.History.route) {
                     AttendanceHistoryScreen(
@@ -218,22 +227,36 @@ fun AlgoDailyApp(
                     )
                 }
                 composable(route = Screen.UploadProfilePic.route) {
+                    fun navigateToHome() = navController.navigate(Screen.Success.createRoute("Berhasil mengganti foto profil", "Foto profil anda berhasil diubah")) {
+                        popUpTo(Screen.UploadProfilePic.route) { inclusive = true }
+                    }
                     UserChangeProfilePicScreen(
                         profileStateFlow = profileViewModel.profile,
                         getProfile = { profileViewModel.getProfile() },
                         reloadProfile = { profileViewModel.reloadProfile() },
                         updatePP = { selectedImageFile ->
                             if (selectedImageFile != null) {
-                                profileViewModel.updatePP(selectedImageFile)
+                                profileViewModel.updatePP(
+                                    selectedImageFile,
+                                    onSuccess = { navigateToHome() })
                             }
                         },
                         navController = navController,
+                        eventMessage = profileViewModel.eventFlow
                     )
                 }
                 composable(route = Screen.ChangePassword.route) {
+                    fun navigateToHome() = navController.navigate(Screen.Success.createRoute("Sukses mengubah password", "Password akun anda berhasil diubah")) {
+                        popUpTo(Screen.ChangePassword.route) { inclusive = true }
+                    }
                     ChangePasswordScreen(
                         navController = navController,
-                        changePassword = { userNewPassword -> authViewModel.changePassword(userNewPassword) }
+                        eventMessage = authViewModel.eventFlow,
+                        changePassword = { userNewPassword ->
+                            authViewModel.changePassword(
+                                userNewPassword,
+                                onSuccess = { navigateToHome() })
+                        }
                     )
                 }
             }
