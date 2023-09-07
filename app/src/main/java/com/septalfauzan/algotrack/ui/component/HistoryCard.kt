@@ -15,8 +15,8 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.septalfauzan.algotrack.data.source.local.dao.AttendanceEntity
 import com.septalfauzan.algotrack.data.source.local.dao.AttendanceStatus
-import com.septalfauzan.algotrack.domain.model.apiResponse.AttendanceResponseData
-import com.septalfauzan.algotrack.domain.model.apiResponse.toAttendanceEntity
+import com.septalfauzan.algotrack.data.source.remote.apiResponse.AttendanceResponseData
+import com.septalfauzan.algotrack.data.source.remote.apiResponse.toAttendanceEntity
 import com.septalfauzan.algotrack.helper.formatTimeStampDatasource
 import com.septalfauzan.algotrack.helper.navigation.Screen
 import com.septalfauzan.algotrack.ui.theme.AlgoTrackTheme

@@ -4,7 +4,7 @@ import android.content.Context
 import com.google.gson.Gson
 import com.septalfauzan.algotrack.data.datastore.DataStorePreference
 import com.septalfauzan.algotrack.domain.model.UserData
-import com.septalfauzan.algotrack.domain.model.apiResponse.RegisterResponse
+import com.septalfauzan.algotrack.data.source.remote.apiResponse.RegisterResponse
 import com.septalfauzan.algotrack.data.source.remote.apiInterfaces.AlgoTrackApiInterfaces
 import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull

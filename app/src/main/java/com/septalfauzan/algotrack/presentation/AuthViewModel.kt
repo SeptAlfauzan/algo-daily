@@ -13,6 +13,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
@@ -73,12 +74,13 @@ class AuthViewModel @Inject constructor(private val authUseCase: IAuthUseCase) :
             }
         }
     }
-    fun changePassword(newPassword: UserChangePassword){
+    fun changePassword(newPassword: UserChangePassword, onSuccess: () -> Unit){
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                authUseCase.changePassword(newPassword, eventChannel)
+                authUseCase.changePassword(newPassword, eventChannel, onSuccess = { onSuccess() })
             }catch (e:Exception){
-                eventChannel.send(MyEvent.MessageEvent("error login: ${e.message}"))
+                Log.d("TAG", "changePassword: ${e}")
+                eventChannel.send(MyEvent.MessageEvent("error: ${e.message}"))
             }
         }
     }

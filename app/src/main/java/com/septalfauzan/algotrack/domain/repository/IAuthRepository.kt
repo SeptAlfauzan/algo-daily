@@ -2,8 +2,8 @@ package com.septalfauzan.algotrack.domain.repository
 
 import com.septalfauzan.algotrack.domain.model.AuthData
 import com.septalfauzan.algotrack.domain.model.UserChangePassword
-import com.septalfauzan.algotrack.domain.model.apiResponse.AuthResponse
-import com.septalfauzan.algotrack.domain.model.apiResponse.RegisterResponse
+import com.septalfauzan.algotrack.data.source.remote.apiResponse.AuthResponse
+import com.septalfauzan.algotrack.data.source.remote.apiResponse.RegisterResponse
 import kotlinx.coroutines.flow.Flow
 
 interface IAuthRepository {

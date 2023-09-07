@@ -1,5 +1,6 @@
 package com.septalfauzan.algotrack.domain.usecase
 
+import android.util.Log
 import com.septalfauzan.algotrack.data.event.MyEvent
 import com.septalfauzan.algotrack.data.ui.AuthFormUIState
 import com.septalfauzan.algotrack.domain.model.AuthData
@@ -9,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -30,10 +32,16 @@ class AuthUseCase @Inject constructor(private val authRepository: IAuthRepositor
 
     override suspend fun changePassword(
         newPassword: UserChangePassword,
-        eventChannel: Channel<MyEvent>
+        eventChannel: Channel<MyEvent>,
+        onSuccess: () -> Unit
     ) {
         authRepository.changePassword(newPassword).catch { error ->
+            Log.d("TAG", "changePassword: ${error.message}")
             eventChannel.send(MyEvent.MessageEvent("error: ${error.message}"))
+        }.collect{
+            withContext(Dispatchers.Main){
+                onSuccess()
+            }
         }
     }
 

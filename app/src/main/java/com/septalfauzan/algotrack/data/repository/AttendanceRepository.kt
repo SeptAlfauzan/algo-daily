@@ -12,9 +12,9 @@ import com.septalfauzan.algotrack.data.source.local.dao.AttendanceEntity
 import com.septalfauzan.algotrack.data.source.local.dao.AttendanceStatus
 import com.septalfauzan.algotrack.data.source.remote.apiInterfaces.AlgoTrackApiInterfaces
 import com.septalfauzan.algotrack.domain.model.AttendanceRequestBody
-import com.septalfauzan.algotrack.domain.model.apiResponse.AttendanceResponse
-import com.septalfauzan.algotrack.domain.model.apiResponse.formatTimeToGMT
-import com.septalfauzan.algotrack.domain.model.apiResponse.toAttendanceEntity
+import com.septalfauzan.algotrack.data.source.remote.apiResponse.AttendanceResponse
+import com.septalfauzan.algotrack.data.source.remote.apiResponse.formatTimeToGMT
+import com.septalfauzan.algotrack.data.source.remote.apiResponse.toAttendanceEntity
 import com.septalfauzan.algotrack.domain.repository.IAttendanceRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope

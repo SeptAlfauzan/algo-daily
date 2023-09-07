@@ -1,15 +1,15 @@
 package com.septalfauzan.algotrack.data.source.remote.apiInterfaces
 
+import com.septalfauzan.algotrack.data.source.remote.apiResponse.*
 import com.septalfauzan.algotrack.domain.model.AttendanceRequestBody
 import com.septalfauzan.algotrack.domain.model.AuthData
 import com.septalfauzan.algotrack.domain.model.UserChangePassword
-import com.septalfauzan.algotrack.domain.model.apiResponse.*
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import retrofit2.Response
 import retrofit2.http.*
 
 interface AlgoTrackApiInterfaces {
-    // TODO: implement all api interfaces
     @POST("users/login")
     suspend fun auth(@Body authData: AuthData) : AuthResponse
 
@@ -42,11 +42,17 @@ interface AlgoTrackApiInterfaces {
     suspend fun updatePassword(
         @Header("Authorization") authToken: String,
         @Body newPassword : UserChangePassword,
-    ) : RegisterResponse
+    ) : Response<RegisterResponse>
 
+    @Multipart
     @PUT("users/photo")
     suspend fun updatePP(
         @Header("Authorization") authToken: String,
         @Part photo: MultipartBody.Part
     ) : UpdateUserProfilePicData
+
+    @GET("users/statistic")
+    suspend fun getStats(
+        @Header("Authorization") authToken: String
+    ) : UserStatsResponse
 }

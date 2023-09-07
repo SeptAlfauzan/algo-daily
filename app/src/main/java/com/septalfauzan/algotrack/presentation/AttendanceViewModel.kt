@@ -46,7 +46,7 @@ class AttendanceViewModel @Inject constructor(private val repository: Attendance
         viewModelScope.launch {
             repository.updateAttendance(id, attendanceEntity)
             withContext(Dispatchers.Main){
-                navController.navigate(Screen.Success.route){
+                navController.navigate(Screen.Success.createRoute("Absen berhasil dikirim", "Terimakasih telah \nmengisi absen")){
                     popUpTo(Screen.Attendance.route) {
                         inclusive = true
                     }

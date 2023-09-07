@@ -126,7 +126,7 @@ fun AttendanceScreen(id: String, navController: NavController, viewModel: Attend
                         )
                     }
                 },
-                backgroundColor = Color.White,
+                backgroundColor = MaterialTheme.colors.background,
             )
         }
     ) {

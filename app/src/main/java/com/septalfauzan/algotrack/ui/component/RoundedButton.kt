@@ -12,8 +12,7 @@ import androidx.compose.ui.unit.dp
 import com.septalfauzan.algotrack.ui.theme.AlgoTrackTheme
 
 enum class ButtonType {
-    PRIMARY,
-    SECONDARY
+    PRIMARY, SECONDARY
 }
 
 /**
@@ -38,21 +37,18 @@ fun RoundedButton(
         shape = RoundedCornerShape(20.dp),
         modifier = modifier,
         enabled = enabled,
-        colors = ButtonDefaults.buttonColors(backgroundColor = if (buttonType == ButtonType.PRIMARY) MaterialTheme.colors.primary else MaterialTheme.colors.secondary)
+        colors = ButtonDefaults.buttonColors(backgroundColor = if (buttonType == ButtonType.PRIMARY) MaterialTheme.colors.primary.copy(alpha = if(enabled) 1f else 0.3f) else MaterialTheme.colors.secondary.copy(alpha = if(enabled) 1f else 0.3f))
     ) {
         icon?.let {
             Icon(
-                imageVector = it,
-                contentDescription = "trail icon",
-                modifier = Modifier.size(24.dp)
+                imageVector = it, contentDescription = "trail icon", modifier = Modifier.size(24.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
         }
         Text(
             text = text,
             style = MaterialTheme.typography.body1.copy(
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colors.onPrimary
+                textAlign = TextAlign.Center, color = MaterialTheme.colors.onPrimary
             ),
         )
     }

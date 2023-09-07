@@ -33,7 +33,7 @@ import com.septalfauzan.algotrack.ui.component.RoundedButton
 import com.septalfauzan.algotrack.ui.theme.AlgoTrackTheme
 
 @Composable
-fun SuccessScreen(navController: NavController) {
+fun SuccessScreen(navController: NavController, title: String? = null, desc: String? = null) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -56,20 +56,14 @@ fun SuccessScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = "Absen berhasil dikirim",
+                text = title ?: "Absen berhasil dikirim",
                 style = MaterialTheme.typography.h5,
                 textAlign = TextAlign.Center,
                 color = Color.White
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = "Terimakasih telah",
-                style = MaterialTheme.typography.h6,
-                textAlign = TextAlign.Center,
-                color = Color.White
-            )
-            Text(
-                text = "mengisi absen",
+                text = desc ?: "Terimakasih telah \nmengisi absen",
                 style = MaterialTheme.typography.h6,
                 textAlign = TextAlign.Center,
                 color = Color.White
@@ -92,6 +86,6 @@ fun SuccessScreen(navController: NavController) {
 @Composable
 fun SuccessScreenPreview() {
     AlgoTrackTheme {
-        SuccessScreen(navController = rememberNavController())
+        SuccessScreen(navController = rememberNavController(), title = null, desc = null)
     }
 }

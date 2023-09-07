@@ -4,7 +4,7 @@ import com.septalfauzan.algotrack.data.datastore.SortBy
 import com.septalfauzan.algotrack.data.datastore.SortType
 import com.septalfauzan.algotrack.data.source.local.dao.AttendanceEntity
 import com.septalfauzan.algotrack.domain.model.AttendanceRequestBody
-import com.septalfauzan.algotrack.domain.model.apiResponse.AttendanceResponse
+import com.septalfauzan.algotrack.data.source.remote.apiResponse.AttendanceResponse
 import kotlinx.coroutines.flow.Flow
 
 interface IAttendanceRepository {

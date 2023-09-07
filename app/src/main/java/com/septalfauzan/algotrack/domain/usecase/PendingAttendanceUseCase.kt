@@ -1,7 +1,7 @@
 package com.septalfauzan.algotrack.domain.usecase
 
 import com.septalfauzan.algotrack.data.source.local.dao.PendingAttendanceEntity
-import com.septalfauzan.algotrack.domain.model.apiResponse.AttendanceResponse
+import com.septalfauzan.algotrack.data.source.remote.apiResponse.AttendanceResponse
 import com.septalfauzan.algotrack.domain.repository.IAttendanceRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
