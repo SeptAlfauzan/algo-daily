@@ -3,7 +3,6 @@ package com.septalfauzan.algotrack.ui.screen
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Key
 import androidx.compose.runtime.*
@@ -15,23 +14,27 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.septalfauzan.algotrack.R
+import com.septalfauzan.algotrack.domain.model.UserChangePassword
 import com.septalfauzan.algotrack.ui.component.AlertModalDialog
 import com.septalfauzan.algotrack.ui.component.RoundedButton
 import com.septalfauzan.algotrack.ui.component.RoundedTextInput
-import com.septalfauzan.algotrack.ui.theme.AlgoTrackTheme
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun ChangePasswordScreen(modifier: Modifier = Modifier) {
+fun ChangePasswordScreen(
+    modifier: Modifier = Modifier,
+    navController: NavController,
+    changePassword : (UserChangePassword) -> Unit
+) {
 
     val keyboardController = LocalSoftwareKeyboardController.current
     var password by remember { mutableStateOf("") }
     var passwordConfirm by remember { mutableStateOf("") }
     var showDialog by remember { mutableStateOf(false) }
+    val newPassword = UserChangePassword(password, passwordConfirm)
 
     Column(
         modifier
@@ -87,16 +90,10 @@ fun ChangePasswordScreen(modifier: Modifier = Modifier) {
             text = stringResource(
                 R.string.change_pw_question_desc
             ),
-            onStateChange = { showDialog = it })
-    }
-}
-
-@Preview(showBackground = true, device = Devices.PIXEL_4)
-@Composable
-private fun Preview() {
-    AlgoTrackTheme() {
-        Surface {
-            ChangePasswordScreen()
-        }
+            onStateChange = {
+                showDialog = it
+                changePassword(newPassword)
+                navController.popBackStack()
+            })
     }
 }
