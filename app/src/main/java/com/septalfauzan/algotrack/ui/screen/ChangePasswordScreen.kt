@@ -49,7 +49,7 @@ fun ChangePasswordScreen(
         }
     }
 
-    Box(Modifier.fillMaxSize()) {
+    Box(Modifier.fillMaxSize().statusBarsPadding()) {
         Column(
             modifier
                 .fillMaxSize()
@@ -111,7 +111,7 @@ fun ChangePasswordScreen(
             )
         }
         errorMessage?.let{msg ->
-            BottomSheetErrorHandler(message = msg, dismissLabel = stringResource(R.string.closed), retry = {
+            BottomSheetErrorHandler(message = msg, dismissLabel = stringResource(R.string.closed), action = {
                 errorMessage = null
             })
         }

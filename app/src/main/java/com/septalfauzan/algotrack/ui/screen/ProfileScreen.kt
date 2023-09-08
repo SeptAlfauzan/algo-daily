@@ -8,7 +8,6 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -22,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.septalfauzan.algotrack.R
+import com.septalfauzan.algotrack.data.event.MyEvent
 import com.septalfauzan.algotrack.data.ui.UiState
 import com.septalfauzan.algotrack.data.source.remote.apiResponse.GetProfileResponse
 import com.septalfauzan.algotrack.helper.navigation.Screen
@@ -29,6 +29,7 @@ import com.septalfauzan.algotrack.ui.component.*
 import com.septalfauzan.algotrack.ui.theme.AlgoTrackTheme
 import com.septalfauzan.algotrack.ui.utils.bottomBorder
 import com.septalfauzan.algotrack.ui.utils.shimmer
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -40,86 +41,101 @@ fun ProfileScreen(
     navController: NavHostController,
     profileUiState: StateFlow<UiState<GetProfileResponse>>,
     getProfile: () -> Unit,
+    reloadProfile: () -> Unit,
+    eventMessage: Flow<MyEvent>,
     setOnDuty: (Boolean) -> Unit,
     onDutyState: StateFlow<Boolean>,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier.fillMaxSize()
-    ) {
-        TopAppBar(
-            title = {
-                Text(
-                    text = "Profile",
-                    style = MaterialTheme.typography.h6,
-                )
-            },
-            navigationIcon = {
-                IconButton(
-                    onClick = { navController.popBackStack() }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowBack,
-                        contentDescription = "Back",
-                    )
-                }
-            },
-            backgroundColor = Color.Transparent,
-            elevation = 0.dp
-        )
+
+    var errorMessage: String? by remember{ mutableStateOf(null) }
+    LaunchedEffect(Unit){
+        eventMessage.collect{event ->
+            when(event){
+                is MyEvent.MessageEvent -> errorMessage = event.message
+            }
+        }
+    }
+
+    Box(modifier = Modifier.fillMaxSize().statusBarsPadding()){
         Column(
-            modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp, vertical = 42.dp)
+            modifier.fillMaxSize()
         ) {
-            profileUiState.collectAsState(initial = UiState.Loading).value.let { uiData ->
-                when (uiData) {
-                    is UiState.Loading -> {
-                        ShimmerLoading()
-                        getProfile()
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "Profile",
+                        style = MaterialTheme.typography.h6,
+                    )
+                },
+                navigationIcon = {
+                    IconButton(
+                        onClick = { navController.popBackStack() }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Back",
+                        )
                     }
-                    is UiState.Success -> {
-                        val result = uiData.data
-                        Row(modifier = Modifier.fillMaxWidth()) {
-                            AvatarProfile(
-                                imageUri = result.data.photoUrl ?: "",
-                                onClick = { navController.navigate(Screen.UploadProfilePic.route) },
-                                type = AvatarProfileType.WITH_EDIT
-                            )
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Column(
-                                modifier = Modifier.weight(1f),
-                                verticalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                Text(
-                                    text = result.data?.name ?: "",
-                                    style = MaterialTheme.typography.subtitle2.copy(
-                                        fontWeight = FontWeight(600)
-                                    )
+                },
+                backgroundColor = Color.Transparent,
+                elevation = 0.dp
+            )
+            Column(
+                modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp, vertical = 42.dp)
+            ) {
+                profileUiState.collectAsState(initial = UiState.Loading).value.let { uiData ->
+                    when (uiData) {
+                        is UiState.Loading -> {
+                            ShimmerLoading()
+                            getProfile()
+                        }
+                        is UiState.Success -> {
+                            val result = uiData.data
+                            Row(modifier = Modifier.fillMaxWidth()) {
+                                AvatarProfile(
+                                    imageUri = result.data.photoUrl ?: "",
+                                    onClick = { navController.navigate(Screen.UploadProfilePic.route) },
+                                    type = AvatarProfileType.WITH_EDIT
                                 )
-                                Text(
-                                    text = result.data?.email ?: "noemail@email.com",
-                                    style = MaterialTheme.typography.subtitle2.copy(
-                                        fontWeight = FontWeight(300)
+                                Spacer(modifier = Modifier.width(12.dp))
+                                Column(
+                                    modifier = Modifier.weight(1f),
+                                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    Text(
+                                        text = result.data?.name ?: "",
+                                        style = MaterialTheme.typography.subtitle2.copy(
+                                            fontWeight = FontWeight(600)
+                                        )
                                     )
-                                )
+                                    Text(
+                                        text = result.data?.email ?: "noemail@email.com",
+                                        style = MaterialTheme.typography.subtitle2.copy(
+                                            fontWeight = FontWeight(300)
+                                        )
+                                    )
+                                }
                             }
                         }
-                    }
-                    is UiState.Error -> {
-                        Text("error: ${uiData.errorMessage}")
+                        is UiState.Error -> ErrorHandler(reload = reloadProfile, errorMessage = "error: ${uiData.errorMessage}")
                     }
                 }
+                Spacer(modifier = Modifier.height(36.dp))
+                SettingMenu(
+                    logout = logout,
+                    toggleTheme = toggleTheme,
+                    isDarkMode = isDarkMode,
+                    onDutyStatusState = onDutyState,
+                    setOnDuty = setOnDuty,
+                    navController = navController,
+                )
             }
-            Spacer(modifier = Modifier.height(36.dp))
-            SettingMenu(
-                logout = logout,
-                toggleTheme = toggleTheme,
-                isDarkMode = isDarkMode,
-                onDutyStatusState = onDutyState,
-                setOnDuty = setOnDuty,
-                navController = navController,
-            )
+        }
+        errorMessage?.let {
+            BottomSheetErrorHandler(message = it, action = { errorMessage = null } )
         }
     }
 }
@@ -285,6 +301,8 @@ private fun Preview() {
                 profileUiState = MutableStateFlow(UiState.Loading),
                 getProfile = {},
                 setOnDuty = { },
+                reloadProfile = {},
+                eventMessage = MutableStateFlow(MyEvent.MessageEvent("")),
                 onDutyState = MutableStateFlow(true),
             )
         }

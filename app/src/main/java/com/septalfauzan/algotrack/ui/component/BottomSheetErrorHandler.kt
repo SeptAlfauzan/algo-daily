@@ -19,7 +19,7 @@ import com.septalfauzan.algotrack.R
 
 
 @Composable
-fun BottomSheetErrorHandler(message: String, retry: () -> Unit = {}, showed: Boolean = true, dismissLabel: String? = null) {
+fun BottomSheetErrorHandler(message: String, action: () -> Unit = {}, showed: Boolean = true, dismissLabel: String? = null) {
     var showed: Boolean by remember { mutableStateOf(showed) }
     val density = LocalDensity.current
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
@@ -51,7 +51,7 @@ fun BottomSheetErrorHandler(message: String, retry: () -> Unit = {}, showed: Boo
                     ),
                     modifier = Modifier.clickable {
                         showed = false
-                        retry()
+                        action()
                     })
             }
         }

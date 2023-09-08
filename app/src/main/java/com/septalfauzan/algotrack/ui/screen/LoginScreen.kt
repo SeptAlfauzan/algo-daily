@@ -2,7 +2,6 @@
 
 package com.septalfauzan.algotrack.ui.screen
 
-import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
@@ -81,7 +80,7 @@ fun LoginScreen(
             )
         }
         errorMessage?.let{msg ->
-            BottomSheetErrorHandler(message = msg, retry = {
+            BottomSheetErrorHandler(message = msg, action = {
                 errorMessage = null
             })
         }

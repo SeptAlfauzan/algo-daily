@@ -107,7 +107,7 @@ fun AttendanceScreen(id: String, navController: NavController, viewModel: Attend
     }
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().statusBarsPadding(),
         topBar = {
             TopAppBar(
                 title = {

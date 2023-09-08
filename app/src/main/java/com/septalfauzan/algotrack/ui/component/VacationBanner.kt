@@ -7,23 +7,28 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.septalfauzan.algotrack.ui.theme.AlgoTrackTheme
 
 @Composable
-fun VacationBanner(onCreateVacation: () -> Unit, modifier: Modifier = Modifier) {
+fun VacationBanner(action: () -> Unit, isWork: Boolean = true, modifier: Modifier = Modifier) {
     Card(
         modifier = modifier
             .height(136.dp)
             .fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         backgroundColor = MaterialTheme.colors.primary,
-        contentColor = MaterialTheme.colors.onPrimary,
+        contentColor = Color.White,
     ) {
         Row(
             Modifier
@@ -36,22 +41,38 @@ fun VacationBanner(onCreateVacation: () -> Unit, modifier: Modifier = Modifier) 
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = stringResource(R.string.ask_vacation),
+                    text = if(isWork) stringResource(R.string.ask_vacation) else "Ingin mengubah status anda ke sedang bekerja?",
                     style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold)
                 )
                 RoundedButton(
-                    text = stringResource(R.string.create_vacation),
-                    onClick = onCreateVacation,
-                    buttonType = ButtonType.SECONDARY
+                    text = if(isWork) stringResource(R.string.create_vacation) else "ubah status",
+                    onClick = action,
+                    buttonType = ButtonType.SECONDARY,
+                    modifier = Modifier.align(if(!isWork) Alignment.End else Alignment.Start)
                 )
             }
-            Image(
-                painter = painterResource(id = R.drawable.vacation),
-                contentDescription = null,
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxSize()
-            )
+            if(isWork){
+                Image(
+                    painter = painterResource(id = R.drawable.vacation),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxSize()
+                )
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun preview(){
+    AlgoTrackTheme() {
+        Surface() {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                VacationBanner(action = { /*TODO*/ }, isWork = true)
+                VacationBanner(action = { /*TODO*/ }, isWork = false)
+            }
         }
     }
 }

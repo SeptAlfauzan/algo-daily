@@ -5,7 +5,6 @@ import com.septalfauzan.algotrack.data.repository.AttendanceRepository
 import com.septalfauzan.algotrack.data.source.local.MainDatabase
 import com.septalfauzan.algotrack.data.source.remote.apiInterfaces.AlgoTrackApiInterfaces
 import com.septalfauzan.algotrack.domain.repository.IAttendanceRepository
-import com.septalfauzan.algotrack.domain.repository.IAuthRepository
 import com.septalfauzan.algotrack.domain.usecase.*
 import dagger.Module
 import dagger.Provides
@@ -26,7 +25,7 @@ object AttendanceModule {
 
     @Provides
     @Singleton
-    fun provideHistoryAttendanceUseCase(attendanceRepository: IAttendanceRepository) : IHistoryAttendanceUseCase = HistoryAttendanceUseCase(attendanceRepository)
+    fun provideHistoryAttendanceUseCase(attendanceRepository: IAttendanceRepository) : IAttendanceHistoryUseCase = AttendanceHistoryUseCase(attendanceRepository)
 
 
     @Provides

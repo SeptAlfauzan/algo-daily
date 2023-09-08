@@ -46,4 +46,8 @@
     <string name="notification_text">absen baru sudah tersedia, yuk segera absen</string>
     <string name="retry">muat ulang</string>
     <string name="closed">tutup</string>
+    <string name="success_title_change_profile_pic">Berhasil mengganti foto profil</string>
+    <string name="success_desc_change_profile_pic">Foto profil anda berhasil diubah</string>
+    <string name="success_change_title_password">Sukses mengubah password</string>
+    <string name="success_change_desc_password">Password akun anda berhasil diubah</string>
 </resources>

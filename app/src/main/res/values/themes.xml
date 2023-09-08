@@ -7,6 +7,5 @@
 
     <style name="Theme.AlgoTrack.DatePicker" parent="Theme.AppCompat.Light.Dialog">
         <item name="colorAccent">@color/blue_primary</item>
-<!--        <item name="colorPrimary">@color/blue_primary</item>-->
     </style>
 </resources>
