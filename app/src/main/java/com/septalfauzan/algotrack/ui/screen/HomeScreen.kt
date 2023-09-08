@@ -122,7 +122,7 @@ fun HomeScreen(
                                 navHostController.navigate(
                                     Screen.Success.createRoute(
                                         "Berhasil mengubah status bekerja anda",
-                                        if (isWorkState) "Kini status anda sedang bekerja" else "Kini status anda sedang tidak  bekerja"
+                                        if (!isWorkState) "Kini status anda sedang bekerja" else "Kini status anda sedang tidak  bekerja"
                                     )
                                 )
                             } catch (e: Exception) {

@@ -1,6 +1,7 @@
 package com.septalfauzan.algotrack.data.repository
 
 import android.util.Log
+import com.google.gson.GsonBuilder
 import com.septalfauzan.algotrack.data.datastore.DataStorePreference
 import com.septalfauzan.algotrack.domain.model.AuthData
 import com.septalfauzan.algotrack.data.source.remote.apiResponse.AuthResponse
@@ -8,11 +9,11 @@ import com.septalfauzan.algotrack.data.source.remote.apiInterfaces.AlgoTrackApiI
 import com.septalfauzan.algotrack.domain.model.UserChangePassword
 import com.septalfauzan.algotrack.data.source.remote.apiResponse.RegisterResponse
 import com.septalfauzan.algotrack.domain.repository.IAuthRepository
+import com.septalfauzan.algotrack.helper.RequestError.getErrorMessage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import javax.inject.Inject
-
 class AuthRepository @Inject constructor(
     private val apiServices: AlgoTrackApiInterfaces,
     private val dataStorePreference: DataStorePreference
@@ -20,7 +21,12 @@ class AuthRepository @Inject constructor(
     override suspend fun login(authData: AuthData): Flow<AuthResponse> {
         try {
             val result = apiServices.auth(authData)
-            return flowOf(result)
+            if(!result.isSuccessful) {
+                val errorJson = result.errorBody()?.string()
+                val errorResponse = errorJson?.getErrorMessage()
+                throw Exception(errorResponse?.errors ?: result.message())
+            }
+            return flowOf(result.body()!!)
         }catch (e: Exception){
             throw e
         }
@@ -31,7 +37,9 @@ class AuthRepository @Inject constructor(
         try {
             val result = apiServices.updatePassword(token, newPassword)
             if(!result.isSuccessful) {
-                throw Exception(result.message())
+                val errorJson = result.errorBody()?.string()
+                val errorResponse = errorJson?.getErrorMessage()
+                throw Exception(errorResponse?.errors ?: result.message())
             }
             return flowOf(result.body()!!)
         }catch (e: Exception){

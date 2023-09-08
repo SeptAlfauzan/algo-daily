@@ -44,7 +44,6 @@ fun LoginScreen(
     loginAction: () -> Unit,
 ) {
     val formUiState by formUIStateFlow.collectAsState()
-    val context = LocalContext.current
     var errorMessage: String? by remember{ mutableStateOf(null) }
 
     LaunchedEffect(Unit){
@@ -82,7 +81,7 @@ fun LoginScreen(
         errorMessage?.let{msg ->
             BottomSheetErrorHandler(message = msg, action = {
                 errorMessage = null
-            })
+            }, dismissLabel = "tutup")
         }
     }
 }

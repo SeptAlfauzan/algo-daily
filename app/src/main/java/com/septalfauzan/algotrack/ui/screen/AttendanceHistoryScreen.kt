@@ -132,13 +132,13 @@ fun AttendanceHistoryScreen(
                             verticalArrangement = Arrangement.spacedBy(8.dp),
                             modifier = Modifier.fillMaxSize()
                         ) {
-                            if (uiState.data.isNotEmpty()) {
-                                items(uiState.data) { history ->
-                                    HistoryCard(data = history, navController = navController)
-                                }
-                            } else {
-                                item { NoAttendanceData() }
+                            items(uiState.data) { history ->
+                                HistoryCard(data = history, navController = navController)
                             }
+//                            if (uiState.data.isNotEmpty()) {
+//                            } else {
+//                                item { NoAttendanceData() }
+//                            }
                         }
                     }
                 }

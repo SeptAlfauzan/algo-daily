@@ -16,6 +16,7 @@ import com.septalfauzan.algotrack.data.source.remote.apiResponse.AttendanceRespo
 import com.septalfauzan.algotrack.data.source.remote.apiResponse.formatTimeToGMT
 import com.septalfauzan.algotrack.data.source.remote.apiResponse.toAttendanceEntity
 import com.septalfauzan.algotrack.domain.repository.IAttendanceRepository
+import com.septalfauzan.algotrack.helper.RequestError.getErrorMessage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -42,13 +43,20 @@ class AttendanceRepository @Inject constructor(
 
         try {
             val response = apiService.getHistory(authToken = token)
-            val dataFormattedToGMT = response.data.map { it.formatTimeToGMT() }
+
+            if(!response.isSuccessful) {
+                val errorJson = response.errorBody()?.string()
+                val errorResponse = errorJson?.getErrorMessage()
+                throw Exception(errorResponse?.errors ?: response.message())
+            }
+
+            val dataFormattedToGMT = response.body()!!.data.map { it.formatTimeToGMT() }
             val apiData = dataFormattedToGMT.map { it.toAttendanceEntity() }
             appDatabase.attendanceDao().deleteAll()
             saveBatchToLocalDB(apiData)
 
             val sorted = appDatabase.attendanceDao().getHistory(query)
-            Log.d("TAG", "getHistory: $sorted")
+            Log.d("TAG", "getHistory: $query")
             return flowOf(sorted)
         } catch (e: java.lang.Exception) {
             throw e
@@ -59,7 +67,14 @@ class AttendanceRepository @Inject constructor(
         try {
             val token = dataStorePreference.getAuthToken().first()
             val response = apiService.getDetailHistory(authToken = token, id)
-            return flowOf(response.data.formatTimeToGMT().toAttendanceEntity())
+
+            if(!response.isSuccessful) {
+                val errorJson = response.errorBody()?.string()
+                val errorResponse = errorJson?.getErrorMessage()
+                throw Exception(errorResponse?.errors ?: response.message())
+            }
+
+            return flowOf(response.body()!!.data.formatTimeToGMT().toAttendanceEntity())
         } catch (e: java.lang.Exception) {
             throw e
         }
@@ -72,7 +87,13 @@ class AttendanceRepository @Inject constructor(
         try {
             val token = dataStorePreference.getAuthToken().first()
             val response = apiService.putAttendance(authToken = token, attendance = data, id = id)
-            return flowOf(response)
+
+            if(!response.isSuccessful) {
+                val errorJson = response.errorBody()?.string()
+                val errorResponse = errorJson?.getErrorMessage()
+                throw Exception(errorResponse?.errors ?: response.message())
+            }
+            return flowOf(response.body()!!)
         } catch (e: Exception) {
             throw e
         }
@@ -100,7 +121,14 @@ class AttendanceRepository @Inject constructor(
             )
             val response =
                 apiService.postAttendance(authToken = token, attendance = blankAttendance)
-            return flowOf(response)
+
+            if(!response.isSuccessful) {
+                val errorJson = response.errorBody()?.string()
+                val errorResponse = errorJson?.getErrorMessage()
+                throw Exception(errorResponse?.errors ?: response.message())
+            }
+
+            return flowOf(response.body()!!)
         } catch (e: Exception) {
             throw e
         }
@@ -128,5 +156,4 @@ class AttendanceRepository @Inject constructor(
     override suspend fun deleteLocalAttendanceHistoryRecord(): Flow<Int> {
        return flowOf(appDatabase.attendanceDao().deleteAll())
     }
-
 }
