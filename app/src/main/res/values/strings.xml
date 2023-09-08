@@ -4,8 +4,8 @@
     <string name="register_form_title">Buat Akun Anda</string>
     <string name="login">Login</string>
     <string name="register">Register</string>
-    <string name="already_have_account">Already Have Account, </string>
-    <string name="dont_have_account">Dont Have Account, </string>
+    <string name="already_have_account">Sudah punya akun, </string>
+    <string name="dont_have_account">Belum punya akun, </string>
     <string name="attendance_text_workday">Absen selanjutnya</string>
     <string name="your_stats">Statistik anda hari ini</string>
     <string name="ask_vacation">Ingin libur hari ini?</string>

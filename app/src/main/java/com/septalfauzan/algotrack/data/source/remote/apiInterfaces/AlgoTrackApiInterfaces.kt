@@ -11,32 +11,32 @@ import retrofit2.http.*
 
 interface AlgoTrackApiInterfaces {
     @POST("users/login")
-    suspend fun auth(@Body authData: AuthData) : AuthResponse
+    suspend fun auth(@Body authData: AuthData) : Response<AuthResponse>
 
     @POST("users")
-    suspend fun register(@Body userData: RequestBody) : RegisterResponse
+    suspend fun register(@Body userData: RequestBody) : Response<RegisterResponse>
 
     @GET("users/profile")
-    suspend fun getUserProfile(@Header("Authorization") authToken: String) : GetProfileResponse
+    suspend fun getUserProfile(@Header("Authorization") authToken: String) : Response<GetProfileResponse>
 
     @GET("users/attendance/history")
-    suspend fun getHistory(@Header("Authorization") authToken: String) : AttendanceHistoryResponse
+    suspend fun getHistory(@Header("Authorization") authToken: String) : Response<AttendanceHistoryResponse>
 
     @GET("users/attendance/history/{id}")
-    suspend fun getDetailHistory(@Header("Authorization") authToken: String, @Path("id") id: String) : AttendanceResponse
+    suspend fun getDetailHistory(@Header("Authorization") authToken: String, @Path("id") id: String) : Response<AttendanceResponse>
 
     @POST("users/attendance")
     suspend fun postAttendance(
         @Header("Authorization") authToken: String,
         @Body attendance: AttendanceRequestBody
-    ) : AttendanceResponse
+    ) : Response<AttendanceResponse>
 
     @PUT("users/attendance/history/{id}")
     suspend fun putAttendance(
         @Header("Authorization") authToken: String,
         @Path("id") id: String,
         @Body attendance: AttendanceRequestBody
-    ) : AttendanceResponse
+    ) : Response<AttendanceResponse>
 
     @PUT("users/password")
     suspend fun updatePassword(
@@ -49,10 +49,10 @@ interface AlgoTrackApiInterfaces {
     suspend fun updatePP(
         @Header("Authorization") authToken: String,
         @Part photo: MultipartBody.Part
-    ) : UpdateUserProfilePicData
+    ) : Response<UpdateUserProfilePicData>
 
     @GET("users/statistic")
     suspend fun getStats(
         @Header("Authorization") authToken: String
-    ) : UserStatsResponse
+    ) : Response<UserStatsResponse>
 }

@@ -7,10 +7,13 @@ import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -55,56 +58,76 @@ fun UserChangeProfilePicScreen(
         }
     }
 
-    Box(modifier.fillMaxSize().statusBarsPadding()) {
-        profileStateFlow.collectAsState(initial = UiState.Error("error")).value.let { uiState ->
-            when (uiState) {
-                is UiState.Loading -> {
-                    CircularProgressIndicator()
-                    getProfile()
-                }
-                is UiState.Success -> {
-                    val response = uiState.data
-                    Column(
-                        Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = 16.dp),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        AvatarProfile(
-                            onClick = { launcher.launch("image/*") },
-                            type = AvatarProfileType.WITH_EDIT_LARGE,
-                            imageUri = if (imageFile != null) imageFile!!.path else response.data.photoUrl ?: ""
-                        )
-                        Spacer(modifier = Modifier.height(152.dp))
-                        Row(horizontalArrangement = Arrangement.End) {
-                            RoundedButton(
-                                text = "batal edit",
-                                buttonType = ButtonType.SECONDARY,
-                                enabled = imageFile?.isFile ?: false,
-                                onClick = {
-                                    navController.popBackStack()
-                                })
-                            Spacer(modifier = Modifier.width(16.dp))
-                            RoundedButton(
-                                text = "simpan perubahan",
-                                enabled = imageFile?.isFile ?: false,
-                                onClick = {
-                                    updatePP(imageFile)
-                                })
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                modifier = Modifier.statusBarsPadding(),
+                title = { Text(text = "Upload Foto Profil") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
+                    }
+                },
+                backgroundColor = Color.Transparent,
+                elevation = 0.dp
+            )
+        },
+    ) {paddingValues ->
+        Box(
+            modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .statusBarsPadding()) {
+            profileStateFlow.collectAsState(initial = UiState.Error("error")).value.let { uiState ->
+                when (uiState) {
+                    is UiState.Loading -> {
+                        CircularProgressIndicator()
+                        getProfile()
+                    }
+                    is UiState.Success -> {
+                        val response = uiState.data
+                        Column(
+                            Modifier
+                                .fillMaxSize()
+                                .padding(horizontal = 16.dp),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            AvatarProfile(
+                                onClick = { launcher.launch("image/*") },
+                                type = AvatarProfileType.WITH_EDIT_LARGE,
+                                imageUri = if (imageFile != null) imageFile!!.path else response.data.photoUrl ?: ""
+                            )
+                            Spacer(modifier = Modifier.height(152.dp))
+                            Row(horizontalArrangement = Arrangement.End) {
+                                RoundedButton(
+                                    text = "batal edit",
+                                    buttonType = ButtonType.SECONDARY,
+                                    enabled = imageFile?.isFile ?: false,
+                                    onClick = {
+                                        navController.popBackStack()
+                                    })
+                                Spacer(modifier = Modifier.width(16.dp))
+                                RoundedButton(
+                                    text = "simpan perubahan",
+                                    enabled = imageFile?.isFile ?: false,
+                                    onClick = {
+                                        updatePP(imageFile)
+                                    })
+                            }
                         }
                     }
-                }
-                is UiState.Error -> {
-                    BottomSheetErrorHandler(message = uiState.errorMessage, action = reloadProfile)
+                    is UiState.Error -> {
+                        BottomSheetErrorHandler(message = uiState.errorMessage, action = reloadProfile)
+                    }
                 }
             }
-        }
 
-        errorMessage?.let{msg ->
-            BottomSheetErrorHandler(message = msg, dismissLabel = stringResource(R.string.closed), action = {
-                errorMessage = null
-            })
+            errorMessage?.let{msg ->
+                BottomSheetErrorHandler(message = msg, dismissLabel = stringResource(R.string.closed), action = {
+                    errorMessage = null
+                })
+            }
         }
     }
 }

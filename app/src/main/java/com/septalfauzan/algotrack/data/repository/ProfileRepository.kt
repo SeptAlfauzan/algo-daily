@@ -7,6 +7,7 @@ import com.septalfauzan.algotrack.data.source.remote.apiResponse.GetProfileRespo
 import com.septalfauzan.algotrack.data.source.remote.apiResponse.UpdateUserProfilePicData
 import com.septalfauzan.algotrack.data.source.remote.apiResponse.UserStatsResponse
 import com.septalfauzan.algotrack.domain.repository.IProfileRepository
+import com.septalfauzan.algotrack.helper.RequestError.getErrorMessage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
@@ -24,7 +25,13 @@ class ProfileRepository @Inject constructor(
     override suspend fun getUserProfile(): Flow<GetProfileResponse> {
         val token = dataStorePreference.getAuthToken().first()
         try {
-            return flowOf(apiService.getUserProfile(token))
+            val result = apiService.getUserProfile(token)
+            if(!result.isSuccessful) {
+                val errorJson = result.errorBody()?.string()
+                val errorResponse = errorJson?.getErrorMessage()
+                throw Exception(errorResponse?.errors ?: result.message())
+            }
+            return flowOf(result.body()!!)
         } catch (e: Exception){
             throw e
         }
@@ -36,7 +43,13 @@ class ProfileRepository @Inject constructor(
     Log.d("TAG", "updateProfilePic:  $requestFile")
         val photoPart = MultipartBody.Part.createFormData("photo", imageFile.name, requestFile)
         try {
-            return flowOf(apiService.updatePP(token, photoPart))
+            val result = apiService.updatePP(token, photoPart)
+            if(!result.isSuccessful) {
+                val errorJson = result.errorBody()?.string()
+                val errorResponse = errorJson?.getErrorMessage()
+                throw Exception(errorResponse?.errors ?: result.message())
+            }
+            return flowOf(result.body()!!)
         } catch (e: Exception){
             Log.d("TAG", "updateProfilePic: error: $e")
             throw e
@@ -46,7 +59,13 @@ class ProfileRepository @Inject constructor(
     override suspend fun getStats(): Flow<UserStatsResponse> {
         val token = dataStorePreference.getAuthToken().first()
         try {
-            return flowOf(apiService.getStats(token))
+            val result = apiService.getStats(token)
+            if(!result.isSuccessful) {
+                val errorJson = result.errorBody()?.string()
+                val errorResponse = errorJson?.getErrorMessage()
+                throw Exception(errorResponse?.errors ?: result.message())
+            }
+            return flowOf(result.body()!!)
         }catch (e: Exception){
             throw e
         }
