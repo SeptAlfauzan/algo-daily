@@ -57,7 +57,7 @@ val locationPermissions = listOf(
 @OptIn(ExperimentalPermissionsApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun MapScreen(navController: NavController) {
+fun MapScreen() {
     val context = LocalContext.current
     val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
     var userLocation by remember { mutableStateOf(UserLocation(0.0, 0.0)) }
@@ -140,16 +140,7 @@ fun MapScreen(navController: NavController) {
     val mapStyle = MapStyleOptions.loadRawResourceStyle(context, R.raw.map_style)
 
     Scaffold(
-//        topBar = {
-//            TopAppBar(
-//                title = { Text(text = "Map Screen") },
-//                navigationIcon = {
-//                    IconButton(onClick = { navController.popBackStack() }) {
-//                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
-//                    }
-//                },
-//            )
-//        },
+        modifier = Modifier.statusBarsPadding(),
         content = {
             PermissionsRequired(
                 multiplePermissionsState = permissionsState,
@@ -185,13 +176,4 @@ fun MapScreen(navController: NavController) {
             }
         }
     )
-}
-
-object PermissionUtils {
-    fun isLocationPermissionGranted(context: Context): Boolean {
-        return ActivityCompat.checkSelfPermission(
-            context,
-            Manifest.permission.ACCESS_FINE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED
-    }
 }

@@ -18,4 +18,5 @@ interface IAttendanceRepository {
 
     suspend fun getSortByTimestampValue() : Flow<SortType>
     suspend fun getSortByStatusValue() : Flow<SortType>
+    suspend fun deleteLocalAttendanceHistoryRecord() : Flow<Int>
 }

@@ -20,7 +20,8 @@ import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
-class ProfileViewModel @Inject constructor(private val profileUseCase: IProfileUseCase) : ViewModel() {
+class ProfileViewModel @Inject constructor(private val profileUseCase: IProfileUseCase) :
+    ViewModel() {
     private val _profile = MutableStateFlow<UiState<GetProfileResponse>>(UiState.Loading)
     val profile: StateFlow<UiState<GetProfileResponse>> = _profile
 
@@ -30,10 +31,13 @@ class ProfileViewModel @Inject constructor(private val profileUseCase: IProfileU
     private val _changePP = MutableStateFlow<UiState<UpdateUserProfilePicData>>(UiState.Loading)
     val changePP: StateFlow<UiState<UpdateUserProfilePicData>> = _changePP
 
+    private val _homeData = MutableStateFlow<UiState<HomeData>>(UiState.Loading)
+    val homeData: StateFlow<UiState<HomeData>> = _homeData
+
     private val eventChannel = Channel<MyEvent>()
     val eventFlow = eventChannel.receiveAsFlow()
 
-    fun getProfile(){
+    fun getProfile() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 profileUseCase.getProfile().catch { error ->
@@ -47,11 +51,11 @@ class ProfileViewModel @Inject constructor(private val profileUseCase: IProfileU
         }
     }
 
-    fun reloadProfile(){
+    fun reloadProfile() {
         viewModelScope.launch(Dispatchers.IO) { _profile.value = UiState.Loading }
     }
 
-    fun updatePP(imageFile: File, onSuccess: () -> Unit){
+    fun updatePP(imageFile: File, onSuccess: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 profileUseCase.updateImageProfile(imageFile).catch { error ->
@@ -59,38 +63,44 @@ class ProfileViewModel @Inject constructor(private val profileUseCase: IProfileU
                     eventChannel.send(MyEvent.MessageEvent("Error: ${error.message}"))
                 }.collect { response ->
                     _changePP.value = UiState.Success(response)
-                    withContext(Dispatchers.Main){ onSuccess() }
+                    withContext(Dispatchers.Main) { onSuccess() }
                 }
             } catch (e: Exception) {
                 _changePP.value = UiState.Error("Error: ${e.message}")
-                    eventChannel.send(MyEvent.MessageEvent("Error: ${e.message}"))
+                eventChannel.send(MyEvent.MessageEvent("Error: ${e.message}"))
             }
         }
     }
 
-    private fun getStats(){
+    private fun getStats() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                profileUseCase.getStats().catch { e->
+                profileUseCase.getStats().catch { e ->
                     _stats.value = UiState.Error("Error: ${e.message}")
-                }.collect{
+                }.collect {
                     _stats.value = UiState.Success(it)
                 }
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 _stats.value = UiState.Error("Error: ${e.message}")
             }
         }
     }
 
-    fun getProfileWithStats(){
+    fun getProfileWithStats() {
         viewModelScope.launch(Dispatchers.IO) {
-            getStats()
-            getProfile()
-            _profile.zip(_stats){ flow1, flow2 -> HomeData(profile = flow1, stats = flow2) }.catch { e ->
-                Log.d("TAG", "getProfileWithStats: ${e.message}")
-            }.collect{
-
+            try {
+                profileUseCase.getProfileWithStats().catch { e ->
+                    _homeData.value = UiState.Error("Error: ${e.message}")
+                }.collect {
+                    _homeData.value = UiState.Success(it)
+                }
+            } catch (e: Exception) {
+                _homeData.value = UiState.Error("Error: ${e.message}")
             }
         }
+    }
+
+    fun reloadProfileWithStats(){
+        _homeData.value = UiState.Loading
     }
 }

@@ -125,4 +125,8 @@ class AttendanceRepository @Inject constructor(
     override suspend fun getSortByStatusValue(): Flow<SortType> =
         flowOf(SortType.valueOf(dataStorePreference.getSortByStatusType().first()))
 
+    override suspend fun deleteLocalAttendanceHistoryRecord(): Flow<Int> {
+       return flowOf(appDatabase.attendanceDao().deleteAll())
+    }
+
 }

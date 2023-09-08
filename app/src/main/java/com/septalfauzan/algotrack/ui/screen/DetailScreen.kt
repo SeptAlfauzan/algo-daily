@@ -12,11 +12,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -40,16 +40,46 @@ fun DetailScreen(
     reloadDetail: () -> Unit,
     detailStateUi: StateFlow<UiState<AttendanceEntity>>
 ) {
-    val context = LocalContext.current
     val textStyle: TextStyle = MaterialTheme.typography.body1
-    val mapPosition = LatLng( 37.3875,  -122.0575)
-    var attendanceDate by rememberSaveable{ mutableStateOf("") }
-    val cameraPositionState = rememberCameraPositionState { position = CameraPosition.fromLatLngZoom(mapPosition, 40f) }
-    fun updateAttendanceDateTimeTitle(data: AttendanceEntity){ attendanceDate = data.timestamp.formatTimeStampDatasourceHourMinute()  }
+    var latitude by rememberSaveable { mutableStateOf(0.0) }
+    var longitude by rememberSaveable { mutableStateOf(0.0) }
+    var dataLoaded by rememberSaveable { mutableStateOf(false) }
+
+    var attendanceDate by rememberSaveable { mutableStateOf("") }
+    val cameraPositionState = rememberCameraPositionState {
+        position = CameraPosition.fromLatLngZoom(
+            LatLng(latitude, longitude), 40f
+        )
+    }
+
+    fun updateAttendanceDateTimeTitle(data: AttendanceEntity) {
+        attendanceDate = data.timestamp.formatTimeStampDatasourceHourMinute()
+    }
+
+    fun updateLocation(lat: Double?, lon: Double?) {
+        if (lat != null && lon != null) {
+            latitude = lat
+            longitude = lon
+        }
+    }
+
+    fun updateDataIsLoaded(status: Boolean){ dataLoaded = status }
+
+    LaunchedEffect(dataLoaded) {
+        if(dataLoaded){
+            cameraPositionState.animate(
+                update = CameraUpdateFactory.newCameraPosition(
+                    CameraPosition(LatLng(latitude, longitude), 15f, 0f, 0f)
+                ),
+                durationMs = 500
+            )
+        }
+    }
 //    val mapStyle = MapStyleOptions.loadRawResourceStyle(context, R.raw.map_style)
     Scaffold(
         topBar = {
             TopAppBar(
+                modifier = Modifier.statusBarsPadding(),
                 title = { Text(text = "Detail Absen $attendanceDate") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
@@ -60,15 +90,17 @@ fun DetailScreen(
                 elevation = 0.dp
             )
         },
-    ) {  _ ->
+    ) { _ ->
         detailStateUi.collectAsState(initial = UiState.Loading).value.let { uiState ->
-            when(uiState){
+            when (uiState) {
                 is UiState.Loading -> {
                     CircularProgressIndicator()
                     loadDetail(attendanceId)
                 }
                 is UiState.Success -> {
+                    updateDataIsLoaded(true)
                     updateAttendanceDateTimeTitle(uiState.data)
+                    updateLocation(lat = uiState.data.latitude, lon = uiState.data.longitude)
                     Column(
                         modifier
                             .fillMaxSize()
@@ -78,7 +110,7 @@ fun DetailScreen(
                         Text(text = "Rincian", style = MaterialTheme.typography.h6)
                         DetailScreenItem(
                             label = "Apakah anda sedang bekerja?",
-                            text = when(uiState.data.status){
+                            text = when (uiState.data.status) {
                                 AttendanceStatus.PERMIT -> "Izin"
                                 AttendanceStatus.ON_DUTY -> "Masuk"
                                 AttendanceStatus.OFF_DUTY -> "Cuti"
@@ -86,10 +118,10 @@ fun DetailScreen(
                             },
                             textStyle = textStyle
                         )
-                        uiState.data.reason?.let{
+                        uiState.data.reason?.let {
                             DetailScreenItem(
                                 label = "Alasan tidak bekerja",
-                                text =  it,
+                                text = it,
                                 textStyle = textStyle
                             )
                         }
@@ -132,10 +164,12 @@ fun DetailScreen(
                                     scrollGesturesEnabledDuringRotateOrZoom = false,
                                 ),
                                 properties = MapProperties(isMyLocationEnabled = false),
-                            ){
+                            ) {
                                 Marker(
-                                    state = MarkerState(position = mapPosition),
-                                    icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN),
+                                    state = MarkerState(position = LatLng(latitude, longitude)),
+                                    icon = BitmapDescriptorFactory.defaultMarker(
+                                        BitmapDescriptorFactory.HUE_CYAN
+                                    ),
                                 )
 //                    Circle(center = mapPosition, radius = pulse.toDouble(), fillColor = MaterialTheme.colors.secondary.copy(alpha = 0.3f), strokeColor = MaterialTheme.colors.primary, strokeWidth = 0f)
                             }
@@ -150,6 +184,7 @@ fun DetailScreen(
 
     }
 }
+
 
 @Composable
 private fun DetailScreenItem(

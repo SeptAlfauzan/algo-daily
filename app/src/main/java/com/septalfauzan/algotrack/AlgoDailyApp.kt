@@ -2,8 +2,8 @@ package com.septalfauzan.algotrack
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.History
@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -29,10 +30,7 @@ import com.septalfauzan.algotrack.ui.component.BottomBar
 import com.septalfauzan.algotrack.ui.screen.*
 import com.septalfauzan.algotrack.presentation.*
 
-
-@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 val permission33APIBelow = listOf(
-    android.Manifest.permission.POST_NOTIFICATIONS,
     android.Manifest.permission.ACCESS_COARSE_LOCATION,
     android.Manifest.permission.ACCESS_FINE_LOCATION,
 )
@@ -44,7 +42,6 @@ val permission33APIAbove = listOf(
     android.Manifest.permission.ACCESS_FINE_LOCATION,
 )
 
-@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun AlgoDailyApp(
@@ -68,6 +65,7 @@ fun AlgoDailyApp(
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
+    val context = LocalContext.current
 
     val permissionsState =
         rememberMultiplePermissionsState(permissions = if (Build.VERSION.SDK_INT > 33) permission33APIAbove else permission33APIBelow)
@@ -79,7 +77,7 @@ fun AlgoDailyApp(
     }
 
     Scaffold(
-        modifier = modifier,
+        modifier = modifier.navigationBarsPadding(),
         bottomBar = {
             if (bottomBarMenuItems.map { it.screen.route }
                     .contains(currentDestination?.route)) BottomBar(
@@ -106,9 +104,6 @@ fun AlgoDailyApp(
                 modifier = Modifier.padding(innerPadding)
             ) {
                 composable(Screen.Login.route) {
-                    systemUiController.setSystemBarsColor(
-                        color = MaterialTheme.colors.secondary
-                    )
                     fun navigateToHome() = navController.navigate(Screen.Home.route) {
                         popUpTo(Screen.Login.route) {
                             inclusive = true
@@ -141,19 +136,18 @@ fun AlgoDailyApp(
                     )
                 }
                 composable(Screen.Home.route) {
-                    systemUiController.setSystemBarsColor(
-                        color = MaterialTheme.colors.background
-                    )
                     HomeScreen(
                         timerState = timerViewModel.timerState,
                         navHostController = navController,
-                        getHomeStateFlow = {},
+                        getHomeStateFlow = { profileViewModel.getProfileWithStats() },
+                        homeData = profileViewModel.homeData,
+                        reloadHomeData = { profileViewModel.reloadProfile() },
                         setOnDuty = { value -> attendanceViewModel.setOnDutyValue(value) },
                         onDutyValue = attendanceViewModel.onDutyStatus
                     )
                 }
                 composable(Screen.Map.route) {
-                    MapScreen(navController)
+                    MapScreen()
                 }
                 composable(
                     route = Screen.Attendance.route,
@@ -167,14 +161,12 @@ fun AlgoDailyApp(
                 }
                 composable(
                     route = Screen.Success.route,
-                    arguments = listOf(navArgument("title") { type = NavType.StringType }, navArgument("desc") { type = NavType.StringType })
+                    arguments = listOf(
+                        navArgument("title") { type = NavType.StringType },
+                        navArgument("desc") { type = NavType.StringType })
                 ) {
-                    systemUiController.setSystemBarsColor(
-                        color = MaterialTheme.colors.primary
-                    )
                     val title = it.arguments?.getString("title")
                     val desc = it.arguments?.getString("desc")
-
                     SuccessScreen(navController = navController, title = title, desc = desc)
                 }
                 composable(Screen.History.route) {
@@ -199,9 +191,6 @@ fun AlgoDailyApp(
                     fun navigateToLogin() = navController.navigate(Screen.Login.route) {
                         popUpTo(Screen.Home.route) { inclusive = true }
                     }
-                    systemUiController.setSystemBarsColor(
-                        color = MaterialTheme.colors.background
-                    )
                     ProfileScreen(
                         profileUiState = profileViewModel.profile,
                         getProfile = { profileViewModel.getProfile() },
@@ -211,6 +200,8 @@ fun AlgoDailyApp(
                         toggleTheme = { themeViewModel.toggleDarkTheme() },
                         isDarkMode = themeViewModel.isDarkTheme.collectAsState().value,
                         logout = { authViewModel.logout(onSuccess = { navigateToLogin() }) },
+                        eventMessage = authViewModel.eventFlow,
+                        reloadProfile = { profileViewModel.reloadProfile() }
                     )
                 }
                 composable(
@@ -227,7 +218,15 @@ fun AlgoDailyApp(
                     )
                 }
                 composable(route = Screen.UploadProfilePic.route) {
-                    fun navigateToHome() = navController.navigate(Screen.Success.createRoute("Berhasil mengganti foto profil", "Foto profil anda berhasil diubah")) {
+                    fun navigateToHome() = navController.navigate(
+                        Screen.Success.createRoute(
+                            context.getString(
+                                R.string.success_title_change_profile_pic
+                            ), context.getString(
+                                R.string.success_desc_change_profile_pic
+                            )
+                        )
+                    ) {
                         popUpTo(Screen.UploadProfilePic.route) { inclusive = true }
                     }
                     UserChangeProfilePicScreen(
@@ -246,7 +245,12 @@ fun AlgoDailyApp(
                     )
                 }
                 composable(route = Screen.ChangePassword.route) {
-                    fun navigateToHome() = navController.navigate(Screen.Success.createRoute("Sukses mengubah password", "Password akun anda berhasil diubah")) {
+                    fun navigateToHome() = navController.navigate(
+                        Screen.Success.createRoute(
+                            context.getString(R.string.success_change_title_password),
+                            context.getString(R.string.success_change_desc_password)
+                        )
+                    ) {
                         popUpTo(Screen.ChangePassword.route) { inclusive = true }
                     }
                     ChangePasswordScreen(

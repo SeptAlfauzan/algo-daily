@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.septalfauzan.algotrack.data.event.MyEvent
 import com.septalfauzan.algotrack.data.ui.AuthFormUIState
 import com.septalfauzan.algotrack.domain.model.UserChangePassword
+import com.septalfauzan.algotrack.domain.usecase.IAttendanceHistoryUseCase
 import com.septalfauzan.algotrack.domain.usecase.IAuthUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -18,7 +19,7 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class AuthViewModel @Inject constructor(private val authUseCase: IAuthUseCase) : ViewModel() {
+class AuthViewModel @Inject constructor(private val authUseCase: IAuthUseCase, private val historyUseCase: IAttendanceHistoryUseCase) : ViewModel() {
 
     private val _isLogged: MutableStateFlow<Boolean> = MutableStateFlow(false)
     private val _isLoadingSplash: MutableStateFlow<Boolean> = MutableStateFlow(true)
@@ -88,8 +89,10 @@ class AuthViewModel @Inject constructor(private val authUseCase: IAuthUseCase) :
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 authUseCase.logout(eventChannel = eventChannel, onSuccess = { onSuccess() })
+                historyUseCase.deleteLocalHistoryAttendances()
             } catch (e: Exception) {
                 e.printStackTrace()
+                eventChannel.send(MyEvent.MessageEvent("error: ${e.message}"))
             }
         }
     }

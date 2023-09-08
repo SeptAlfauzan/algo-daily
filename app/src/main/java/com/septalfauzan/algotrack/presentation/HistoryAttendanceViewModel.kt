@@ -6,22 +6,17 @@ import com.septalfauzan.algotrack.data.datastore.SortBy
 import com.septalfauzan.algotrack.data.datastore.SortType
 import com.septalfauzan.algotrack.data.source.local.dao.AttendanceEntity
 import com.septalfauzan.algotrack.data.ui.UiState
-import com.septalfauzan.algotrack.data.source.remote.apiResponse.AttendanceHistoryResponse
-import com.septalfauzan.algotrack.domain.usecase.HistoryAttendanceUseCase
-import com.septalfauzan.algotrack.domain.usecase.IHistoryAttendanceUseCase
+import com.septalfauzan.algotrack.domain.usecase.IAttendanceHistoryUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import java.util.Calendar
 import javax.inject.Inject
 
 @HiltViewModel
-class HistoryAttendanceViewModel @Inject constructor(private val historyAttendanceUseCase: IHistoryAttendanceUseCase) : ViewModel() {
+class HistoryAttendanceViewModel @Inject constructor(private val historyAttendanceUseCase: IAttendanceHistoryUseCase) : ViewModel() {
     private val _result = MutableStateFlow<UiState<List<AttendanceEntity>>>(UiState.Loading)
     val result: StateFlow<UiState<List<AttendanceEntity>>> = _result
 

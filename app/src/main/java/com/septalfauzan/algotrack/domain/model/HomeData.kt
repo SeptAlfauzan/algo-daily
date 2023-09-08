@@ -5,6 +5,6 @@ import com.septalfauzan.algotrack.data.source.remote.apiResponse.UserStatsRespon
 import com.septalfauzan.algotrack.data.ui.UiState
 
 data class HomeData(
-    val profile: UiState<GetProfileResponse>,
-    val stats: UiState<UserStatsResponse>,
+    val profile: GetProfileResponse,
+    val stats: UserStatsResponse,
 )

@@ -11,6 +11,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -31,7 +32,7 @@ fun TimerBanner(timer: Long, isWorkDay: Boolean, modifier: Modifier = Modifier) 
             .fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         backgroundColor = MaterialTheme.colors.primary,
-        contentColor = MaterialTheme.colors.onPrimary,
+        contentColor = Color.White,
     ) {
         Box(
             Modifier
@@ -54,18 +55,33 @@ fun TimerBanner(timer: Long, isWorkDay: Boolean, modifier: Modifier = Modifier) 
                     .fillMaxSize()
                     .padding(vertical = 28.dp, horizontal = 32.dp)
             ) {
-                Text(
-                    text = stringResource(R.string.attendance_text_workday),
-                    style = MaterialTheme.typography.h6
-                )
-                Text(
-                    text = timer.formatMilliseconds(),
-                    modifier = Modifier.fillMaxWidth(),
-                    style = MaterialTheme.typography.h3.copy(
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.End
+                if(isWorkDay){
+                    Text(
+                        text = stringResource(R.string.attendance_text_workday),
+                        style = MaterialTheme.typography.h6
                     )
-                )
+                    Text(
+                        text = timer.formatMilliseconds(),
+                        modifier = Modifier.fillMaxWidth(),
+                        style = MaterialTheme.typography.h3.copy(
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.End
+                        )
+                    )
+                }else{
+                    Text(
+                        text = "Hari ini anda sedang tidak bekerja",
+                        style = MaterialTheme.typography.h6
+                    )
+                    Text(
+                        text = "Silahkan beristirahat",
+                        modifier = Modifier.fillMaxWidth(),
+                        style = MaterialTheme.typography.h5.copy(
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.End
+                        )
+                    )
+                }
             }
         }
     }
@@ -80,7 +96,10 @@ private fun Preview() {
 
     AlgoTrackTheme() {
         Surface(Modifier.padding(24.dp)) {
-            TimerBanner(timer = timer, isWorkDay = true)
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                TimerBanner(timer = timer, isWorkDay = true)
+                TimerBanner(timer = timer, isWorkDay = false)
+            }
         }
     }
 }

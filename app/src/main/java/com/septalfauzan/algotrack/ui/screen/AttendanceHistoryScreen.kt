@@ -82,6 +82,7 @@ fun AttendanceHistoryScreen(
     Scaffold(
         topBar = {
             TopAppBar(
+                modifier = Modifier.statusBarsPadding(),
                 title = { Text(text = "History") },
                 actions = {
                     IconButton(onClick = { dropdownExpanded = !dropdownExpanded }) {
