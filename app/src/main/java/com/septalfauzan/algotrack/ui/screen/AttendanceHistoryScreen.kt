@@ -1,6 +1,7 @@
 package com.septalfauzan.algotrack.ui.screen
 
 import android.app.DatePickerDialog
+import android.util.Log
 import android.widget.DatePicker
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -15,6 +16,7 @@ import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Sort
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -58,7 +60,7 @@ fun AttendanceHistoryScreen(
     val calendar = Calendar.getInstance()
 
     var dropdownExpanded by remember { mutableStateOf(false) }
-    var selectedDateText by remember { mutableStateOf("") }
+    var selectedDateText: String? by rememberSaveable { mutableStateOf(null) }
 
 // Fetching current year, month and day
     val year = calendar[Calendar.YEAR]
@@ -76,7 +78,10 @@ fun AttendanceHistoryScreen(
     )
 
     LaunchedEffect(Unit) {
-        selectedDateText = "$dayOfMonth/${month + 1}/$year".formatCalendarDate()
+        Log.d("launchedEffect", "$dayOfMonth/${month + 1}/$year")
+        if(selectedDateText == null){
+            selectedDateText = "$dayOfMonth/${month + 1}/$year".formatCalendarDate()
+        }
     }
 
     Scaffold(
@@ -104,7 +109,9 @@ fun AttendanceHistoryScreen(
             when (uiState) {
                 is UiState.Loading -> {
                     ShimmerLoading(showShimmer = true, modifier = Modifier.padding(paddingValues))
-                    getHistory(selectedDateText.reverseFormatCalendarDate())
+                    selectedDateText?.let{
+                        getHistory(it.reverseFormatCalendarDate())
+                    }
                 }
                 is UiState.Success -> {
                     Column(
@@ -123,7 +130,7 @@ fun AttendanceHistoryScreen(
                                 contentDescription = "date icon"
                             )
                             Text(
-                                text = selectedDateText,
+                                text = selectedDateText!!,
                                 style = MaterialTheme.typography.caption,
                                 color = MaterialTheme.colors.onSurface
                             )
@@ -135,10 +142,9 @@ fun AttendanceHistoryScreen(
                             items(uiState.data) { history ->
                                 HistoryCard(data = history, navController = navController)
                             }
-//                            if (uiState.data.isNotEmpty()) {
-//                            } else {
-//                                item { NoAttendanceData() }
-//                            }
+                            if (uiState.data.isEmpty()) {
+                                item { NoAttendanceData() }
+                            }
                         }
                     }
                 }

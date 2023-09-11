@@ -21,6 +21,7 @@ enum class ButtonType {
  * @param onClick action when button is clicked
  * @param buttonType for button style type (primary or secondary) by default is primary
  * @param icon for icon placed before text
+ * @param onloading for prevent user click another action when current form state is loading
  * @param modifier to overwrite button compose modifier
  */
 @Composable
@@ -30,14 +31,19 @@ fun RoundedButton(
     enabled: Boolean = true,
     buttonType: ButtonType = ButtonType.PRIMARY,
     icon: ImageVector? = null,
+    onloading: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     Button(
         onClick = onClick,
         shape = RoundedCornerShape(20.dp),
         modifier = modifier,
-        enabled = enabled,
-        colors = ButtonDefaults.buttonColors(backgroundColor = if (buttonType == ButtonType.PRIMARY) MaterialTheme.colors.primary.copy(alpha = if(enabled) 1f else 0.3f) else MaterialTheme.colors.secondary.copy(alpha = if(enabled) 1f else 0.3f))
+        enabled = !onloading && enabled,
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = if (buttonType == ButtonType.PRIMARY) MaterialTheme.colors.primary.copy(
+                alpha = if (enabled) 1f else 0.3f
+            ) else MaterialTheme.colors.secondary.copy(alpha = if (enabled) 1f else 0.3f)
+        )
     ) {
         icon?.let {
             Icon(
@@ -51,6 +57,10 @@ fun RoundedButton(
                 textAlign = TextAlign.Center, color = MaterialTheme.colors.onPrimary
             ),
         )
+        if(onloading){
+            Spacer(modifier = Modifier.width(16.dp))
+            CircularProgressIndicator(modifier = Modifier.size(24.dp), color = MaterialTheme.colors.onPrimary)
+        }
     }
 }
 
@@ -61,7 +71,7 @@ private fun Preview() {
         Surface() {
             Column() {
                 RoundedButton("Login", onClick = {}, modifier = Modifier.fillMaxWidth())
-                RoundedButton("Login", onClick = {}, buttonType = ButtonType.SECONDARY)
+                RoundedButton("Login", onClick = {}, buttonType = ButtonType.SECONDARY, onloading = true)
             }
         }
     }

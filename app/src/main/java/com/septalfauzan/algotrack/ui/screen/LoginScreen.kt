@@ -94,12 +94,7 @@ private fun LoginForm(
     onLoginCLick: () -> Unit,
     formUiState: AuthFormUIState,
 ) {
-
-    var emailBlur by remember {mutableStateOf(false) }
-    var passwordBlur by remember {mutableStateOf(false) }
-
     val keyboardController = LocalSoftwareKeyboardController.current
-
 
     Column(
         modifier = Modifier.padding(horizontal = 76.dp),
@@ -151,7 +146,8 @@ private fun LoginForm(
         RoundedButton(
             text = stringResource(id = R.string.login),
             onClick = { onLoginCLick() },
-            modifier = Modifier.fillMaxWidth()
+            onloading = formUiState.onLoading,
+            modifier = Modifier.fillMaxWidth(),
         )
     }
 }

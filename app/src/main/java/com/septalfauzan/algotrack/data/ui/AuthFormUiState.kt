@@ -7,4 +7,5 @@ data class AuthFormUIState(
     val password: String = "",
     val passwordBlur: Boolean = false,
     val passwordError: String = "",
+    val onLoading: Boolean = false,
 )
