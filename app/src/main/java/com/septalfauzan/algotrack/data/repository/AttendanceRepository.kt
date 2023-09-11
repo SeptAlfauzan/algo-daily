@@ -56,7 +56,7 @@ class AttendanceRepository @Inject constructor(
             saveBatchToLocalDB(apiData)
 
             val sorted = appDatabase.attendanceDao().getHistory(query)
-            Log.d("TAG", "getHistory: $query")
+//            Log.d("TAG", "getHistory: $query")
             return flowOf(sorted)
         } catch (e: java.lang.Exception) {
             throw e

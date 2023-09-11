@@ -14,7 +14,6 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
@@ -62,16 +61,24 @@ class AuthViewModel @Inject constructor(private val authUseCase: IAuthUseCase, p
             passwordError = error
         )
     }
+    private fun updateOnLoading(status: Boolean){
+        _formUiState.value = _formUiState.value.copy(
+            onLoading = status
+        )
+    }
     fun login(onSuccess: () -> Unit) {
         updateEmail(_formUiState.value.email)
         updatePassword(_formUiState.value.password)
         viewModelScope.launch(Dispatchers.IO) {
+            updateOnLoading(status = true)
             try {
                 authUseCase.login(authFormUIState = _formUiState.value, eventChannel = eventChannel, onSuccess = { onSuccess() })
             } catch (e: Exception) {
                 Log.d("TAG", "login error: ${e.message}")
                 e.printStackTrace()
                 eventChannel.send(MyEvent.MessageEvent("error login: ${e.message}"))
+            }finally {
+                updateOnLoading(status = false)
             }
         }
     }
