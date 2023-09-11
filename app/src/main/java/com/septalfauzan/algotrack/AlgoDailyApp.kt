@@ -132,6 +132,10 @@ fun AlgoDailyApp(
                                 onSuccess = { navigateToLogin() })
                         },
                         LoginAction = { navigateToLogin() },
+                        registerFormUiStateFlow = registerViewModel.registerFormUiState,
+                        updateName = { registerViewModel.updateName(it) },
+                        updateEmail = { registerViewModel.updateEmail(it) },
+                        updatePassword = { registerViewModel.updatePassword(it) },
                         eventMessage = registerViewModel.eventFlow,
                     )
                 }

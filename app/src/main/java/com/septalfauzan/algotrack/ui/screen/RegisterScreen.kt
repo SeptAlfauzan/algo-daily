@@ -34,18 +34,24 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.septalfauzan.algotrack.R
 import com.septalfauzan.algotrack.data.event.MyEvent
+import com.septalfauzan.algotrack.data.ui.RegisterFormUiState
 import com.septalfauzan.algotrack.domain.model.UserData
 import com.septalfauzan.algotrack.ui.component.BottomSheetErrorHandler
 import com.septalfauzan.algotrack.ui.component.Header
 import com.septalfauzan.algotrack.ui.component.RoundedButton
 import com.septalfauzan.algotrack.ui.component.RoundedTextInput
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 fun RegisterScreen(
     modifier: Modifier = Modifier,
     RegisterAction: (UserData) -> Unit,
     LoginAction: () -> Unit,
+    registerFormUiStateFlow: StateFlow<RegisterFormUiState>,
+    updateName: (String) -> Unit,
+    updateEmail: (String) -> Unit,
+    updatePassword: (String) -> Unit,
     eventMessage: Flow<MyEvent>,
 ) {
     var errorMessage: String? by remember { mutableStateOf(null) }
@@ -77,10 +83,14 @@ fun RegisterScreen(
             Spacer(modifier = Modifier.size(8.dp))
             RegisterForm(
                 onRegisterClick = RegisterAction,
+                registerFormUiState = registerFormUiStateFlow.collectAsState().value,
+                updateName = updateName,
+                updateEmail = updateEmail,
+                updatePassword = updatePassword,
                 onLoginCLick = LoginAction
             )
         }
-        errorMessage?.let{msg ->
+        errorMessage?.let { msg ->
             BottomSheetErrorHandler(message = msg, action = {
                 errorMessage = null
             })
@@ -90,13 +100,14 @@ fun RegisterScreen(
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-private fun RegisterForm(onRegisterClick: (UserData) -> Unit, onLoginCLick: () -> Unit) {
-
-    var name by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var showError by remember { mutableStateOf(false) }
-
+private fun RegisterForm(
+    onRegisterClick: (UserData) -> Unit,
+    onLoginCLick: () -> Unit,
+    registerFormUiState: RegisterFormUiState,
+    updateName: (String) -> Unit,
+    updateEmail: (String) -> Unit,
+    updatePassword: (String) -> Unit,
+) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
     Column(
@@ -106,27 +117,36 @@ private fun RegisterForm(onRegisterClick: (UserData) -> Unit, onLoginCLick: () -
         RoundedTextInput(
             label = "Nama",
             icon = Icons.Default.Person,
-            onChange = { name = it },
-            value = name,
+            onChange = updateName,
+            value = registerFormUiState.name,
+            error = registerFormUiState.nameError.isNotEmpty(),
+            errorText = registerFormUiState.nameError,
             imeAction = ImeAction.Next,
+            withOnBlur = true,
             modifier = Modifier.fillMaxWidth()
         )
         RoundedTextInput(
             label = "Email",
             icon = Icons.Default.Email,
-            onChange = { email = it },
-            value = email,
+            onChange = updateEmail,
+            value = registerFormUiState.email,
+            error = registerFormUiState.emailError.isNotEmpty(),
+            errorText = registerFormUiState.emailError,
             keyboardType = KeyboardType.Email,
             imeAction = ImeAction.Next,
+            withOnBlur = true,
             modifier = Modifier.fillMaxWidth()
         )
         RoundedTextInput(
             label = "Password",
             icon = Icons.Default.Lock,
-            onChange = { password = it },
-            value = password,
+            onChange = updatePassword,
+            value = registerFormUiState.password,
+            error = registerFormUiState.passwordError.isNotEmpty(),
+            errorText = registerFormUiState.passwordError,
             keyboardType = KeyboardType.Password,
             imeAction = ImeAction.Done,
+            withOnBlur = true,
             keyboardAction = KeyboardActions(
                 onDone = { keyboardController?.hide() }
             ),
@@ -145,29 +165,16 @@ private fun RegisterForm(onRegisterClick: (UserData) -> Unit, onLoginCLick: () -
                 )
             }
         }
-        if (showError) {
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "All fields must be filled",
-                    color = Color.Red,
-                    style = MaterialTheme.typography.caption
-                )
-            }
-
-        }
         RoundedButton(
             text = stringResource(R.string.register),
+            onloading = registerFormUiState.onLoading,
             onClick = {
-                if (name.isNotBlank() && email.isNotBlank() && password.isNotBlank()) {
-                    val userData = UserData(name, email, password)
-                    showError = false
-                    onRegisterClick(userData)
-                } else {
-                    showError = true
-                }
+                val userData = UserData(
+                    registerFormUiState.name,
+                    registerFormUiState.email,
+                    registerFormUiState.password
+                )
+                onRegisterClick(userData)
             },
             modifier = Modifier.fillMaxWidth()
         )

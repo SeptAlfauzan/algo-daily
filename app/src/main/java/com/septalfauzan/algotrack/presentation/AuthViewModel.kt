@@ -8,6 +8,7 @@ import com.septalfauzan.algotrack.data.ui.AuthFormUIState
 import com.septalfauzan.algotrack.domain.model.UserChangePassword
 import com.septalfauzan.algotrack.domain.usecase.IAttendanceHistoryUseCase
 import com.septalfauzan.algotrack.domain.usecase.IAuthUseCase
+import com.septalfauzan.algotrack.helper.isEmailValid
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
@@ -48,7 +49,11 @@ class AuthViewModel @Inject constructor(private val authUseCase: IAuthUseCase, p
         }
     }
     fun updateEmail(email: String){
-        val error = if(email.isEmpty()) "Field email tidak boleh kosong!" else ""
+        val error = when {
+            email.isEmpty() -> "Field email tidak boleh kosong!"
+            !email.isEmailValid() -> "Email tidak valid"
+            else -> ""
+        }
         _formUiState.value = _formUiState.value.copy(
             email = email,
             emailError = error
