@@ -1,7 +1,6 @@
 package com.septalfauzan.algotrack.data.repository
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.sqlite.db.SimpleSQLiteQuery
 import com.septalfauzan.algotrack.data.datastore.DataStorePreference
@@ -10,19 +9,20 @@ import com.septalfauzan.algotrack.data.datastore.SortType
 import com.septalfauzan.algotrack.data.source.local.MainDatabase
 import com.septalfauzan.algotrack.data.source.local.dao.AttendanceEntity
 import com.septalfauzan.algotrack.data.source.local.dao.AttendanceStatus
+import com.septalfauzan.algotrack.data.source.local.dao.PendingAttendanceEntity
 import com.septalfauzan.algotrack.data.source.remote.apiInterfaces.AlgoTrackApiInterfaces
-import com.septalfauzan.algotrack.domain.model.AttendanceRequestBody
+import com.septalfauzan.algotrack.domain.model.Attendance
 import com.septalfauzan.algotrack.data.source.remote.apiResponse.AttendanceResponse
 import com.septalfauzan.algotrack.data.source.remote.apiResponse.formatTimeToGMT
 import com.septalfauzan.algotrack.data.source.remote.apiResponse.toAttendanceEntity
 import com.septalfauzan.algotrack.domain.repository.IAttendanceRepository
 import com.septalfauzan.algotrack.helper.RequestError.getErrorMessage
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
+import com.septalfauzan.algotrack.helper.formatDatePendingEntity
+import com.septalfauzan.algotrack.helper.formatToLocaleGMT
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.launch
+import java.util.*
 import javax.inject.Inject
 
 class AttendanceRepository @Inject constructor(
@@ -39,12 +39,13 @@ class AttendanceRepository @Inject constructor(
             SortBy.STATUS -> dataStorePreference.getSortByStatusType().first()
         }
 
-        val query = SimpleSQLiteQuery("SELECT * FROM attendance WHERE strftime('%d/%m/%Y', datetime(timestamp, 'utc'))  = '$date' ORDER BY $sortBy $sortType")
+        val query =
+            SimpleSQLiteQuery("SELECT * FROM attendance WHERE strftime('%d/%m/%Y', datetime(timestamp, 'utc'))  = '$date' ORDER BY $sortBy $sortType")
 
         try {
             val response = apiService.getHistory(authToken = token)
 
-            if(!response.isSuccessful) {
+            if (!response.isSuccessful) {
                 val errorJson = response.errorBody()?.string()
                 val errorResponse = errorJson?.getErrorMessage()
                 throw Exception(errorResponse?.errors ?: response.message())
@@ -68,7 +69,7 @@ class AttendanceRepository @Inject constructor(
             val token = dataStorePreference.getAuthToken().first()
             val response = apiService.getDetailHistory(authToken = token, id)
 
-            if(!response.isSuccessful) {
+            if (!response.isSuccessful) {
                 val errorJson = response.errorBody()?.string()
                 val errorResponse = errorJson?.getErrorMessage()
                 throw Exception(errorResponse?.errors ?: response.message())
@@ -82,13 +83,13 @@ class AttendanceRepository @Inject constructor(
 
     override suspend fun updateAttendance(
         id: String,
-        data: AttendanceRequestBody
+        data: Attendance
     ): Flow<AttendanceResponse> {
         try {
             val token = dataStorePreference.getAuthToken().first()
             val response = apiService.putAttendance(authToken = token, attendance = data, id = id)
 
-            if(!response.isSuccessful) {
+            if (!response.isSuccessful) {
                 val errorJson = response.errorBody()?.string()
                 val errorResponse = errorJson?.getErrorMessage()
                 throw Exception(errorResponse?.errors ?: response.message())
@@ -108,27 +109,31 @@ class AttendanceRepository @Inject constructor(
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    override suspend fun createNewBlankAttendance(): Flow<AttendanceResponse> {
+    override suspend fun createNewBlankAttendance(): Flow<PendingAttendanceEntity> {
         try {
             val token = dataStorePreference.getAuthToken().first()
             val isOnDuty = dataStorePreference.getOnDutyValue().first()
 //            val currentTime = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
-            val blankAttendance = AttendanceRequestBody(
+            val blankAttendance = Attendance(
                 status = if (isOnDuty) AttendanceStatus.NOT_FILLED else AttendanceStatus.OFF_DUTY,
                 reason = null,
                 latitude = null,
                 longitude = null,
             )
-            val response =
-                apiService.postAttendance(authToken = token, attendance = blankAttendance)
+            val currentDate = Calendar.getInstance()
+            val currentFormattedTime = currentDate.time.toString().formatDatePendingEntity()
 
-            if(!response.isSuccessful) {
-                val errorJson = response.errorBody()?.string()
-                val errorResponse = errorJson?.getErrorMessage()
-                throw Exception(errorResponse?.errors ?: response.message())
-            }
-
-            return flowOf(response.body()!!)
+            val pendingAttendanceEntity = PendingAttendanceEntity(
+                id = UUID.randomUUID().toString(),
+                status = blankAttendance.status,
+                reason = blankAttendance.reason,
+                latitude = blankAttendance.latitude,
+                longitude = blankAttendance.longitude,
+                createdAt = currentFormattedTime,
+                timestamp = currentFormattedTime,
+            )
+            appDatabase.pendingAttendanceDao().insert(pendingAttendanceEntity)
+            return flowOf(pendingAttendanceEntity)
         } catch (e: Exception) {
             throw e
         }
@@ -154,6 +159,6 @@ class AttendanceRepository @Inject constructor(
         flowOf(SortType.valueOf(dataStorePreference.getSortByStatusType().first()))
 
     override suspend fun deleteLocalAttendanceHistoryRecord(): Flow<Int> {
-       return flowOf(appDatabase.attendanceDao().deleteAll())
+        return flowOf(appDatabase.attendanceDao().deleteAll())
     }
 }

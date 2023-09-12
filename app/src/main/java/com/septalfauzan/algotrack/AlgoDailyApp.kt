@@ -24,7 +24,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionsRequired
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.septalfauzan.algotrack.data.ui.BottomBarMenu
+import com.septalfauzan.algotrack.domain.model.ui.BottomBarMenu
 import com.septalfauzan.algotrack.helper.navigation.Screen
 import com.septalfauzan.algotrack.ui.component.BottomBar
 import com.septalfauzan.algotrack.ui.screen.*

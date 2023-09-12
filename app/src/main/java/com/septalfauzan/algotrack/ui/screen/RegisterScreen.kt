@@ -23,7 +23,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -34,8 +33,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.septalfauzan.algotrack.R
 import com.septalfauzan.algotrack.data.event.MyEvent
-import com.septalfauzan.algotrack.data.ui.RegisterFormUiState
-import com.septalfauzan.algotrack.domain.model.UserData
+import com.septalfauzan.algotrack.domain.model.ui.RegisterFormUiState
+import com.septalfauzan.algotrack.domain.model.User
 import com.septalfauzan.algotrack.ui.component.BottomSheetErrorHandler
 import com.septalfauzan.algotrack.ui.component.Header
 import com.septalfauzan.algotrack.ui.component.RoundedButton
@@ -46,7 +45,7 @@ import kotlinx.coroutines.flow.StateFlow
 @Composable
 fun RegisterScreen(
     modifier: Modifier = Modifier,
-    RegisterAction: (UserData) -> Unit,
+    RegisterAction: (User) -> Unit,
     LoginAction: () -> Unit,
     registerFormUiStateFlow: StateFlow<RegisterFormUiState>,
     updateName: (String) -> Unit,
@@ -101,7 +100,7 @@ fun RegisterScreen(
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun RegisterForm(
-    onRegisterClick: (UserData) -> Unit,
+    onRegisterClick: (User) -> Unit,
     onLoginCLick: () -> Unit,
     registerFormUiState: RegisterFormUiState,
     updateName: (String) -> Unit,
@@ -169,7 +168,7 @@ private fun RegisterForm(
             text = stringResource(R.string.register),
             onloading = registerFormUiState.onLoading,
             onClick = {
-                val userData = UserData(
+                val userData = User(
                     registerFormUiState.name,
                     registerFormUiState.email,
                     registerFormUiState.password

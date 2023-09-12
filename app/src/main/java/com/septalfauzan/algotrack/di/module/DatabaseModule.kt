@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.septalfauzan.algotrack.data.source.local.MainDatabase
 import com.septalfauzan.algotrack.data.source.local.dao.AttendanceDao
+import com.septalfauzan.algotrack.data.source.local.dao.PendingAttendanceDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,6 +18,11 @@ object DatabaseModule {
     @Provides
     fun provideAttendanceDao(appDatabase: MainDatabase): AttendanceDao {
         return appDatabase.attendanceDao()
+    }
+
+    @Provides
+    fun providePendingAttendanceDao(appDatabase: MainDatabase): PendingAttendanceDao {
+        return appDatabase.pendingAttendanceDao()
     }
 
     @Provides

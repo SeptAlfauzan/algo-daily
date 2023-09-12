@@ -26,12 +26,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import androidx.work.WorkManager
 import com.septalfauzan.algotrack.R
-import com.septalfauzan.algotrack.data.ui.UiState
+import com.septalfauzan.algotrack.domain.model.ui.UiState
 import com.septalfauzan.algotrack.domain.model.HomeData
 import com.septalfauzan.algotrack.domain.model.UserStats
 import com.septalfauzan.algotrack.helper.getCurrentDayCycle
 import com.septalfauzan.algotrack.helper.navigation.Screen
+import com.septalfauzan.algotrack.service.DailyAttendanceWorker
 import com.septalfauzan.algotrack.ui.component.*
 import com.septalfauzan.algotrack.ui.theme.AlgoTrackTheme
 import com.septalfauzan.algotrack.ui.utils.shimmer
@@ -65,10 +67,12 @@ fun HomeScreen(
                 getHomeStateFlow()
             }
             is UiState.Error -> {
-                ErrorHandler(
-                    reload = reloadHomeData,
-                    errorMessage = "Error: ${uiState.errorMessage}"
-                )
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    ErrorHandler(
+                        reload = reloadHomeData,
+                        errorMessage = "Error: ${uiState.errorMessage}"
+                    )
+                }
             }
             is UiState.Success -> {
                 val homeUiStateData = uiState.data
@@ -190,8 +194,14 @@ private fun ShimmerLoading() {
     ) {
         Row(Modifier.fillMaxWidth()) {
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Box(modifier = Modifier.width(240.dp).height(58.dp).shimmer(true))
-                Box(modifier = Modifier.width(120.dp).height(58.dp).shimmer(true))
+                Box(modifier = Modifier
+                    .width(240.dp)
+                    .height(58.dp)
+                    .shimmer(true))
+                Box(modifier = Modifier
+                    .width(120.dp)
+                    .height(58.dp)
+                    .shimmer(true))
             }
             Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.TopEnd) {
                 Box(modifier = Modifier
@@ -219,7 +229,7 @@ private fun ShimmerLoading() {
                 .fillMaxWidth()
                 .padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            val boxModifier =  Modifier
+            val boxModifier = Modifier
                 .width(172.dp)
                 .height(68.dp)
                 .clip(RoundedCornerShape(16.dp))

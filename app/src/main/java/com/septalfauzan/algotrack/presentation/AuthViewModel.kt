@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.septalfauzan.algotrack.data.event.MyEvent
-import com.septalfauzan.algotrack.data.ui.AuthFormUIState
+import com.septalfauzan.algotrack.domain.model.ui.AuthFormUIState
 import com.septalfauzan.algotrack.domain.model.UserChangePassword
 import com.septalfauzan.algotrack.domain.usecase.IAttendanceHistoryUseCase
 import com.septalfauzan.algotrack.domain.usecase.IAuthUseCase

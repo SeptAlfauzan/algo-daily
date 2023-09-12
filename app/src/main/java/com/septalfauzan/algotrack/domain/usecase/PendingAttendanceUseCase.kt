@@ -9,19 +9,34 @@ import kotlinx.coroutines.flow.catch
 import javax.inject.Inject
 
 class PendingAttendanceUseCase @Inject constructor(private val attendanceRepository: IAttendanceRepository) : IPendingAttendanceUseCase {
-    override suspend fun create(): StateFlow<AttendanceResponse?> {
-        val result: MutableStateFlow<AttendanceResponse?> = MutableStateFlow(null)
+//    override suspend fun create(): StateFlow<AttendanceResponse?> {
+//        val result: MutableStateFlow<AttendanceResponse?> = MutableStateFlow(null)
+//        try {
+//            val response = attendanceRepository.createNewBlankAttendance()
+//            response.catch { error ->
+//                throw error
+//            }.collect{
+//                result.value = it
+//            }
+//        }catch (e: Exception){
+//            throw e
+//        }
+//        return result
+//    }
+
+
+    override suspend fun create(): StateFlow<String?> {
+        val result: MutableStateFlow<String?> = MutableStateFlow(null)
         try {
             val response = attendanceRepository.createNewBlankAttendance()
             response.catch { error ->
                 throw error
             }.collect{
-                result.value = it
+                result.value = it.id
             }
         }catch (e: Exception){
             throw e
         }
         return result
     }
-
 }

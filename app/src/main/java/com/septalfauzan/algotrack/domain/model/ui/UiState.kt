@@ -1,4 +1,4 @@
-package com.septalfauzan.algotrack.data.ui
+package com.septalfauzan.algotrack.domain.model.ui
 
 sealed class UiState<out T: Any?>{
     object Loading: UiState<Nothing>()

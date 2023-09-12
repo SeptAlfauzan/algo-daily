@@ -10,7 +10,6 @@ import androidx.annotation.RequiresApi
 import com.septalfauzan.algotrack.service.AttendanceReminder
 
 object Notification {
-    @RequiresApi(Build.VERSION_CODES.N)
     fun setDailyReminder(context: Context) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, AttendanceReminder::class.java)
@@ -25,13 +24,19 @@ object Notification {
         )
 
         workDays.map { day ->
-            val calendar = Calendar.getInstance()
-            calendar.set(Calendar.HOUR_OF_DAY, 8)
-            calendar.set(Calendar.MINUTE, 0)
-            calendar.set(Calendar.DAY_OF_WEEK, day)
-
-            alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, AlarmManager.INTERVAL_HOUR, pendingIntent)
+//            val calendar = Calendar.getInstance()
+//            calendar.set(Calendar.HOUR_OF_DAY, 8)
+//            calendar.set(Calendar.MINUTE, 0)
+//            calendar.set(Calendar.DAY_OF_WEEK, day)
+//
+//            alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, AlarmManager.INTERVAL_FIFTEEN_MINUTES, pendingIntent)
         }
+
+        val calendar = Calendar.getInstance()
+        calendar.set(Calendar.HOUR_OF_DAY, 23)
+        calendar.set(Calendar.MINUTE, 23)
+
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, AlarmManager.INTERVAL_FIFTEEN_MINUTES, pendingIntent)
     }
 
     fun cancelAlarm(context: Context) {

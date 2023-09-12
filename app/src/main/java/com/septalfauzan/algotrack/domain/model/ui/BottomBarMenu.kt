@@ -1,4 +1,4 @@
-package com.septalfauzan.algotrack.data.ui
+package com.septalfauzan.algotrack.domain.model.ui
 
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.septalfauzan.algotrack.helper.navigation.Screen

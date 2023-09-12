@@ -1,7 +1,6 @@
 package com.septalfauzan.algotrack.domain.model
 
-data class UserData(
-    val name: String,
+data class Auth(
     val email: String,
     val password: String
 )

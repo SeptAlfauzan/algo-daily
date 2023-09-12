@@ -8,6 +8,7 @@ import com.septalfauzan.algotrack.data.datastore.DataStorePreference
 import com.septalfauzan.algotrack.data.source.local.dao.AttendanceStatus
 import com.septalfauzan.algotrack.data.source.local.dao.PendingAttendanceEntity
 import com.septalfauzan.algotrack.domain.usecase.IPendingAttendanceUseCase
+import com.septalfauzan.algotrack.helper.getMilliSecFromMinutesSecond
 import com.septalfauzan.algotrack.util.REMINDER_WORK_MANAGER_TAG
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -41,11 +42,11 @@ class DailyAttendanceWorker @AssistedInject constructor(
 
             response.value?.let {
                 if(isOnDuty){
-                    AttendanceReminder.showNotification(applicationContext, it.data.id)
+                    AttendanceReminder.showNotification(applicationContext, it)
                 }
                 return Result.success()
             }
-            return Result.retry()
+            return Result.failure()
         } catch (e: Exception) {
             e.printStackTrace()
             return Result.retry()
@@ -54,10 +55,17 @@ class DailyAttendanceWorker @AssistedInject constructor(
 
     companion object {
         private val networkConstraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
+
+        private val totalTimer = 3600000L
+        private val currentDate: Calendar =  Calendar.getInstance()
+        private val currentMinuteSecond = currentDate.getMilliSecFromMinutesSecond()
+        val timerLeft = totalTimer - currentMinuteSecond
+
         val periodicWorkRequest =
-            PeriodicWorkRequestBuilder<DailyAttendanceWorker>(5, TimeUnit.MINUTES)
+            PeriodicWorkRequestBuilder<DailyAttendanceWorker>(1, TimeUnit.MINUTES)
                 .addTag(REMINDER_WORK_MANAGER_TAG)
                 .setConstraints(networkConstraints)
+                .setInitialDelay(timerLeft, TimeUnit.MILLISECONDS)
                 .build()
 
         val oneTImeWorkRequest =

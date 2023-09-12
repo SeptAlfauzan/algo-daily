@@ -14,11 +14,15 @@ import androidx.compose.material.Surface
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
+import androidx.work.WorkManager
 import com.septalfauzan.algotrack.ui.theme.AlgoTrackTheme
 import com.septalfauzan.algotrack.presentation.*
+import com.septalfauzan.algotrack.service.DailyAttendanceWorker
 import com.septalfauzan.algotrack.util.Notification
+import com.septalfauzan.algotrack.util.REMINDER_WORK_MANAGER_TAG
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -38,18 +42,20 @@ class MainActivity : ComponentActivity() {
             authViewModel.isLoadingSplash.value
         }
 
-        Notification.setDailyReminder(this)
         WindowCompat.setDecorFitsSystemWindows(window, false)
+        Notification.setDailyReminder(this)
 
-//        val workManager = WorkManager.getInstance(this)
-//        workManager.enqueue(DailyAttendanceWorker.oneTImeWorkRequest)
+        val workManager = WorkManager.getInstance(this)
+        workManager.cancelAllWorkByTag(REMINDER_WORK_MANAGER_TAG)
+        workManager.enqueue(DailyAttendanceWorker.oneTImeWorkRequest)
 
         setContent {
             AlgoTrackTheme(darkTheme = themeViewModel.isDarkTheme.collectAsState().value) {
                 val isLogged by authViewModel.isLogged.collectAsState()
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
+                    color = MaterialTheme.colors.background,
+                    contentColor = if(themeViewModel.isDarkTheme.collectAsState().value) Color.White else Color.Black
                 ) {
                     AlgoDailyApp(
                         isLogged = isLogged,

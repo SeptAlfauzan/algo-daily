@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.septalfauzan.algotrack.R
 import com.septalfauzan.algotrack.data.event.MyEvent
-import com.septalfauzan.algotrack.data.ui.AuthFormUIState
+import com.septalfauzan.algotrack.domain.model.ui.AuthFormUIState
 import com.septalfauzan.algotrack.ui.component.BottomSheetErrorHandler
 import com.septalfauzan.algotrack.ui.component.Header
 import com.septalfauzan.algotrack.ui.component.RoundedButton

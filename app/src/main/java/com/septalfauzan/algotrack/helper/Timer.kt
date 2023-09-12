@@ -84,6 +84,16 @@ fun String.reverseFormatCalendarDate(): String{
     }
 }
 
+fun String.formatDatePendingEntity(): String {
+    val inputDateFormat = SimpleDateFormat("EEE MMM dd HH:mm:ss 'GMT'XXX yyyy", Locale.US)
+    val outputDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
+
+    outputDateFormat.timeZone = TimeZone.getTimeZone("UTC")
+
+    val date = inputDateFormat.parse(this)
+    return outputDateFormat.format(date)
+}
+
 fun Context.getCurrentDayCycle():String{
     val calendar = Calendar.getInstance()
     return when(calendar.get(Calendar.HOUR_OF_DAY)){

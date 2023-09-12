@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.septalfauzan.algotrack.data.event.MyEvent
-import com.septalfauzan.algotrack.data.ui.UiState
+import com.septalfauzan.algotrack.domain.model.ui.UiState
 import com.septalfauzan.algotrack.data.source.remote.apiResponse.GetProfileResponse
 import com.septalfauzan.algotrack.data.source.remote.apiResponse.UpdateUserProfilePicData
 import com.septalfauzan.algotrack.data.source.remote.apiResponse.UserStatsResponse
@@ -13,6 +13,7 @@ import com.septalfauzan.algotrack.domain.usecase.IProfileUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -39,6 +40,7 @@ class ProfileViewModel @Inject constructor(private val profileUseCase: IProfileU
 
     fun getProfile() {
         viewModelScope.launch(Dispatchers.IO) {
+            delay(100)
             try {
                 profileUseCase.getProfile().catch { error ->
                     _profile.value = UiState.Error("Error: ${error.message}")
@@ -51,9 +53,7 @@ class ProfileViewModel @Inject constructor(private val profileUseCase: IProfileU
         }
     }
 
-    fun reloadProfile() {
-        viewModelScope.launch(Dispatchers.IO) { _profile.value = UiState.Loading }
-    }
+    fun reloadProfile() = viewModelScope.launch(Dispatchers.IO) { _profile.value = UiState.Loading }
 
     fun updatePP(imageFile: File, onSuccess: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
