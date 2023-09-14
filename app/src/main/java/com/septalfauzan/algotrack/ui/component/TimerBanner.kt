@@ -69,11 +69,11 @@ fun TimerBanner(timer: Long, onWork: Boolean, modifier: Modifier = Modifier) {
                     )
                 }else{
                     Text(
-                        text = "Hari ini anda sedang tidak bekerja",
+                        text = stringResource(id = R.string.not_working),
                         style = MaterialTheme.typography.h6
                     )
                     Text(
-                        text = "Silahkan beristirahat",
+                        text = stringResource(id = R.string.please_rest),
                         modifier = Modifier.fillMaxWidth(),
                         style = MaterialTheme.typography.h5.copy(
                             fontWeight = FontWeight.Bold,

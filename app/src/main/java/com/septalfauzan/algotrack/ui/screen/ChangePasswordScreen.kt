@@ -11,7 +11,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -60,7 +59,7 @@ fun ChangePasswordScreen(
             topBar = {
                 TopAppBar(
                     modifier = Modifier.statusBarsPadding(),
-                    title = { Text(text = "Ganti Password") },
+                    title = { Text(text = stringResource(id = R.string.change_password)) },
                     navigationIcon = {
                         IconButton(onClick = { navController.popBackStack() }) {
                             Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")

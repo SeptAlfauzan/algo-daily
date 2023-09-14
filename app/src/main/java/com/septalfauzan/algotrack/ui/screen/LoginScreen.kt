@@ -14,7 +14,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -81,7 +80,7 @@ fun LoginScreen(
         errorMessage?.let{msg ->
             BottomSheetErrorHandler(message = msg, action = {
                 errorMessage = null
-            }, dismissLabel = "tutup")
+            }, dismissLabel = stringResource(id = R.string.closed))
         }
     }
 }

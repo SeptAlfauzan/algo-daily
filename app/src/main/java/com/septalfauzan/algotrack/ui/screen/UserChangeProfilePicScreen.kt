@@ -62,7 +62,7 @@ fun UserChangeProfilePicScreen(
         topBar = {
             TopAppBar(
                 modifier = Modifier.statusBarsPadding(),
-                title = { Text(text = "Upload Foto Profil") },
+                title = { Text(text = stringResource(id = R.string.change_pp_title)) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
@@ -101,7 +101,7 @@ fun UserChangeProfilePicScreen(
                             Spacer(modifier = Modifier.height(152.dp))
                             Row(horizontalArrangement = Arrangement.End) {
                                 RoundedButton(
-                                    text = "batal edit",
+                                    text = stringResource(id = R.string.cancel_change),
                                     buttonType = ButtonType.SECONDARY,
                                     enabled = imageFile?.isFile ?: false,
                                     onClick = {
@@ -109,7 +109,7 @@ fun UserChangeProfilePicScreen(
                                     })
                                 Spacer(modifier = Modifier.width(16.dp))
                                 RoundedButton(
-                                    text = "simpan perubahan",
+                                    text = stringResource(id = R.string.save_change),
                                     enabled = imageFile?.isFile ?: false,
                                     onClick = {
                                         updatePP(imageFile)

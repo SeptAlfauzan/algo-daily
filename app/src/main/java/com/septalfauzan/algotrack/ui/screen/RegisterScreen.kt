@@ -54,7 +54,6 @@ fun RegisterScreen(
     eventMessage: Flow<MyEvent>,
 ) {
     var errorMessage: String? by remember { mutableStateOf(null) }
-    val context = LocalContext.current
     LaunchedEffect(Unit) {
         eventMessage.collect { event ->
             when (event) {
@@ -114,7 +113,7 @@ private fun RegisterForm(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         RoundedTextInput(
-            label = "Nama",
+            label = stringResource(id = R.string.name),
             icon = Icons.Default.Person,
             onChange = updateName,
             value = registerFormUiState.name,
@@ -125,7 +124,7 @@ private fun RegisterForm(
             modifier = Modifier.fillMaxWidth()
         )
         RoundedTextInput(
-            label = "Email",
+            label = stringResource(id = R.string.email),
             icon = Icons.Default.Email,
             onChange = updateEmail,
             value = registerFormUiState.email,
@@ -137,7 +136,7 @@ private fun RegisterForm(
             modifier = Modifier.fillMaxWidth()
         )
         RoundedTextInput(
-            label = "Password",
+            label = stringResource(id = R.string.password),
             icon = Icons.Default.Lock,
             onChange = updatePassword,
             value = registerFormUiState.password,

@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.Map
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -93,8 +94,8 @@ fun AlgoDailyApp(
             permissionsNotGrantedContent = {
                 AlertModalDialog(
                     isShowed = showDialog,
-                    title = "Permission perlu untuk ditambahkan!",
-                    text = "Aplikasi ini memerlukan beberapa permission tersebut untuk dapat menjalankan fitur-fitur di dalamnya",
+                    title = stringResource(id = R.string.permissions_need_to_be_added),
+                    text = stringResource(id = R.string.need_permission),
                     onStateChange = { showDialog = it }
                 )
             },

@@ -1,41 +1,57 @@
 package com.septalfauzan.algotrack.ui.screen
 
 import android.widget.Toast
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.outlined.Timer
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.septalfauzan.algotrack.R
-import com.septalfauzan.algotrack.domain.model.ui.UiState
 import com.septalfauzan.algotrack.domain.model.HomeData
 import com.septalfauzan.algotrack.domain.model.UserStats
+import com.septalfauzan.algotrack.domain.model.ui.UiState
 import com.septalfauzan.algotrack.helper.getCurrentDayCycle
 import com.septalfauzan.algotrack.helper.navigation.Screen
-import com.septalfauzan.algotrack.ui.component.*
-import com.septalfauzan.algotrack.ui.theme.AlgoTrackTheme
+import com.septalfauzan.algotrack.ui.component.AlertModalDialog
+import com.septalfauzan.algotrack.ui.component.AvatarProfile
+import com.septalfauzan.algotrack.ui.component.ErrorHandler
+import com.septalfauzan.algotrack.ui.component.StatsCard
+import com.septalfauzan.algotrack.ui.component.TimerBanner
+import com.septalfauzan.algotrack.ui.component.VacationBanner
+import com.septalfauzan.algotrack.ui.component.WeekSummaryStatsCard
 import com.septalfauzan.algotrack.ui.utils.shimmer
 import com.septalfauzan.algotrack.util.Notification
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import java.util.Calendar
 
@@ -126,8 +142,8 @@ fun HomeScreen(
                                 setOnDuty(!isWorkState)
                                 navHostController.navigate(
                                     Screen.Success.createRoute(
-                                        "Berhasil mengubah status bekerja anda",
-                                        if (!isWorkState) "Kini status anda sedang bekerja" else "Kini status anda sedang tidak  bekerja"
+                                        R.string.success_change_status.toString(),
+                                        if (!isWorkState) R.string.status_desc_work.toString() else R.string.status_desc_permit.toString()
                                     )
                                 )
                             } catch (e: Exception) {
@@ -243,24 +259,5 @@ private fun ShimmerLoading() {
                 .shimmer(true)
                 .clip(RoundedCornerShape(16.dp))
         )
-    }
-}
-
-@Preview(showBackground = true, device = Devices.PIXEL_4)
-@Composable
-private fun HomeScreenPreview() {
-    val navHostController = rememberNavController()
-    AlgoTrackTheme {
-        Surface {
-            HomeScreen(
-                navHostController = navHostController,
-                MutableStateFlow(100L),
-                setOnDuty = { },
-                homeData = MutableStateFlow(UiState.Loading),
-                getHomeStateFlow = { },
-                reloadHomeData = { },
-                onDutyValue = MutableStateFlow(true)
-            )
-        }
     }
 }

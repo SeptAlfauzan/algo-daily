@@ -11,7 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -21,6 +21,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.*
+import com.septalfauzan.algotrack.R
 import com.septalfauzan.algotrack.data.source.local.dao.AttendanceEntity
 import com.septalfauzan.algotrack.data.source.local.dao.AttendanceStatus
 import com.septalfauzan.algotrack.domain.model.ui.UiState
@@ -83,7 +84,7 @@ fun DetailScreen(
         topBar = {
             TopAppBar(
                 modifier = Modifier.statusBarsPadding(),
-                title = { Text(text = "Detail Absen ${attendanceDate.formatTimeStampDatasource()}") },
+                title = { Text(text = stringResource(id = R.string.attendance_detail, attendanceDate.formatTimeStampDatasource())) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
@@ -110,26 +111,26 @@ fun DetailScreen(
                             .padding(horizontal = 16.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Text(text = "Rincian", style = MaterialTheme.typography.h6)
+                        Text(text = stringResource(id = R.string.detail), style = MaterialTheme.typography.h6)
                         DetailScreenItem(
-                            label = "Apakah anda sedang bekerja?",
+                            label = stringResource(id = R.string.question1),
                             text = when (uiState.data.status) {
-                                AttendanceStatus.PERMIT -> "Izin"
-                                AttendanceStatus.ON_DUTY -> "Masuk"
-                                AttendanceStatus.OFF_DUTY -> "Cuti"
-                                AttendanceStatus.NOT_FILLED -> "Belum Absen"
+                                AttendanceStatus.PERMIT -> stringResource(id = R.string.permit)
+                                AttendanceStatus.ON_DUTY -> stringResource(id = R.string.on_duty)
+                                AttendanceStatus.OFF_DUTY -> stringResource(id = R.string.off_duty)
+                                AttendanceStatus.NOT_FILLED -> stringResource(id = R.string.not_filled)
                             },
                             textStyle = textStyle
                         )
                         uiState.data.reason?.let {
                             DetailScreenItem(
-                                label = "Alasan tidak bekerja",
+                                label = stringResource(id = R.string.question2),
                                 text = it,
                                 textStyle = textStyle
                             )
                         }
                         DetailScreenItem(
-                            label = "Timestamp",
+                            label = stringResource(id = R.string.time_stamp),
                             text = uiState.data.timestamp.formatTimeStampDatasource(),
                             textStyle = textStyle,
                         )
@@ -143,7 +144,7 @@ fun DetailScreen(
                                 )
                         )
                         Text(
-                            text = "Lokasi",
+                            text = stringResource(id = R.string.location),
                             style = textStyle,
                             color = MaterialTheme.colors.onSurface.copy(alpha = 0.3f)
                         )
@@ -263,19 +264,3 @@ private fun DetailScreenItem(
         )
     }
 }
-
-//@Preview(showBackground = true, device = Devices.PIXEL_4)
-//@Composable
-//private fun Preview() {
-//    AlgoTrackTheme() {
-//        Surface {
-//            DetailScreen(
-//                navController = rememberNavController(),
-//                attendanceId = "id",
-//                loadDetail = { id -> historyAttendanceViewModel.getDetail(id) },
-//                reloadDetail = { historyAttendanceViewModel.reloadDetail() },
-//                detailStateUi = historyAttendanceViewModel.detail
-//            )
-//        }
-//    }
-//}
