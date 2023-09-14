@@ -18,6 +18,7 @@ import com.septalfauzan.algotrack.data.source.remote.apiResponse.toAttendanceEnt
 import com.septalfauzan.algotrack.domain.repository.IAttendanceRepository
 import com.septalfauzan.algotrack.helper.RequestError.getErrorMessage
 import com.septalfauzan.algotrack.helper.formatDatePendingEntity
+import com.septalfauzan.algotrack.helper.formatToLocaleGMT
 import com.septalfauzan.algotrack.util.DataMapper.toAttendanceEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -53,7 +54,12 @@ class AttendanceRepository @Inject constructor(
 
             val dataFormattedToGMT = response.body()!!.data.map { it.formatTimeToGMT() }
             val apiData = dataFormattedToGMT.map { it.toAttendanceEntity() }
-            val pendingAttendance = appDatabase.pendingAttendanceDao().get().map { it.toAttendanceEntity() }
+            val pendingAttendance = appDatabase.pendingAttendanceDao().get().map { data ->
+                data.toAttendanceEntity().copy(
+                    createdAt = data.createdAt.formatToLocaleGMT(),
+                    timestamp = data.timestamp.formatToLocaleGMT()
+                )
+            }
             val combinedAttendanceList = apiData.plus(pendingAttendance)
 //            appDatabase.attendanceDao().deleteAll()
             appDatabase.attendanceDao().resetThenInsertBatch(combinedAttendanceList)
@@ -101,7 +107,10 @@ class AttendanceRepository @Inject constructor(
         }
     }
 
-    override suspend fun createAttendance(pendingId: String, data: Attendance): Flow<AttendanceResponse> {
+    override suspend fun createAttendance(
+        pendingId: String,
+        data: Attendance
+    ): Flow<AttendanceResponse> {
         try {
             val token = dataStorePreference.getAuthToken().first()
             val response = apiService.postAttendance(authToken = token, attendance = data)
@@ -129,7 +138,7 @@ class AttendanceRepository @Inject constructor(
     @RequiresApi(Build.VERSION_CODES.O)
     override suspend fun createNewBlankAttendance(): Flow<PendingAttendanceEntity> {
         try {
-            val token = dataStorePreference.getAuthToken().first()
+//            val token = dataStorePreference.getAuthToken().first()
             val isOnDuty = dataStorePreference.getOnDutyValue().first()
             val blankAttendance = Attendance(
                 status = if (isOnDuty) AttendanceStatus.NOT_FILLED else AttendanceStatus.OFF_DUTY,

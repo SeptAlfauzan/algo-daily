@@ -83,13 +83,13 @@ fun DetailScreen(
         topBar = {
             TopAppBar(
                 modifier = Modifier.statusBarsPadding(),
-                title = { Text(text = "Detail Absen $attendanceDate") },
+                title = { Text(text = "Detail Absen ${attendanceDate.formatTimeStampDatasource()}") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
                     }
                 },
-                backgroundColor = Color.Transparent,
+                backgroundColor = MaterialTheme.colors.surface,
                 elevation = 0.dp
             )
         },

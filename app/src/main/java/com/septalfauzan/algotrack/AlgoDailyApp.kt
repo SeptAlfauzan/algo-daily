@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Map
@@ -23,12 +24,12 @@ import androidx.navigation.navDeepLink
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionsRequired
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.septalfauzan.algotrack.domain.model.ui.BottomBarMenu
 import com.septalfauzan.algotrack.helper.navigation.Screen
 import com.septalfauzan.algotrack.ui.component.BottomBar
 import com.septalfauzan.algotrack.ui.screen.*
 import com.septalfauzan.algotrack.presentation.*
+import com.septalfauzan.algotrack.ui.component.AlertModalDialog
 
 val permission33APIBelow = listOf(
     android.Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -56,11 +57,11 @@ fun AlgoDailyApp(
     historyAttendanceViewModel: HistoryAttendanceViewModel,
     attendanceViewModel: AttendanceViewModel,
 ) {
-    val systemUiController = rememberSystemUiController()
     val bottomBarMenuItems = listOf(
         BottomBarMenu(screen = Screen.Home, icon = Icons.Default.Home),
         BottomBarMenu(screen = Screen.History, icon = Icons.Default.History),
         BottomBarMenu(screen = Screen.Map, icon = Icons.Default.Map),
+        BottomBarMenu(screen = Screen.Profile, icon = Icons.Default.AccountCircle),
     )
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -68,7 +69,7 @@ fun AlgoDailyApp(
     val context = LocalContext.current
 
     val permissionsState =
-        rememberMultiplePermissionsState(permissions = if (Build.VERSION.SDK_INT > 33) permission33APIAbove else permission33APIBelow)
+        rememberMultiplePermissionsState(permissions = if (Build.VERSION.SDK_INT >= 33) permission33APIAbove else permission33APIBelow)
 
     var showDialog by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
@@ -80,7 +81,7 @@ fun AlgoDailyApp(
         modifier = modifier.navigationBarsPadding(),
         bottomBar = {
             if (bottomBarMenuItems.map { it.screen.route }
-                    .contains(currentDestination?.route)) BottomBar(
+                    .contains(currentDestination?.route) && currentDestination?.route != Screen.Profile.route) BottomBar(
                 bottomBarMenu = bottomBarMenuItems,
                 navHostController = navController,
                 currentDestination = currentDestination
@@ -90,12 +91,12 @@ fun AlgoDailyApp(
         PermissionsRequired(
             multiplePermissionsState = permissionsState,
             permissionsNotGrantedContent = {
-//                AlertModalDialog(
-//                    isShowed = showDialog,
-//                    title = "Permission perlu untuk ditambahkan!",
-//                    text = "Aplikasi ini memerlukan beberapa permission tersebut untuk dapat menjalankan fitur-fitur di dalamnya",
-//                    onStateChange = { showDialog = it }
-//                )
+                AlertModalDialog(
+                    isShowed = showDialog,
+                    title = "Permission perlu untuk ditambahkan!",
+                    text = "Aplikasi ini memerlukan beberapa permission tersebut untuk dapat menjalankan fitur-fitur di dalamnya",
+                    onStateChange = { showDialog = it }
+                )
             },
             permissionsNotAvailableContent = { }) {
             NavHost(
@@ -169,7 +170,12 @@ fun AlgoDailyApp(
                 ) {
                     val id = it.arguments?.getString("id") ?: ""
                     val createdAt = it.arguments?.getString("createdAt") ?: ""
-                    AttendanceScreen(id = id, createdAt = createdAt, navController = navController, viewModel = attendanceViewModel)
+                    AttendanceScreen(
+                        id = id,
+                        createdAt = createdAt,
+                        navController = navController,
+                        viewModel = attendanceViewModel
+                    )
                 }
 
                 composable(

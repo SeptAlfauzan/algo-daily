@@ -22,6 +22,8 @@ import com.google.accompanist.permissions.MultiplePermissionsState
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.android.gms.location.*
 import com.septalfauzan.algotrack.data.event.MyEvent
+import com.septalfauzan.algotrack.helper.formatTimeStampDatasource
+import com.septalfauzan.algotrack.helper.formatToLocaleGMT
 import com.septalfauzan.algotrack.presentation.AttendanceViewModel
 import com.septalfauzan.algotrack.ui.component.BottomSheetErrorHandler
 import com.septalfauzan.algotrack.ui.component.ButtonType
@@ -31,14 +33,19 @@ import com.septalfauzan.algotrack.ui.component.RoundedButton
 @OptIn(ExperimentalPermissionsApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun AttendanceScreen(id: String, createdAt: String, navController: NavController, viewModel: AttendanceViewModel) {
+fun AttendanceScreen(
+    id: String,
+    createdAt: String,
+    navController: NavController,
+    viewModel: AttendanceViewModel
+) {
     var currentQuestion by remember { mutableStateOf(1) }
     var selectedAnswer by remember { mutableStateOf("") }
     var reasonNotWork by remember { mutableStateOf("") }
     var latitude: Double by remember { mutableStateOf(0.0) }
     var longitude: Double by remember { mutableStateOf(0.0) }
     var isLoadLocationFinished: Boolean by rememberSaveable { mutableStateOf(false) }
-    var errorMessage: String? by remember{ mutableStateOf(null) }
+    var errorMessage: String? by remember { mutableStateOf(null) }
 
     val offsetQuestion1 by animateDpAsState(targetValue = if (currentQuestion == 1) 0.dp else (-1000).dp)
     val offsetQuestion2 by animateDpAsState(targetValue = if (currentQuestion == 2) 0.dp else (1000).dp)
@@ -62,7 +69,7 @@ fun AttendanceScreen(id: String, createdAt: String, navController: NavController
     LaunchedEffect(Unit) {
         runLocationRequest(permissionsState, fusedLocationClient, locationCallback)
         viewModel.eventFlow.collect { event ->
-            when(event) {
+            when (event) {
                 is MyEvent.MessageEvent -> errorMessage = event.message
             }
         }
@@ -84,7 +91,7 @@ fun AttendanceScreen(id: String, createdAt: String, navController: NavController
                 TopAppBar(
                     title = {
                         Text(
-                            text = "Attendance $createdAt",
+                            text = "Attendance ${createdAt.formatToLocaleGMT().formatTimeStampDatasource()}",
                             style = MaterialTheme.typography.h6,
                         )
                     },
@@ -99,7 +106,7 @@ fun AttendanceScreen(id: String, createdAt: String, navController: NavController
                         }
                     },
                     elevation = 0.dp,
-                    backgroundColor = MaterialTheme.colors.background,
+                    backgroundColor = MaterialTheme.colors.surface,
                 )
             }
         ) {
@@ -191,11 +198,11 @@ fun AttendanceScreen(id: String, createdAt: String, navController: NavController
                                             viewModel.createAttendance(
                                                 id = id,
                                                 createdAt = createdAt,
-                                                selectedAnswer =  selectedAnswer,
-                                                reasonNotWork =  reasonNotWork,
-                                                latitude =  latitude,
-                                                longitude =  longitude,
-                                                navController =  navController,
+                                                selectedAnswer = selectedAnswer,
+                                                reasonNotWork = reasonNotWork,
+                                                latitude = latitude,
+                                                longitude = longitude,
+                                                navController = navController,
                                             )
                                         },
                                         text = "kirim",
@@ -242,11 +249,11 @@ fun AttendanceScreen(id: String, createdAt: String, navController: NavController
                                             viewModel.createAttendance(
                                                 id = id,
                                                 createdAt = createdAt,
-                                                selectedAnswer =  selectedAnswer,
-                                                reasonNotWork =  reasonNotWork,
-                                                latitude =  latitude,
-                                                longitude =  longitude,
-                                                navController =  navController,
+                                                selectedAnswer = selectedAnswer,
+                                                reasonNotWork = reasonNotWork,
+                                                latitude = latitude,
+                                                longitude = longitude,
+                                                navController = navController,
                                             )
                                         },
                                         onloading = viewModel.attendanceFormUiState.collectAsState().value.onLoading,
@@ -262,7 +269,7 @@ fun AttendanceScreen(id: String, createdAt: String, navController: NavController
                 }
             }
 
-            errorMessage?.let{msg ->
+            errorMessage?.let { msg ->
                 BottomSheetErrorHandler(message = msg, action = {
                     errorMessage = null
                 }, dismissLabel = "tutup")

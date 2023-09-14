@@ -79,8 +79,14 @@ fun AttendanceHistoryScreen(
 
     LaunchedEffect(Unit) {
         Log.d("launchedEffect", "$dayOfMonth/${month + 1}/$year")
-        if(selectedDateText == null){
+        if (selectedDateText == null) {
             selectedDateText = "$dayOfMonth/${month + 1}/$year".formatCalendarDate()
+        }
+    }
+
+    DisposableEffect(Unit){
+        onDispose {
+            reloadHistory()
         }
     }
 
@@ -101,7 +107,7 @@ fun AttendanceHistoryScreen(
                         onDismiss = { dropdownExpanded = false })
                 },
                 elevation = 0.dp,
-                backgroundColor = MaterialTheme.colors.background
+                backgroundColor = MaterialTheme.colors.surface,
             )
         }
     ) { paddingValues ->
@@ -109,7 +115,7 @@ fun AttendanceHistoryScreen(
             when (uiState) {
                 is UiState.Loading -> {
                     ShimmerLoading(showShimmer = true, modifier = Modifier.padding(paddingValues))
-                    selectedDateText?.let{
+                    selectedDateText?.let {
                         getHistory(it.reverseFormatCalendarDate())
                     }
                 }
@@ -178,6 +184,7 @@ private fun DropdownSortMenu(
                     SortType.DESC -> SortType.ASC
                 }
             )
+            onDismiss()
         }) {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Icon(
@@ -188,7 +195,7 @@ private fun DropdownSortMenu(
                     contentDescription = stringResource(R.string.sorting_arrow_ic),
                     tint = MaterialTheme.colors.primary
                 )
-                Text(text = "Waktu")
+                Text(text = stringResource(R.string.time))
             }
         }
         DropdownMenuItem(onClick = {
@@ -198,6 +205,7 @@ private fun DropdownSortMenu(
                     SortType.DESC -> SortType.ASC
                 }
             )
+            onDismiss()
         }) {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Icon(
@@ -208,7 +216,7 @@ private fun DropdownSortMenu(
                     contentDescription = stringResource(R.string.sorting_arrow_ic),
                     tint = MaterialTheme.colors.primary
                 )
-                Text(text = "Status Absen")
+                Text(text = stringResource(R.string.attendance_status))
             }
         }
     }

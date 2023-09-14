@@ -1,5 +1,6 @@
 package com.septalfauzan.algotrack.ui.screen
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -48,16 +49,18 @@ fun ProfileScreen(
     modifier: Modifier = Modifier,
 ) {
 
-    var errorMessage: String? by remember{ mutableStateOf(null) }
-    LaunchedEffect(Unit){
-        eventMessage.collect{event ->
-            when(event){
+    var errorMessage: String? by remember { mutableStateOf(null) }
+    LaunchedEffect(Unit) {
+        eventMessage.collect { event ->
+            when (event) {
                 is MyEvent.MessageEvent -> errorMessage = event.message
             }
         }
     }
 
-    Box(modifier = Modifier.fillMaxSize().statusBarsPadding()){
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .statusBarsPadding()) {
         Column(
             modifier.fillMaxSize()
         ) {
@@ -78,7 +81,7 @@ fun ProfileScreen(
                         )
                     }
                 },
-                backgroundColor = Color.Transparent,
+                backgroundColor = MaterialTheme.colors.surface,
                 elevation = 0.dp
             )
             Column(
@@ -120,7 +123,10 @@ fun ProfileScreen(
                                 }
                             }
                         }
-                        is UiState.Error -> ErrorHandler(reload = reloadProfile, errorMessage = "error: ${uiData.errorMessage}")
+                        is UiState.Error -> ErrorHandler(
+                            reload = reloadProfile,
+                            errorMessage = "error: ${uiData.errorMessage}"
+                        )
                     }
                 }
                 Spacer(modifier = Modifier.height(36.dp))
@@ -135,7 +141,7 @@ fun ProfileScreen(
             }
         }
         errorMessage?.let {
-            BottomSheetErrorHandler(message = it, action = { errorMessage = null } )
+            BottomSheetErrorHandler(message = it, action = { errorMessage = null })
         }
     }
 }
@@ -191,10 +197,12 @@ private fun SettingMenu(
         SettingItem(
             text = "On duty",
             icon = Icons.Default.Work,
-            modifier = Modifier.bottomBorder(
-                0.5.dp,
-                MaterialTheme.colors.onSurface.copy(alpha = 0.3f)
-            )
+            modifier = Modifier
+                .background(MaterialTheme.colors.surface)
+                .bottomBorder(
+                    0.5.dp,
+                    MaterialTheme.colors.onSurface.copy(alpha = 0.3f)
+                )
         ) {
             SwitchButton(
                 isChecked = onDutyStatusState.collectAsState().value,
@@ -207,29 +215,42 @@ private fun SettingMenu(
                 color = MaterialTheme.colors.onSurface.copy(alpha = 0.3f)
             )
         )
-        SettingItem(text = "Mode malam", icon = Icons.Default.DarkMode) {
+        SettingItem(
+            modifier = Modifier.background(MaterialTheme.colors.surface),
+            text = "Mode malam",
+            icon = Icons.Default.DarkMode
+        ) {
             SwitchButton(
                 isChecked = isDarkMode,
                 onClick = toggleTheme
             )
         }
-        SettingItem(text = "Bahasa", icon = Icons.Default.Language) {
-            Icon(
-                imageVector = Icons.Default.ChevronRight,
-                contentDescription = null
-            )
-        }
-        SettingItem(text = "Ganti password", icon = Icons.Default.Key, onClick = {
-            navController.navigate(
-                Screen.ChangePassword.route
-            )
-        }) {
+        SettingItem(
+            modifier = Modifier.background(MaterialTheme.colors.surface),
+            text = "Bahasa",
+            icon = Icons.Default.Language
+        ) {
             Icon(
                 imageVector = Icons.Default.ChevronRight,
                 contentDescription = null
             )
         }
         SettingItem(
+            modifier = Modifier.background(MaterialTheme.colors.surface),
+            text = "Ganti password",
+            icon = Icons.Default.Key,
+            onClick = {
+                navController.navigate(
+                    Screen.ChangePassword.route
+                )
+            }) {
+            Icon(
+                imageVector = Icons.Default.ChevronRight,
+                contentDescription = null
+            )
+        }
+        SettingItem(
+            modifier = Modifier.background(MaterialTheme.colors.surface),
             text = "Logout",
             icon = Icons.Default.Logout,
             onClick = { logoutAlertShowed = true }) {
@@ -271,7 +292,7 @@ private fun SettingItem(
             .fillMaxWidth()
             .height(48.dp)
             .padding(horizontal = 2.dp)
-            .clip(RoundedCornerShape(4.dp))
+            .clip(RoundedCornerShape(8.dp))
             .clickable { onClick() }
     ) {
         Icon(

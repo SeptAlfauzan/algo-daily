@@ -23,7 +23,7 @@ fun BottomBar(
     currentDestination: NavDestination?,
     modifier: Modifier = Modifier,
 ){
-    BottomNavigation(modifier, backgroundColor = MaterialTheme.colors.background, elevation = 4.dp) {
+    BottomNavigation(modifier, backgroundColor = MaterialTheme.colors.surface, elevation = 4.dp) {
         bottomBarMenu.forEach {menu ->
             BottomNavigationItem(
                 icon = { Icon(imageVector = menu.icon, contentDescription = menu.screen.route) },

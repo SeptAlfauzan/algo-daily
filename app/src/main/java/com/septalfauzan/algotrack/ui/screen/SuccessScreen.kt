@@ -43,7 +43,6 @@ fun SuccessScreen(navController: NavController, title: String? = null, desc: Str
 
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.success_thumb))
 
-
     Box(
         modifier = Modifier
             .fillMaxSize()

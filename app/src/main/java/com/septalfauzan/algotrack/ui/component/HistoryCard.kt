@@ -11,12 +11,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.material.MaterialTheme
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.septalfauzan.algotrack.R
 import com.septalfauzan.algotrack.data.source.local.dao.AttendanceEntity
 import com.septalfauzan.algotrack.data.source.local.dao.AttendanceStatus
 import com.septalfauzan.algotrack.data.source.remote.apiResponse.AttendanceResponseData
 import com.septalfauzan.algotrack.data.source.remote.apiResponse.toAttendanceEntity
+import com.septalfauzan.algotrack.helper.formatGMTtoUTC
 import com.septalfauzan.algotrack.helper.formatTimeStampDatasource
 import com.septalfauzan.algotrack.helper.navigation.Screen
 import com.septalfauzan.algotrack.ui.theme.AlgoTrackTheme
@@ -28,9 +31,8 @@ fun HistoryCard(data: AttendanceEntity, navController: NavController) {
     Card(
         modifier = Modifier
             .fillMaxWidth(),
-        elevation = 4.dp,
-        border = BorderStroke(1.dp, MaterialTheme.colors.primary),
-        shape = RoundedCornerShape(20.dp),
+        shape = RoundedCornerShape(16.dp),
+        backgroundColor = MaterialTheme.colors.surface
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -41,17 +43,17 @@ fun HistoryCard(data: AttendanceEntity, navController: NavController) {
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "Waktu",
+                    text = stringResource(id = R.string.time),
                     color = MaterialTheme.colors.onSurface.copy(alpha = 0.3f),
                     style = MaterialTheme.typography.caption,
                     modifier = Modifier.align(Alignment.CenterVertically)
                 )
                 Text(
                     text = when (data.status) {
-                        AttendanceStatus.PERMIT -> "Izin"
-                        AttendanceStatus.ON_DUTY -> "Masuk"
-                        AttendanceStatus.OFF_DUTY -> "Cuti"
-                        AttendanceStatus.NOT_FILLED -> "Belum Absen"
+                        AttendanceStatus.PERMIT -> stringResource(R.string.permit)
+                        AttendanceStatus.ON_DUTY -> stringResource(R.string.on_duty)
+                        AttendanceStatus.OFF_DUTY -> stringResource(R.string.off_duty)
+                        AttendanceStatus.NOT_FILLED -> stringResource(R.string.not_filled)
                     },
                     color = if (data.status == AttendanceStatus.ON_DUTY) GreenVariant else RedAccent,
                     style = MaterialTheme.typography.caption
@@ -59,37 +61,55 @@ fun HistoryCard(data: AttendanceEntity, navController: NavController) {
             }
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Bottom
             ) {
-                Column{
-                    Text(
-                        text = data.createdAt.formatTimeStampDatasource(),
-                        modifier = Modifier
-                            .padding(bottom = 8.dp)
-                    )
-                    Text(
-                        text = data.timestamp.formatTimeStampDatasource(),
-                        modifier = Modifier
-                            .padding(bottom = 8.dp)
-                    )
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Column {
+                        Text(
+                            text = stringResource(R.string.created),
+                            color = MaterialTheme.colors.onSurface.copy(alpha = 0.3f),
+                            style = MaterialTheme.typography.caption,
+                        )
+                        Text(
+                            text = data.createdAt.formatTimeStampDatasource(),
+                            modifier = Modifier
+                                .padding(bottom = 8.dp)
+                        )
+                    }
+
+                    Column {
+                        Text(
+                            text = stringResource(R.string.edited),
+                            color = MaterialTheme.colors.onSurface.copy(alpha = 0.3f),
+                            style = MaterialTheme.typography.caption,
+                        )
+                        Text(
+                            text = if (data.timestamp == data.createdAt) "-" else data.timestamp.formatTimeStampDatasource(),
+                            modifier = Modifier
+                                .padding(bottom = 8.dp)
+                        )
+                    }
                 }
-                if (data.status == AttendanceStatus.NOT_FILLED) {
-                    HistoryCardButton(
-                        text = "absen",
-                        isAttended = false,
-                        onClick = {
-                            navController.navigate(
-                                Screen.Attendance.createRoute(
-                                    data.id,
-                                    data.createdAt
-                                )
+                TextButton(onClick = {
+                    if (data.status == AttendanceStatus.NOT_FILLED) {
+                        navController.navigate(
+                            Screen.Attendance.createRoute(
+                                data.id,
+                                data.createdAt.formatGMTtoUTC()
                             )
-                        })
-                } else {
-                    HistoryCardButton(
-                        text = "detail",
-                        isAttended = true,
-                        onClick = { navController.navigate(Screen.Detail.createRoute(data.id)) })
+                        )
+                    } else {
+                        navController.navigate(Screen.Detail.createRoute(data.id))
+                    }
+                }) {
+                    Text(
+                        text = if (data.status == AttendanceStatus.NOT_FILLED) stringResource(R.string.attend) else stringResource(
+                            R.string.detail
+                        ),
+                        style = MaterialTheme.typography.h6,
+                        color = MaterialTheme.colors.primary
+                    )
                 }
             }
         }

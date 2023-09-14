@@ -22,10 +22,9 @@ import com.septalfauzan.algotrack.R
 import com.septalfauzan.algotrack.helper.formatMilliseconds
 import com.septalfauzan.algotrack.ui.theme.AlgoTrackTheme
 import java.util.Calendar
-import java.util.Timer
 
 @Composable
-fun TimerBanner(timer: Long, isWorkDay: Boolean, modifier: Modifier = Modifier) {
+fun TimerBanner(timer: Long, onWork: Boolean, modifier: Modifier = Modifier) {
     Card(
         modifier = modifier
             .height(158.dp)
@@ -55,7 +54,7 @@ fun TimerBanner(timer: Long, isWorkDay: Boolean, modifier: Modifier = Modifier) 
                     .fillMaxSize()
                     .padding(vertical = 28.dp, horizontal = 32.dp)
             ) {
-                if(isWorkDay){
+                if(onWork){
                     Text(
                         text = stringResource(R.string.attendance_text_workday),
                         style = MaterialTheme.typography.h6
@@ -97,8 +96,8 @@ private fun Preview() {
     AlgoTrackTheme() {
         Surface(Modifier.padding(24.dp)) {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                TimerBanner(timer = timer, isWorkDay = true)
-                TimerBanner(timer = timer, isWorkDay = false)
+                TimerBanner(timer = timer, onWork = true)
+                TimerBanner(timer = timer, onWork = false)
             }
         }
     }

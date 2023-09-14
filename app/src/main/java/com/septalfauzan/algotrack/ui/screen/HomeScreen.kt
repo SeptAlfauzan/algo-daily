@@ -7,7 +7,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -26,17 +25,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import androidx.work.WorkManager
 import com.septalfauzan.algotrack.R
 import com.septalfauzan.algotrack.domain.model.ui.UiState
 import com.septalfauzan.algotrack.domain.model.HomeData
 import com.septalfauzan.algotrack.domain.model.UserStats
 import com.septalfauzan.algotrack.helper.getCurrentDayCycle
 import com.septalfauzan.algotrack.helper.navigation.Screen
-import com.septalfauzan.algotrack.service.DailyAttendanceWorker
 import com.septalfauzan.algotrack.ui.component.*
 import com.septalfauzan.algotrack.ui.theme.AlgoTrackTheme
 import com.septalfauzan.algotrack.ui.utils.shimmer
+import com.septalfauzan.algotrack.util.Notification
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import java.util.Calendar
@@ -59,6 +57,7 @@ fun HomeScreen(
     val context = LocalContext.current
 
     val isWorkState = onDutyValue.collectAsState().value
+
 
     homeData.collectAsState(initial = UiState.Loading).value.let { uiState ->
         when (uiState) {
@@ -103,7 +102,7 @@ fun HomeScreen(
                                 })
                         }
                     }
-                    TimerBanner(timer = timerState.collectAsState().value, isWorkDay = isWorkState)
+                    TimerBanner(timer = timerState.collectAsState().value, onWork = (isWorkState && Notification.isWorkHour() && Notification.isWorkDay()))
                     VacationBanner(action = { showAlert = true }, isWork = isWorkState)
                     homeUiStateData.stats.let {
                         Statistic(

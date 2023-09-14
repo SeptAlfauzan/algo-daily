@@ -5,15 +5,15 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.icu.util.Calendar
-import android.os.Build
-import androidx.annotation.RequiresApi
+import android.util.Log
 import com.septalfauzan.algotrack.service.AttendanceReminder
 
 object Notification {
     fun setDailyReminder(context: Context) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, AttendanceReminder::class.java)
-        val pendingIntent = PendingIntent.getBroadcast(context, ID_REPEATING, intent, PendingIntent.FLAG_IMMUTABLE)
+        val pendingIntent =
+            PendingIntent.getBroadcast(context, ID_REPEATING, intent, PendingIntent.FLAG_IMMUTABLE)
 
         val workDays = listOf(
             Calendar.MONDAY,
@@ -37,15 +37,41 @@ object Notification {
         calendar.set(Calendar.HOUR_OF_DAY, 23)
         calendar.set(Calendar.MINUTE, 23)
 
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, AlarmManager.INTERVAL_FIFTEEN_MINUTES, pendingIntent)
+        alarmManager.setRepeating(
+            AlarmManager.RTC_WAKEUP,
+            calendar.timeInMillis,
+            AlarmManager.INTERVAL_FIFTEEN_MINUTES,
+            pendingIntent
+        )
     }
 
     fun cancelAlarm(context: Context) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, AttendanceReminder::class.java)
-        val pendingIntent = PendingIntent.getBroadcast(context, ID_REPEATING, intent, PendingIntent.FLAG_IMMUTABLE)
+        val pendingIntent =
+            PendingIntent.getBroadcast(context, ID_REPEATING, intent, PendingIntent.FLAG_IMMUTABLE)
 
         alarmManager.cancel(pendingIntent)
         pendingIntent.cancel()
+    }
+
+    fun isWorkDay(): Boolean {
+        val calendar = Calendar.getInstance()
+        val dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
+        return when (dayOfWeek) {
+            Calendar.SUNDAY -> false
+            Calendar.SATURDAY -> false
+            else -> true
+        }
+    }
+    fun isWorkHour(): Boolean{
+        val calendar = Calendar.getInstance()
+        val dayOfWeek = calendar.get(Calendar.HOUR_OF_DAY)
+        Log.d("TAG", "isWorkHour: $dayOfWeek")
+        return when{
+            dayOfWeek > 16 -> false
+            dayOfWeek < 8 -> false
+            else -> true
+        }
     }
 }
