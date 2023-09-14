@@ -15,17 +15,7 @@ import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.first
 import java.util.*
 import java.util.concurrent.TimeUnit
-
-
-val dummy = PendingAttendanceEntity(
-    id = UUID.randomUUID().toString(),
-    reason = null,
-    status = AttendanceStatus.ON_DUTY,
-    latitude = 0.0,
-    longitude = 0.0,
-    timestamp = "2023-08-29T05:55:21.071Z",
-    createdAt = "2023-08-29T05:55:21.071Z",
-)
+import com.septalfauzan.algotrack.R
 
 @HiltWorker
 class DailyAttendanceWorker @AssistedInject constructor(
@@ -37,9 +27,9 @@ class DailyAttendanceWorker @AssistedInject constructor(
     CoroutineWorker(context, workerParams) {
     override suspend fun doWork(): Result {
         try {
-            if (!Notification.isWorkDay()) throw Exception("Today is day off!")
-            if (!Notification.isWorkHour()) throw Exception("It is not working time!")
-            if(dataStorePreference.getAuthToken().first().isEmpty()) throw Exception("Not login yet!")
+            if (!Notification.isWorkDay()) throw Exception(R.string.today_is_day_off.toString())
+            if (!Notification.isWorkHour()) throw Exception(R.string.it_is_not_working_time.toString())
+            if(dataStorePreference.getAuthToken().first().isEmpty()) throw Exception(R.string.not_login_yet.toString())
 
             val response = pendingAttendanceUseCase.create()
             val isOnDuty = dataStorePreference.getOnDutyValue().first()

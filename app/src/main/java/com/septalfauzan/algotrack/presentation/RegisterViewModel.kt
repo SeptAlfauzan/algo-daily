@@ -2,6 +2,7 @@ package com.septalfauzan.algotrack.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.septalfauzan.algotrack.R
 import com.septalfauzan.algotrack.data.event.MyEvent
 import com.septalfauzan.algotrack.domain.model.User
 import com.septalfauzan.algotrack.data.repository.MainRepository
@@ -32,8 +33,8 @@ class RegisterViewModel @Inject constructor(private val repository: MainReposito
 
     fun updateEmail(email: String) {
         val error = when {
-            email.isEmpty() -> "Field email tidak boleh kosong!"
-            !email.isEmailValid() -> "Email tidak valid"
+            email.isEmpty() -> R.string.email_cant_empty.toString()
+            !email.isEmailValid() -> R.string.invalid_email.toString()
             else -> ""
         }
         _registerFormUiState.value = _registerFormUiState.value.copy(
@@ -43,7 +44,7 @@ class RegisterViewModel @Inject constructor(private val repository: MainReposito
     }
 
     fun updatePassword(password: String) {
-        val error = if (password.isEmpty()) "Field password tidak boleh kosong!" else ""
+        val error = if (password.isEmpty()) R.string.password_cant_empty.toString() else ""
         _registerFormUiState.value = _registerFormUiState.value.copy(
             password = password,
             passwordError = error
@@ -51,7 +52,7 @@ class RegisterViewModel @Inject constructor(private val repository: MainReposito
     }
 
     fun updateName(name: String) {
-        val error = if (name.isEmpty()) "Field name tidak boleh kosong!" else ""
+        val error = if (name.isEmpty()) R.string.name_cant_empty.toString() else ""
         _registerFormUiState.value = _registerFormUiState.value.copy(
             name = name,
             nameError = error
@@ -80,12 +81,12 @@ class RegisterViewModel @Inject constructor(private val repository: MainReposito
                 if (registerResponse.data != null) {
                     withContext(Dispatchers.Main) { onSuccess() }
                 } else eventChannel.send(
-                    MyEvent.MessageEvent("Error when register")
+                    MyEvent.MessageEvent(R.string.error_register.toString())
                 )
             } catch (e: Exception) {
                 eventChannel.send(MyEvent.MessageEvent("error: ${e.message}"))
                 _registrationStatusFlow.value =
-                    RegistrationStatus.Error(e.message ?: "Registration failed")
+                    RegistrationStatus.Error(e.message ?: R.string.register_failed.toString())
             } finally {
                 updateOnLoading(false)
             }

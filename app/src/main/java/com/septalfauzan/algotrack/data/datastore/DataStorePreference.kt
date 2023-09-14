@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.septalfauzan.algotrack.R
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -20,12 +21,12 @@ enum class SortBy{
 }
 
 class DataStorePreference @Inject constructor(@ApplicationContext private val context: Context){
-    private val AUTH_TOKEN = stringPreferencesKey("auth_token")
-    private val DARK_THEME = booleanPreferencesKey("dark_theme")
-    private val ON_DUTY = booleanPreferencesKey("on_duty")
-    private val ATTENDANCE_SORT_BY_STATUS_TYPE = stringPreferencesKey("attendance_sort_status_type")
-    private val ATTENDANCE_SORT_BY_TIME_TYPE = stringPreferencesKey("attendance_sort_time_type")
-    private val ATTENDANCE_SORTBY = stringPreferencesKey("attendance_sort_by")
+    private val AUTH_TOKEN = stringPreferencesKey(R.string.auth_token.toString())
+    private val DARK_THEME = booleanPreferencesKey(R.string.dark_theme.toString())
+    private val ON_DUTY = booleanPreferencesKey(R.string.on_duty.toString())
+    private val ATTENDANCE_SORT_BY_STATUS_TYPE = stringPreferencesKey(R.string.attendance_sort_status_type.toString())
+    private val ATTENDANCE_SORT_BY_TIME_TYPE = stringPreferencesKey(R.string.attendance_sort_time_type.toString())
+    private val ATTENDANCE_SORTBY = stringPreferencesKey(R.string.attendance_sort_by.toString())
     fun getAuthToken(): Flow<String> = context.datastore.data.map { it[AUTH_TOKEN] ?: "" }
 
     fun getDarkThemeValue(): Flow<Boolean> = context.datastore.data.map { it[DARK_THEME] ?: false }

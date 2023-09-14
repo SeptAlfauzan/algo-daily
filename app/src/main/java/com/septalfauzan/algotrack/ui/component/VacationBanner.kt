@@ -41,11 +41,13 @@ fun VacationBanner(action: () -> Unit, isWork: Boolean = true, modifier: Modifie
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = if(isWork) stringResource(R.string.ask_vacation) else "Ingin mengubah status anda ke sedang bekerja?",
+                    text = if(isWork) stringResource(R.string.ask_vacation) else stringResource(id = R.string.do_want_leave),
                     style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold)
                 )
                 RoundedButton(
-                    text = if(isWork) stringResource(R.string.create_vacation) else "ubah status",
+                    text = if(isWork) stringResource(R.string.create_vacation) else stringResource(
+                        id = R.string.change_status
+                    ),
                     onClick = action,
                     buttonType = ButtonType.SECONDARY,
                     modifier = Modifier.align(if(!isWork) Alignment.End else Alignment.Start)

@@ -1,6 +1,7 @@
 package com.septalfauzan.algotrack.data.repository
 
 import android.util.Log
+import com.septalfauzan.algotrack.R
 import com.septalfauzan.algotrack.data.datastore.DataStorePreference
 import com.septalfauzan.algotrack.domain.model.Auth
 import com.septalfauzan.algotrack.data.source.remote.apiResponse.AuthResponse
@@ -64,7 +65,7 @@ class AuthRepository @Inject constructor(
             if(!result.isSuccessful) {
                 val errorJson = result.errorBody()?.string()
                 val errorResponse = errorJson?.getErrorMessage()
-                return errorResponse?.errors == "Invalid token"
+                return errorResponse?.errors == R.string.invalid_token.toString()
             }
             return true
         }catch (e: Exception){

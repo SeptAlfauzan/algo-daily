@@ -1,27 +1,17 @@
 package com.septalfauzan.algotrack.ui.screen
 
-import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Context
-import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Looper
-import android.util.Log
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.*
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.app.ActivityCompat
-import androidx.navigation.NavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionsRequired
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
@@ -30,13 +20,10 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
-import com.google.android.gms.maps.model.Marker
 import com.google.maps.android.compose.*
 import com.septalfauzan.algotrack.R
 import com.septalfauzan.algotrack.domain.model.UserLocation
@@ -146,15 +133,15 @@ fun MapScreen() {
                 multiplePermissionsState = permissionsState,
                 permissionsNotGrantedContent = {
                     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(32.dp)) {
-                        Text(text = "To run this feature, this app require those permission.", style = MaterialTheme.typography.caption.copy(
+                        Text(text = stringResource(id = R.string.need_request_permission), style = MaterialTheme.typography.caption.copy(
                             color = MaterialTheme.colors.onSurface.copy(alpha = 0.3f)
                         ))
-                        RoundedButton(text = "request permission", onClick = { permissionsState.launchMultiplePermissionRequest() })
+                        RoundedButton(text = stringResource(id = R.string.request_permission), onClick = { permissionsState.launchMultiplePermissionRequest() })
                     }
                 },
                 permissionsNotAvailableContent = {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(text = "Required permission is not available in your device 😢")
+                        Text(text = stringResource(id = R.string.request_permission_not_granted))
                     }
                 },
             ){

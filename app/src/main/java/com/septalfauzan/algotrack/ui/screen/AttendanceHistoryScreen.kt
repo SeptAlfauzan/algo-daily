@@ -94,7 +94,7 @@ fun AttendanceHistoryScreen(
         topBar = {
             TopAppBar(
                 modifier = Modifier.statusBarsPadding(),
-                title = { Text(text = "History") },
+                title = { Text(text = stringResource(id = R.string.history)) },
                 actions = {
                     IconButton(onClick = { dropdownExpanded = !dropdownExpanded }) {
                         Icon(imageVector = Icons.Default.Sort, contentDescription = null)

@@ -3,6 +3,7 @@ package com.septalfauzan.algotrack.presentation
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.septalfauzan.algotrack.R
 import com.septalfauzan.algotrack.data.event.MyEvent
 import com.septalfauzan.algotrack.domain.model.ui.AuthFormUIState
 import com.septalfauzan.algotrack.domain.model.UserChangePassword
@@ -42,8 +43,8 @@ class AuthViewModel @Inject constructor(private val authUseCase: IAuthUseCase, p
     }
     fun updateEmail(email: String){
         val error = when {
-            email.isEmpty() -> "Field email tidak boleh kosong!"
-            !email.isEmailValid() -> "Email tidak valid"
+            email.isEmpty() -> R.string.email_cant_empty.toString()
+            !email.isEmailValid() -> R.string.invalid_email.toString()
             else -> ""
         }
         _formUiState.value = _formUiState.value.copy(
@@ -52,7 +53,7 @@ class AuthViewModel @Inject constructor(private val authUseCase: IAuthUseCase, p
         )
     }
     fun updatePassword(password: String){
-        val error = if(password.isEmpty()) "Field password tidak boleh kosong!" else ""
+        val error = if(password.isEmpty()) R.string.password_cant_empty.toString() else ""
         _formUiState.value = _formUiState.value.copy(
             password = password,
             passwordError = error

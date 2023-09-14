@@ -15,12 +15,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.MultiplePermissionsState
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.android.gms.location.*
+import com.septalfauzan.algotrack.R
 import com.septalfauzan.algotrack.data.event.MyEvent
 import com.septalfauzan.algotrack.helper.formatTimeStampDatasource
 import com.septalfauzan.algotrack.helper.formatToLocaleGMT
@@ -91,7 +93,7 @@ fun AttendanceScreen(
                 TopAppBar(
                     title = {
                         Text(
-                            text = "Attendance ${createdAt.formatToLocaleGMT().formatTimeStampDatasource()}",
+                            text = stringResource(id = R.string.attendance, createdAt.formatToLocaleGMT().formatTimeStampDatasource()),
                             style = MaterialTheme.typography.h6,
                         )
                     },
@@ -117,7 +119,7 @@ fun AttendanceScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        "Harap tunggu sebentar",
+                        stringResource(id = R.string.wait),
                         style = MaterialTheme.typography.body1,
                         modifier = Modifier.padding(end = 8.dp)
                     )
@@ -132,11 +134,11 @@ fun AttendanceScreen(
                             .offset(x = offsetQuestion1)
                     ) {
                         Text(
-                            text = "Attendance",
+                            text = stringResource(id = R.string.attendance),
                             style = MaterialTheme.typography.h6,
                         )
                         Text(
-                            text = "Question $currentQuestion/2",
+                            text = stringResource(id = R.string.question,currentQuestion),
                             style = MaterialTheme.typography.subtitle1,
                         )
                     }
@@ -149,11 +151,11 @@ fun AttendanceScreen(
                         if (currentQuestion == 1) {
                             Column(modifier = Modifier.offset(x = offsetQuestion1)) {
                                 Text(
-                                    text = "Apakah anda sedang bekerja?",
+                                    text = stringResource(id = R.string.question1),
                                     style = MaterialTheme.typography.h5,
                                 )
                                 Text(
-                                    text = "pilih sesuai kondisi anda sekarang",
+                                    text = stringResource(id = R.string.question1_desc),
                                     style = MaterialTheme.typography.h6,
                                     color = Color.Gray,
                                     modifier = Modifier.padding(bottom = 16.dp)
@@ -170,7 +172,7 @@ fun AttendanceScreen(
                                     )
                                     Spacer(modifier = Modifier.width(8.dp))
                                     Text(
-                                        text = "Yes",
+                                        text = stringResource(id = R.string.yes),
                                         style = MaterialTheme.typography.h6,
                                         modifier = Modifier.align(Alignment.CenterVertically)
                                     )
@@ -186,7 +188,7 @@ fun AttendanceScreen(
                                     )
                                     Spacer(modifier = Modifier.width(8.dp))
                                     Text(
-                                        text = "No",
+                                        text = stringResource(id = R.string.no),
                                         style = MaterialTheme.typography.h6,
                                         modifier = Modifier.align(Alignment.CenterVertically)
                                     )
@@ -205,7 +207,7 @@ fun AttendanceScreen(
                                                 navController = navController,
                                             )
                                         },
-                                        text = "kirim",
+                                        text = stringResource(id = R.string.send),
                                         buttonType = ButtonType.PRIMARY,
                                         onloading = viewModel.attendanceFormUiState.collectAsState().value.onLoading,
                                         modifier = Modifier
@@ -216,7 +218,7 @@ fun AttendanceScreen(
                                 } else {
                                     RoundedButton(
                                         onClick = { currentQuestion = 2 },
-                                        text = "selanjutnya",
+                                        text = stringResource(id = R.string.next),
                                         buttonType = ButtonType.PRIMARY,
                                         modifier = Modifier.align(Alignment.End),
                                         enabled = selectedAnswer.isNotBlank(),
@@ -226,11 +228,11 @@ fun AttendanceScreen(
                         } else if (currentQuestion == 2) {
                             Column(modifier = Modifier.offset(x = offsetQuestion2)) {
                                 Text(
-                                    text = "Alasan anda tidak bekerja?",
+                                    text = stringResource(id = R.string.question2),
                                     style = MaterialTheme.typography.h5,
                                 )
                                 EdtTextAttandence(
-                                    label = "Ketik Disini",
+                                    label = stringResource(id = R.string.question2_desc),
                                     onChange = { reasonNotWork = it },
                                     value = reasonNotWork
                                 )
@@ -241,7 +243,7 @@ fun AttendanceScreen(
                                 ) {
                                     RoundedButton(
                                         onClick = { currentQuestion = 1 },
-                                        text = "sebelumnya",
+                                        text = stringResource(id = R.string.back),
                                         modifier = Modifier.width(150.dp)
                                     )
                                     RoundedButton(
@@ -257,7 +259,7 @@ fun AttendanceScreen(
                                             )
                                         },
                                         onloading = viewModel.attendanceFormUiState.collectAsState().value.onLoading,
-                                        text = "kirim",
+                                        text = stringResource(id = R.string.send),
                                         buttonType = ButtonType.PRIMARY,
                                         modifier = Modifier.width(150.dp),
                                         enabled = reasonNotWork.isNotBlank(),
@@ -272,7 +274,7 @@ fun AttendanceScreen(
             errorMessage?.let { msg ->
                 BottomSheetErrorHandler(message = msg, action = {
                     errorMessage = null
-                }, dismissLabel = "tutup")
+                }, dismissLabel = stringResource(id = R.string.closed))
             }
         }
     }

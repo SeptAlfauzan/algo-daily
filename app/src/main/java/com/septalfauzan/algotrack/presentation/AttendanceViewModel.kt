@@ -3,6 +3,7 @@ package com.septalfauzan.algotrack.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.septalfauzan.algotrack.R
 import com.septalfauzan.algotrack.data.event.MyEvent
 import com.septalfauzan.algotrack.data.repository.AttendanceRepository
 import com.septalfauzan.algotrack.data.source.local.dao.AttendanceStatus
@@ -68,8 +69,8 @@ class AttendanceViewModel @Inject constructor(
                 withContext(Dispatchers.Main) {
                     navController.navigate(
                         Screen.Success.createRoute(
-                            "Absen berhasil dikirim",
-                            "Terimakasih telah \nmengisi absen"
+                            R.string.absence_sent_successfully.toString(),
+                            R.string.thank_you_message.toString()
                         )
                     ) {
                         popUpTo(Screen.Attendance.route) {
