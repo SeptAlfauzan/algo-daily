@@ -42,10 +42,11 @@ class DailyAttendanceWorker @AssistedInject constructor(
 
             response.value?.let {
                 if(isOnDuty){
-                    AttendanceReminder.showNotification(applicationContext, it)
+                    AttendanceReminder.showNotification(applicationContext, it.id, it.createdAt)
                 }
                 return Result.success()
             }
+
             return Result.failure()
         } catch (e: Exception) {
             e.printStackTrace()
@@ -62,10 +63,9 @@ class DailyAttendanceWorker @AssistedInject constructor(
         val timerLeft = totalTimer - currentMinuteSecond
 
         val periodicWorkRequest =
-            PeriodicWorkRequestBuilder<DailyAttendanceWorker>(1, TimeUnit.MINUTES)
+            PeriodicWorkRequestBuilder<DailyAttendanceWorker>(15, TimeUnit.MINUTES)
                 .addTag(REMINDER_WORK_MANAGER_TAG)
-                .setConstraints(networkConstraints)
-                .setInitialDelay(timerLeft, TimeUnit.MILLISECONDS)
+                .setInitialDelay(3, TimeUnit.SECONDS)
                 .build()
 
         val oneTImeWorkRequest =

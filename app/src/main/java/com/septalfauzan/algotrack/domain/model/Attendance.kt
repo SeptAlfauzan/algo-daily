@@ -7,4 +7,5 @@ data class Attendance(
     val latitude: Double?,
     val longitude: Double?,
     val reason: String?,
+    val created_at: String?
 )

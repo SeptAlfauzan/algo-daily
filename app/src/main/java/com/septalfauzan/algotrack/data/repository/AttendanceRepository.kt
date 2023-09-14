@@ -18,7 +18,7 @@ import com.septalfauzan.algotrack.data.source.remote.apiResponse.toAttendanceEnt
 import com.septalfauzan.algotrack.domain.repository.IAttendanceRepository
 import com.septalfauzan.algotrack.helper.RequestError.getErrorMessage
 import com.septalfauzan.algotrack.helper.formatDatePendingEntity
-import com.septalfauzan.algotrack.helper.formatToLocaleGMT
+import com.septalfauzan.algotrack.util.DataMapper.toAttendanceEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
@@ -53,11 +53,12 @@ class AttendanceRepository @Inject constructor(
 
             val dataFormattedToGMT = response.body()!!.data.map { it.formatTimeToGMT() }
             val apiData = dataFormattedToGMT.map { it.toAttendanceEntity() }
-            appDatabase.attendanceDao().deleteAll()
-            saveBatchToLocalDB(apiData)
+            val pendingAttendance = appDatabase.pendingAttendanceDao().get().map { it.toAttendanceEntity() }
+            val combinedAttendanceList = apiData.plus(pendingAttendance)
+//            appDatabase.attendanceDao().deleteAll()
+            appDatabase.attendanceDao().resetThenInsertBatch(combinedAttendanceList)
 
             val sorted = appDatabase.attendanceDao().getHistory(query)
-//            Log.d("TAG", "getHistory: $query")
             return flowOf(sorted)
         } catch (e: java.lang.Exception) {
             throw e
@@ -100,6 +101,23 @@ class AttendanceRepository @Inject constructor(
         }
     }
 
+    override suspend fun createAttendance(pendingId: String, data: Attendance): Flow<AttendanceResponse> {
+        try {
+            val token = dataStorePreference.getAuthToken().first()
+            val response = apiService.postAttendance(authToken = token, attendance = data)
+
+            if (!response.isSuccessful) {
+                val errorJson = response.errorBody()?.string()
+                val errorResponse = errorJson?.getErrorMessage()
+                throw Exception(errorResponse?.errors ?: response.message())
+            }
+            appDatabase.pendingAttendanceDao().delete(pendingId)
+            return flowOf(response.body()!!)
+        } catch (e: Exception) {
+            throw e
+        }
+    }
+
     override suspend fun saveToLocalDB(data: AttendanceEntity): Flow<Long> {
         return flowOf(appDatabase.attendanceDao().insert(data))
     }
@@ -113,12 +131,12 @@ class AttendanceRepository @Inject constructor(
         try {
             val token = dataStorePreference.getAuthToken().first()
             val isOnDuty = dataStorePreference.getOnDutyValue().first()
-//            val currentTime = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
             val blankAttendance = Attendance(
                 status = if (isOnDuty) AttendanceStatus.NOT_FILLED else AttendanceStatus.OFF_DUTY,
                 reason = null,
                 latitude = null,
                 longitude = null,
+                created_at = null
             )
             val currentDate = Calendar.getInstance()
             val currentFormattedTime = currentDate.time.toString().formatDatePendingEntity()
@@ -158,7 +176,16 @@ class AttendanceRepository @Inject constructor(
     override suspend fun getSortByStatusValue(): Flow<SortType> =
         flowOf(SortType.valueOf(dataStorePreference.getSortByStatusType().first()))
 
+    override suspend fun deleteLocalPendingAttendance(pendingAttendanceEntity: PendingAttendanceEntity): Long {
+        TODO("Not yet implemented")
+    }
+
     override suspend fun deleteLocalAttendanceHistoryRecord(): Flow<Int> {
         return flowOf(appDatabase.attendanceDao().deleteAll())
+    }
+
+    override suspend fun deleteLocalAttendanceData() {
+        appDatabase.attendanceDao().deleteAll()
+        appDatabase.pendingAttendanceDao().deleteAll()
     }
 }

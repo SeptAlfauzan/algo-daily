@@ -37,9 +37,12 @@ class AttendanceViewModel @Inject constructor(
     init {
         getOnDutyStatusValue()
     }
-
-    fun updateAttendance(
+    /**
+     * @see This method is used to create new attendance and delete pending attendance (local database)
+     */
+    fun createAttendance(
         id: String,
+        createdAt: String,
         selectedAnswer: String,
         reasonNotWork: String,
         latitude: Double,
@@ -53,6 +56,7 @@ class AttendanceViewModel @Inject constructor(
             reason = if (selectedAnswer == "No") reasonNotWork else null,
             latitude = latitude,
             longitude = longitude,
+            created_at = createdAt
         )
 
         viewModelScope.launch {
@@ -60,7 +64,7 @@ class AttendanceViewModel @Inject constructor(
                 onLoading = true
             )
             try {
-                repository.updateAttendance(id, attendanceEntity)
+                repository.createAttendance(id, attendanceEntity)
                 withContext(Dispatchers.Main) {
                     navController.navigate(
                         Screen.Success.createRoute(

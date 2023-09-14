@@ -23,11 +23,11 @@ class AttendanceReminder : BroadcastReceiver() {
          * @param context application context
          * @param id id of attendance data
          */
-        fun showNotification(context: Context, id: String) {
+        fun showNotification(context: Context, id: String, createdAt: String) {
             val notificationStyle = NotificationCompat.InboxStyle()
             val deepLinkIntent = Intent(
                 Intent.ACTION_VIEW,
-                "https://algodaily/attendance/$id".toUri(),
+                "https://algodaily/attendance/$id/$createdAt".toUri(),
                 context,
                 MainActivity::class.java
             )

@@ -103,6 +103,7 @@ fun AlgoDailyApp(
                 startDestination = if (isLogged) Screen.Home.route else Screen.Login.route,
                 modifier = Modifier.padding(innerPadding)
             ) {
+
                 composable(Screen.Login.route) {
                     fun navigateToHome() = navController.navigate(Screen.Home.route) {
                         popUpTo(Screen.Login.route) {
@@ -118,6 +119,7 @@ fun AlgoDailyApp(
                         navController = navController
                     )
                 }
+
                 composable(Screen.Register.route) {
                     fun navigateToLogin() = navController.navigate(Screen.Login.route) {
                         popUpTo(Screen.Register.route) {
@@ -139,6 +141,7 @@ fun AlgoDailyApp(
                         eventMessage = registerViewModel.eventFlow,
                     )
                 }
+
                 composable(Screen.Home.route) {
                     HomeScreen(
                         timerState = timerViewModel.timerState,
@@ -150,19 +153,25 @@ fun AlgoDailyApp(
                         onDutyValue = attendanceViewModel.onDutyStatus
                     )
                 }
+
                 composable(Screen.Map.route) {
                     MapScreen()
                 }
+
                 composable(
                     route = Screen.Attendance.route,
                     deepLinks = listOf(navDeepLink {
-                        uriPattern = "https://algodaily/attendance/{id}"
+                        uriPattern = "https://algodaily/attendance/{id}/{createdAt}"
                     }),
-                    arguments = listOf(navArgument("id") { type = NavType.StringType })
+                    arguments = listOf(
+                        navArgument("id") { type = NavType.StringType },
+                        navArgument("createdAt") { type = NavType.StringType })
                 ) {
                     val id = it.arguments?.getString("id") ?: ""
-                    AttendanceScreen(id = id, navController = navController, attendanceViewModel)
+                    val createdAt = it.arguments?.getString("createdAt") ?: ""
+                    AttendanceScreen(id = id, createdAt = createdAt, navController = navController, viewModel = attendanceViewModel)
                 }
+
                 composable(
                     route = Screen.Success.route,
                     arguments = listOf(
@@ -173,6 +182,7 @@ fun AlgoDailyApp(
                     val desc = it.arguments?.getString("desc")
                     SuccessScreen(navController = navController, title = title, desc = desc)
                 }
+
                 composable(Screen.History.route) {
                     AttendanceHistoryScreen(
                         navController,
@@ -189,6 +199,7 @@ fun AlgoDailyApp(
                         timestampSortType = historyAttendanceViewModel.timestampSortType,
                     )
                 }
+
                 composable(
                     route = Screen.Profile.route,
                 ) {
@@ -208,6 +219,7 @@ fun AlgoDailyApp(
                         reloadProfile = { profileViewModel.reloadProfile() }
                     )
                 }
+
                 composable(
                     route = Screen.Detail.route,
                     arguments = listOf(navArgument("id") { type = NavType.StringType }
@@ -221,6 +233,7 @@ fun AlgoDailyApp(
                         reloadDetail = { historyAttendanceViewModel.reloadDetail() }
                     )
                 }
+
                 composable(route = Screen.UploadProfilePic.route) {
                     fun navigateToHome() = navController.navigate(
                         Screen.Success.createRoute(
@@ -248,6 +261,7 @@ fun AlgoDailyApp(
                         eventMessage = profileViewModel.eventFlow
                     )
                 }
+
                 composable(route = Screen.ChangePassword.route) {
                     fun navigateToHome() = navController.navigate(
                         Screen.Success.createRoute(

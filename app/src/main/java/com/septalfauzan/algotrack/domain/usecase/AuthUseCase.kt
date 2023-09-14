@@ -50,5 +50,6 @@ class AuthUseCase @Inject constructor(private val authRepository: IAuthRepositor
     }
 
     override suspend fun getAuthToken(): Flow<String> = authRepository.getAuthToken()
+    override suspend fun checkAuthTokenValid():Boolean = authRepository.checkTokenIsValid()
 
 }

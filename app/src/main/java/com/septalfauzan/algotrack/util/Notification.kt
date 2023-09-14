@@ -23,14 +23,15 @@ object Notification {
             Calendar.FRIDAY,
         )
 
-        workDays.map { day ->
+//        workDays.map { day ->
 //            val calendar = Calendar.getInstance()
-//            calendar.set(Calendar.HOUR_OF_DAY, 8)
-//            calendar.set(Calendar.MINUTE, 0)
+//            calendar.set(Calendar.HOUR_OF_DAY, 16)
+//            calendar.set(Calendar.MINUTE, 40)
 //            calendar.set(Calendar.DAY_OF_WEEK, day)
 //
-//            alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, AlarmManager.INTERVAL_FIFTEEN_MINUTES, pendingIntent)
-        }
+//
+//            alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, 10000, pendingIntent)
+//        }
 
         val calendar = Calendar.getInstance()
         calendar.set(Calendar.HOUR_OF_DAY, 23)

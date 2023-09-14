@@ -12,4 +12,5 @@ interface IAuthRepository {
     suspend fun login(data: Auth) : Flow<AuthResponse>
     suspend fun changePassword(newPassword: UserChangePassword) : Flow<RegisterResponse>
     suspend fun logout() : Unit
+    suspend fun checkTokenIsValid() : Boolean
 }

@@ -47,7 +47,7 @@ fun HistoryCard(data: AttendanceEntity, navController: NavController) {
                     modifier = Modifier.align(Alignment.CenterVertically)
                 )
                 Text(
-                    text = when(data.status){
+                    text = when (data.status) {
                         AttendanceStatus.PERMIT -> "Izin"
                         AttendanceStatus.ON_DUTY -> "Masuk"
                         AttendanceStatus.OFF_DUTY -> "Cuti"
@@ -60,17 +60,36 @@ fun HistoryCard(data: AttendanceEntity, navController: NavController) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
-            ){
-                Text(
-                    text = data.createdAt.formatTimeStampDatasource(),
-                    modifier = Modifier
-                        .padding(bottom = 8.dp)
-                        .align(Alignment.CenterVertically)
-                )
+            ) {
+                Column{
+                    Text(
+                        text = data.createdAt.formatTimeStampDatasource(),
+                        modifier = Modifier
+                            .padding(bottom = 8.dp)
+                    )
+                    Text(
+                        text = data.timestamp.formatTimeStampDatasource(),
+                        modifier = Modifier
+                            .padding(bottom = 8.dp)
+                    )
+                }
                 if (data.status == AttendanceStatus.NOT_FILLED) {
-                    HistoryCardButton(text = "absen", isAttended = false, onClick = { navController.navigate(Screen.Attendance.createRoute(data.id)) })
+                    HistoryCardButton(
+                        text = "absen",
+                        isAttended = false,
+                        onClick = {
+                            navController.navigate(
+                                Screen.Attendance.createRoute(
+                                    data.id,
+                                    data.createdAt
+                                )
+                            )
+                        })
                 } else {
-                    HistoryCardButton(text = "detail", isAttended = true, onClick = { navController.navigate(Screen.Detail.createRoute(data.id)) })
+                    HistoryCardButton(
+                        text = "detail",
+                        isAttended = true,
+                        onClick = { navController.navigate(Screen.Detail.createRoute(data.id)) })
                 }
             }
         }
@@ -91,7 +110,10 @@ fun HistoryCardPreview() {
                 latitude = 0.0,
                 longitude = 0.0,
             )
-            HistoryCard(data = userData.toAttendanceEntity(), navController = rememberNavController())
+            HistoryCard(
+                data = userData.toAttendanceEntity(),
+                navController = rememberNavController()
+            )
         }
     }
 }

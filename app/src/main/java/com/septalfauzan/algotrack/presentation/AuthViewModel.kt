@@ -33,19 +33,11 @@ class AuthViewModel @Inject constructor(private val authUseCase: IAuthUseCase, p
     val eventFlow = eventChannel.receiveAsFlow()
 
     init {
-        // TODO: fix splash screen issue, login screen flash even tho already login  
-        viewModelScope.launch(Dispatchers.IO) {
-            authUseCase.getAuthToken().catch {
-                it.printStackTrace()
-                _isLogged.value = false
-                delay(1000)
-                _isLoadingSplash.value = false
-            }.collect{token ->
-                _isLogged.value = token.isNotEmpty()
-                Log.d(AuthViewModel::class.java.simpleName, "auth token: $token")
-                delay(1000)
-                _isLoadingSplash.value = false
-            }
+        viewModelScope.launch {
+            if(!authUseCase.checkAuthTokenValid()) logout()
+            _isLogged.value = authUseCase.checkAuthTokenValid()
+            delay(1000)
+            _isLoadingSplash.value = false
         }
     }
     fun updateEmail(email: String){
@@ -97,11 +89,12 @@ class AuthViewModel @Inject constructor(private val authUseCase: IAuthUseCase, p
             }
         }
     }
-    fun logout(onSuccess: () -> Unit) {
+    fun logout(onSuccess: () -> Unit = {}) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 authUseCase.logout(eventChannel = eventChannel, onSuccess = { onSuccess() })
                 historyUseCase.deleteLocalHistoryAttendances()
+                _isLogged.value = false
             } catch (e: Exception) {
                 e.printStackTrace()
                 eventChannel.send(MyEvent.MessageEvent("error: ${e.message}"))

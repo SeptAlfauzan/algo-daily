@@ -11,8 +11,8 @@ sealed class Screen(val route: String){
     object ChangePassword : Screen("change_password")
     object Map : Screen( "map" )
     object History : Screen("history")
-    object Attendance : Screen("attendance/{id}"){
-        fun createRoute(id: String) = "attendance/$id"
+    object Attendance : Screen("attendance/{id}/{createdAt}"){
+        fun createRoute(id: String, createdAt: String) = "attendance/$id/$createdAt"
     }
     object UploadProfilePic : Screen("profile-change")
     object Success : Screen("success/{title}/{desc}"){

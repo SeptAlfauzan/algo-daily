@@ -11,4 +11,5 @@ interface IAuthUseCase {
     suspend fun changePassword(newPassword: UserChangePassword, eventChannel: Channel<MyEvent>, onSuccess: () -> Unit)
     suspend fun logout(eventChannel: Channel<MyEvent>, onSuccess: () -> Unit)
     suspend fun getAuthToken() : Flow<String>
+    suspend fun checkAuthTokenValid() : Boolean
 }

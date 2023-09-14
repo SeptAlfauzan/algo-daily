@@ -29,49 +29,9 @@ import com.septalfauzan.algotrack.ui.component.EdtTextAttandence
 import com.septalfauzan.algotrack.ui.component.RoundedButton
 
 @OptIn(ExperimentalPermissionsApi::class)
-private fun runLocationRequest(
-    permissionsState: MultiplePermissionsState,
-    fusedLocationClient: FusedLocationProviderClient,
-    locationCallback: LocationCallback
-) {
-    val locationRequest = LocationRequest.create().apply {
-        interval = 10000 // Update interval in milliseconds (e.g., every 10 seconds)
-        fastestInterval = 5000 // Fastest interval in milliseconds
-        priority = LocationRequest.PRIORITY_HIGH_ACCURACY // Location accuracy priority
-    }
-    when (permissionsState.allPermissionsGranted) {
-        true -> {
-            try {
-                fusedLocationClient.requestLocationUpdates(
-                    locationRequest,
-                    locationCallback,
-                    Looper.getMainLooper()
-                )
-            } catch (securityException: SecurityException) {
-                // Handle exception if location updates cannot be requested
-                securityException.printStackTrace()
-            }
-        }
-        else -> permissionsState.launchMultiplePermissionRequest()
-    }
-}
-
-private fun onDisposeLocationRequest(
-    fusedLocationClient: FusedLocationProviderClient,
-    locationCallback: LocationCallback
-) {
-    try {
-        fusedLocationClient.removeLocationUpdates(locationCallback)
-    } catch (securityException: SecurityException) {
-        // Handle exception if location updates cannot be removed
-        securityException.printStackTrace()
-    }
-}
-
-@OptIn(ExperimentalPermissionsApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun AttendanceScreen(id: String, navController: NavController, viewModel: AttendanceViewModel) {
+fun AttendanceScreen(id: String, createdAt: String, navController: NavController, viewModel: AttendanceViewModel) {
     var currentQuestion by remember { mutableStateOf(1) }
     var selectedAnswer by remember { mutableStateOf("") }
     var reasonNotWork by remember { mutableStateOf("") }
@@ -124,7 +84,7 @@ fun AttendanceScreen(id: String, navController: NavController, viewModel: Attend
                 TopAppBar(
                     title = {
                         Text(
-                            text = "Attendance",
+                            text = "Attendance $createdAt",
                             style = MaterialTheme.typography.h6,
                         )
                     },
@@ -228,13 +188,14 @@ fun AttendanceScreen(id: String, navController: NavController, viewModel: Attend
                                 if (selectedAnswer == "Yes") {
                                     RoundedButton(
                                         onClick = {
-                                            viewModel.updateAttendance(
-                                                id,
-                                                selectedAnswer,
-                                                reasonNotWork,
-                                                latitude,
-                                                longitude,
-                                                navController
+                                            viewModel.createAttendance(
+                                                id = id,
+                                                createdAt = createdAt,
+                                                selectedAnswer =  selectedAnswer,
+                                                reasonNotWork =  reasonNotWork,
+                                                latitude =  latitude,
+                                                longitude =  longitude,
+                                                navController =  navController,
                                             )
                                         },
                                         text = "kirim",
@@ -278,13 +239,14 @@ fun AttendanceScreen(id: String, navController: NavController, viewModel: Attend
                                     )
                                     RoundedButton(
                                         onClick = {
-                                            viewModel.updateAttendance(
-                                                id,
-                                                selectedAnswer,
-                                                reasonNotWork,
-                                                latitude,
-                                                longitude,
-                                                navController
+                                            viewModel.createAttendance(
+                                                id = id,
+                                                createdAt = createdAt,
+                                                selectedAnswer =  selectedAnswer,
+                                                reasonNotWork =  reasonNotWork,
+                                                latitude =  latitude,
+                                                longitude =  longitude,
+                                                navController =  navController,
                                             )
                                         },
                                         onloading = viewModel.attendanceFormUiState.collectAsState().value.onLoading,
@@ -306,5 +268,46 @@ fun AttendanceScreen(id: String, navController: NavController, viewModel: Attend
                 }, dismissLabel = "tutup")
             }
         }
+    }
+}
+
+
+@OptIn(ExperimentalPermissionsApi::class)
+private fun runLocationRequest(
+    permissionsState: MultiplePermissionsState,
+    fusedLocationClient: FusedLocationProviderClient,
+    locationCallback: LocationCallback
+) {
+    val locationRequest = LocationRequest.create().apply {
+        interval = 10000 // Update interval in milliseconds (e.g., every 10 seconds)
+        fastestInterval = 5000 // Fastest interval in milliseconds
+        priority = LocationRequest.PRIORITY_HIGH_ACCURACY // Location accuracy priority
+    }
+    when (permissionsState.allPermissionsGranted) {
+        true -> {
+            try {
+                fusedLocationClient.requestLocationUpdates(
+                    locationRequest,
+                    locationCallback,
+                    Looper.getMainLooper()
+                )
+            } catch (securityException: SecurityException) {
+                // Handle exception if location updates cannot be requested
+                securityException.printStackTrace()
+            }
+        }
+        else -> permissionsState.launchMultiplePermissionRequest()
+    }
+}
+
+private fun onDisposeLocationRequest(
+    fusedLocationClient: FusedLocationProviderClient,
+    locationCallback: LocationCallback
+) {
+    try {
+        fusedLocationClient.removeLocationUpdates(locationCallback)
+    } catch (securityException: SecurityException) {
+        // Handle exception if location updates cannot be removed
+        securityException.printStackTrace()
     }
 }

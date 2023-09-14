@@ -43,11 +43,11 @@ class MainActivity : ComponentActivity() {
         }
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        Notification.setDailyReminder(this)
+//        Notification.setDailyReminder(this)
 
         val workManager = WorkManager.getInstance(this)
         workManager.cancelAllWorkByTag(REMINDER_WORK_MANAGER_TAG)
-        workManager.enqueue(DailyAttendanceWorker.oneTImeWorkRequest)
+        workManager.enqueue(DailyAttendanceWorker.periodicWorkRequest)
 
         setContent {
             AlgoTrackTheme(darkTheme = themeViewModel.isDarkTheme.collectAsState().value) {

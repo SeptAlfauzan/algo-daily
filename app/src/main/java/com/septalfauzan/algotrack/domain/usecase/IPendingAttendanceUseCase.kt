@@ -7,5 +7,5 @@ import com.septalfauzan.algotrack.data.source.remote.apiResponse.AttendanceRespo
 import kotlinx.coroutines.flow.StateFlow
 
 interface IPendingAttendanceUseCase {
-    suspend fun create() : StateFlow<String?>
+    suspend fun create() : StateFlow<PendingAttendanceEntity?>
 }

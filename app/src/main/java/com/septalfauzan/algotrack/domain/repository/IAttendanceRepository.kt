@@ -12,6 +12,7 @@ interface IAttendanceRepository {
     suspend fun getHistory(date: String) : Flow<List<AttendanceEntity>>
     suspend fun getDetail(id: String) : Flow<AttendanceEntity>
     suspend fun updateAttendance(id: String, data: Attendance) : Flow<AttendanceResponse>
+    suspend fun createAttendance(pendingId: String, data: Attendance) : Flow<AttendanceResponse>
     suspend fun saveToLocalDB(data: AttendanceEntity) : Flow<Long>
     suspend fun saveBatchToLocalDB(listData: List<AttendanceEntity>) : Flow<List<Long>>
     suspend fun createNewBlankAttendance() : Flow<PendingAttendanceEntity>
@@ -19,5 +20,7 @@ interface IAttendanceRepository {
 
     suspend fun getSortByTimestampValue() : Flow<SortType>
     suspend fun getSortByStatusValue() : Flow<SortType>
+    suspend fun deleteLocalPendingAttendance(pendingAttendanceEntity: PendingAttendanceEntity): Long
     suspend fun deleteLocalAttendanceHistoryRecord() : Flow<Int>
+    suspend fun deleteLocalAttendanceData(): Unit
 }

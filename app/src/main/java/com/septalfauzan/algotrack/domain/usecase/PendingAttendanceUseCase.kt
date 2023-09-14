@@ -25,14 +25,14 @@ class PendingAttendanceUseCase @Inject constructor(private val attendanceReposit
 //    }
 
 
-    override suspend fun create(): StateFlow<String?> {
-        val result: MutableStateFlow<String?> = MutableStateFlow(null)
+    override suspend fun create(): StateFlow<PendingAttendanceEntity?> {
+        val result: MutableStateFlow<PendingAttendanceEntity?> = MutableStateFlow(null)
         try {
             val response = attendanceRepository.createNewBlankAttendance()
             response.catch { error ->
                 throw error
             }.collect{
-                result.value = it.id
+                result.value = it
             }
         }catch (e: Exception){
             throw e

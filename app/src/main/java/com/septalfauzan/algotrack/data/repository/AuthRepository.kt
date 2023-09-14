@@ -56,4 +56,19 @@ class AuthRepository @Inject constructor(
     override suspend fun logout(){
         dataStorePreference.setAuthToken("")
     }
+
+    override suspend fun checkTokenIsValid(): Boolean {
+        val token = dataStorePreference.getAuthToken().first()
+        try {
+            val result = apiServices.getUserProfile(token)
+            if(!result.isSuccessful) {
+                val errorJson = result.errorBody()?.string()
+                val errorResponse = errorJson?.getErrorMessage()
+                return errorResponse?.errors == "Invalid token"
+            }
+            return true
+        }catch (e: Exception){
+            throw e
+        }
+    }
 }
