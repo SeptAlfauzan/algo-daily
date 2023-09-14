@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import com.septalfauzan.algotrack.data.ui.BottomBarMenu
+import com.septalfauzan.algotrack.domain.model.ui.BottomBarMenu
 import com.septalfauzan.algotrack.helper.navigation.Screen
 
 
@@ -23,7 +23,7 @@ fun BottomBar(
     currentDestination: NavDestination?,
     modifier: Modifier = Modifier,
 ){
-    BottomNavigation(modifier, backgroundColor = MaterialTheme.colors.background, elevation = 4.dp) {
+    BottomNavigation(modifier, backgroundColor = MaterialTheme.colors.surface, elevation = 4.dp) {
         bottomBarMenu.forEach {menu ->
             BottomNavigationItem(
                 icon = { Icon(imageVector = menu.icon, contentDescription = menu.screen.route) },

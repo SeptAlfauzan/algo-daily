@@ -1,4 +1,4 @@
-package com.septalfauzan.algotrack.data.ui
+package com.septalfauzan.algotrack.domain.model.ui
 
 data class RegisterFormUiState(
     val email: String = "",

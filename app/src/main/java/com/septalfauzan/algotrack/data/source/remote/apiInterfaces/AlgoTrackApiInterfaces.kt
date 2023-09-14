@@ -1,8 +1,8 @@
 package com.septalfauzan.algotrack.data.source.remote.apiInterfaces
 
 import com.septalfauzan.algotrack.data.source.remote.apiResponse.*
-import com.septalfauzan.algotrack.domain.model.AttendanceRequestBody
-import com.septalfauzan.algotrack.domain.model.AuthData
+import com.septalfauzan.algotrack.domain.model.Attendance
+import com.septalfauzan.algotrack.domain.model.Auth
 import com.septalfauzan.algotrack.domain.model.UserChangePassword
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -11,7 +11,7 @@ import retrofit2.http.*
 
 interface AlgoTrackApiInterfaces {
     @POST("users/login")
-    suspend fun auth(@Body authData: AuthData) : Response<AuthResponse>
+    suspend fun auth(@Body authData: Auth) : Response<AuthResponse>
 
     @POST("users")
     suspend fun register(@Body userData: RequestBody) : Response<RegisterResponse>
@@ -28,14 +28,14 @@ interface AlgoTrackApiInterfaces {
     @POST("users/attendance")
     suspend fun postAttendance(
         @Header("Authorization") authToken: String,
-        @Body attendance: AttendanceRequestBody
+        @Body attendance: Attendance
     ) : Response<AttendanceResponse>
 
     @PUT("users/attendance/history/{id}")
     suspend fun putAttendance(
         @Header("Authorization") authToken: String,
         @Path("id") id: String,
-        @Body attendance: AttendanceRequestBody
+        @Body attendance: Attendance
     ) : Response<AttendanceResponse>
 
     @PUT("users/password")

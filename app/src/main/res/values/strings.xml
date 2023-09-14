@@ -50,4 +50,16 @@
     <string name="success_desc_change_profile_pic">Foto profil anda berhasil diubah</string>
     <string name="success_change_title_password">Sukses mengubah password</string>
     <string name="success_change_desc_password">Password akun anda berhasil diubah</string>
+    <string name="attend">absen</string>
+    <string name="edited">Diubah</string>
+    <string name="created">Jadwal</string>
+    <string name="permit">Izin</string>
+    <string name="on_duty">Masuk</string>
+    <string name="off_duty">Cuti</string>
+    <string name="not_filled">Belum Absen</string>
+    <string name="detail">detail</string>
+    <string name="time">Waktu</string>
+    <string name="attendance_status">Status Absen</string>
+    <string name="yes">Ya</string>
+    <string name="no">Tidak</string>
 </resources>

@@ -1,7 +1,7 @@
 package com.septalfauzan.algotrack.helper
 
 import android.util.Log
-import com.septalfauzan.algotrack.data.ui.UiState
+import com.septalfauzan.algotrack.domain.model.ui.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import retrofit2.Call

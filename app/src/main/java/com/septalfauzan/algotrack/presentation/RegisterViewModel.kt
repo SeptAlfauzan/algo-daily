@@ -3,9 +3,9 @@ package com.septalfauzan.algotrack.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.septalfauzan.algotrack.data.event.MyEvent
-import com.septalfauzan.algotrack.domain.model.UserData
+import com.septalfauzan.algotrack.domain.model.User
 import com.septalfauzan.algotrack.data.repository.MainRepository
-import com.septalfauzan.algotrack.data.ui.RegisterFormUiState
+import com.septalfauzan.algotrack.domain.model.ui.RegisterFormUiState
 import com.septalfauzan.algotrack.helper.RegistrationStatus
 import com.septalfauzan.algotrack.helper.isEmailValid
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -64,7 +64,7 @@ class RegisterViewModel @Inject constructor(private val repository: MainReposito
         )
     }
 
-    fun registerUser(userData: UserData, onSuccess: () -> Unit) {
+    fun registerUser(userData: User, onSuccess: () -> Unit) {
         updateEmail(_registerFormUiState.value.email)
         updateName(_registerFormUiState.value.name)
         updatePassword(_registerFormUiState.value.password)

@@ -6,9 +6,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.septalfauzan.algotrack.R
 import com.septalfauzan.algotrack.ui.theme.AlgoTrackTheme
 
 /**
@@ -33,17 +35,21 @@ fun AlertModalDialog(
             title = { Text(title, style = MaterialTheme.typography.h6) },
             text = { Text(text, color = MaterialTheme.colors.onSurface.copy(0.3f)) },
             confirmButton = {
-                RoundedButton(buttonType = ButtonType.PRIMARY, onClick = {
-                    onStateChange(false)
-                    onConfirmYes()
-                }, text = "Ya")
+                TextButton(
+                    onClick = {
+                        onStateChange(false)
+                        onConfirmYes()
+                    }
+                ){
+                    Text(text = stringResource(R.string.yes), color = MaterialTheme.colors.primary)
+                }
             },
             dismissButton = {
-                RoundedButton(
-                    buttonType = ButtonType.SECONDARY,
+                TextButton(
                     onClick = { onStateChange(false) },
-                    text = "Tidak"
-                )
+                ){
+                    Text(text = stringResource(R.string.no), color = MaterialTheme.colors.secondary)
+                }
             },
         )
     }

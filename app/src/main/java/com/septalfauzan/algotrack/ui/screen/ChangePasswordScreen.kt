@@ -66,7 +66,7 @@ fun ChangePasswordScreen(
                             Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
                         }
                     },
-                    backgroundColor = Color.Transparent,
+                    backgroundColor = MaterialTheme.colors.surface,
                     elevation = 0.dp
                 )
             },

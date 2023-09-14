@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.septalfauzan.algotrack.data.datastore.SortBy
 import com.septalfauzan.algotrack.data.datastore.SortType
 import com.septalfauzan.algotrack.data.source.local.dao.AttendanceEntity
-import com.septalfauzan.algotrack.data.ui.UiState
+import com.septalfauzan.algotrack.domain.model.ui.UiState
 import com.septalfauzan.algotrack.domain.usecase.IAttendanceHistoryUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers

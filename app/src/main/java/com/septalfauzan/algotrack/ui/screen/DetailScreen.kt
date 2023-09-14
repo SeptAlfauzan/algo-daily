@@ -23,11 +23,12 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.*
 import com.septalfauzan.algotrack.data.source.local.dao.AttendanceEntity
 import com.septalfauzan.algotrack.data.source.local.dao.AttendanceStatus
-import com.septalfauzan.algotrack.data.ui.UiState
+import com.septalfauzan.algotrack.domain.model.ui.UiState
 import com.septalfauzan.algotrack.helper.formatTimeStampDatasource
 import com.septalfauzan.algotrack.helper.formatTimeStampDatasourceHourMinute
 import com.septalfauzan.algotrack.ui.component.ErrorHandler
 import com.septalfauzan.algotrack.ui.utils.bottomBorder
+import com.septalfauzan.algotrack.ui.utils.shimmer
 import kotlinx.coroutines.flow.StateFlow
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -63,10 +64,12 @@ fun DetailScreen(
         }
     }
 
-    fun updateDataIsLoaded(status: Boolean){ dataLoaded = status }
+    fun updateDataIsLoaded(status: Boolean) {
+        dataLoaded = status
+    }
 
     LaunchedEffect(dataLoaded) {
-        if(dataLoaded){
+        if (dataLoaded) {
             cameraPositionState.animate(
                 update = CameraUpdateFactory.newCameraPosition(
                     CameraPosition(LatLng(latitude, longitude), 15f, 0f, 0f)
@@ -80,13 +83,13 @@ fun DetailScreen(
         topBar = {
             TopAppBar(
                 modifier = Modifier.statusBarsPadding(),
-                title = { Text(text = "Detail Absen $attendanceDate") },
+                title = { Text(text = "Detail Absen ${attendanceDate.formatTimeStampDatasource()}") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
                     }
                 },
-                backgroundColor = Color.Transparent,
+                backgroundColor = MaterialTheme.colors.surface,
                 elevation = 0.dp
             )
         },
@@ -94,7 +97,7 @@ fun DetailScreen(
         detailStateUi.collectAsState(initial = UiState.Loading).value.let { uiState ->
             when (uiState) {
                 is UiState.Loading -> {
-                    CircularProgressIndicator()
+                    ShimmerLoading()
                     loadDetail(attendanceId)
                 }
                 is UiState.Success -> {
@@ -185,6 +188,59 @@ fun DetailScreen(
     }
 }
 
+@Composable
+private fun ShimmerLoading() {
+    Column(
+        Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Box(
+            Modifier
+                .height(32.dp)
+                .width(240.dp)
+                .shimmer(true)
+                .clip(RoundedCornerShape(16.dp))
+        )
+        Box(
+            Modifier
+                .height(32.dp)
+                .width(120.dp)
+                .shimmer(true)
+                .clip(RoundedCornerShape(16.dp))
+        )
+        Box(
+            Modifier
+                .height(32.dp)
+                .width(160.dp)
+                .shimmer(true)
+                .clip(RoundedCornerShape(16.dp))
+        )
+        Box(
+            Modifier
+                .height(32.dp)
+                .width(280.dp)
+                .shimmer(true)
+                .clip(RoundedCornerShape(16.dp))
+        )
+        Box(
+            Modifier
+                .height(32.dp)
+                .width(280.dp)
+                .shimmer(true)
+                .clip(RoundedCornerShape(16.dp))
+        )
+        Box(
+            modifier = Modifier
+                .padding(top = 8.dp)
+                .height(248.dp)
+                .fillMaxWidth()
+                .shimmer(true)
+                .clip(RoundedCornerShape(16.dp))
+        )
+    }
+}
 
 @Composable
 private fun DetailScreenItem(

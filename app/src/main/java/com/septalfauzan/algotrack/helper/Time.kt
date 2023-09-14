@@ -19,7 +19,7 @@ fun Calendar.getMilliSecFromMinutesSecond(): Long{
 fun String.formatTimeStampDatasource(): String{
     return try {
         val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
-        val outputFormat = SimpleDateFormat("EEEE, hh:mm a, dd MMM yyyy", Locale.getDefault())
+        val outputFormat = SimpleDateFormat("EEEE, hh:mm a", Locale.getDefault())
         val data = inputFormat.parse(this)
 
         outputFormat.format(data)
@@ -43,6 +43,24 @@ fun String.formatToLocaleGMT() : String{
         this
     }
 }
+
+
+fun String.formatGMTtoUTC() : String{
+    return try {
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+        inputFormat.timeZone = TimeZone.getTimeZone("GMT+7")
+        val data = inputFormat.parse(this)
+
+        val outputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
+        outputFormat.timeZone = TimeZone.getTimeZone("UTC")
+
+        outputFormat.format(data)
+    }catch (e: java.lang.Exception){
+        e.printStackTrace()
+        this
+    }
+}
+
 
 
 fun String.formatTimeStampDatasourceHourMinute(): String{
@@ -84,6 +102,16 @@ fun String.reverseFormatCalendarDate(): String{
     }
 }
 
+fun String.formatDatePendingEntity(): String {
+    val inputDateFormat = SimpleDateFormat("EEE MMM dd HH:mm:ss 'GMT'XXX yyyy", Locale.US)
+    val outputDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
+
+    outputDateFormat.timeZone = TimeZone.getTimeZone("UTC")
+
+    val date = inputDateFormat.parse(this)
+    return outputDateFormat.format(date)
+}
+
 fun Context.getCurrentDayCycle():String{
     val calendar = Calendar.getInstance()
     return when(calendar.get(Calendar.HOUR_OF_DAY)){
@@ -93,3 +121,4 @@ fun Context.getCurrentDayCycle():String{
         else -> getString(R.string.night)
     }
 }
+

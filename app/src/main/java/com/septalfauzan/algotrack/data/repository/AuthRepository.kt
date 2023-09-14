@@ -1,9 +1,8 @@
 package com.septalfauzan.algotrack.data.repository
 
 import android.util.Log
-import com.google.gson.GsonBuilder
 import com.septalfauzan.algotrack.data.datastore.DataStorePreference
-import com.septalfauzan.algotrack.domain.model.AuthData
+import com.septalfauzan.algotrack.domain.model.Auth
 import com.septalfauzan.algotrack.data.source.remote.apiResponse.AuthResponse
 import com.septalfauzan.algotrack.data.source.remote.apiInterfaces.AlgoTrackApiInterfaces
 import com.septalfauzan.algotrack.domain.model.UserChangePassword
@@ -18,7 +17,7 @@ class AuthRepository @Inject constructor(
     private val apiServices: AlgoTrackApiInterfaces,
     private val dataStorePreference: DataStorePreference
 ) :IAuthRepository {
-    override suspend fun login(authData: AuthData): Flow<AuthResponse> {
+    override suspend fun login(authData: Auth): Flow<AuthResponse> {
         try {
             val result = apiServices.auth(authData)
             if(!result.isSuccessful) {
@@ -56,5 +55,20 @@ class AuthRepository @Inject constructor(
 
     override suspend fun logout(){
         dataStorePreference.setAuthToken("")
+    }
+
+    override suspend fun checkTokenIsValid(): Boolean {
+        val token = dataStorePreference.getAuthToken().first()
+        try {
+            val result = apiServices.getUserProfile(token)
+            if(!result.isSuccessful) {
+                val errorJson = result.errorBody()?.string()
+                val errorResponse = errorJson?.getErrorMessage()
+                return errorResponse?.errors == "Invalid token"
+            }
+            return true
+        }catch (e: Exception){
+            throw e
+        }
     }
 }
