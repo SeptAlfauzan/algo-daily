@@ -103,7 +103,7 @@ fun HomeScreen(
                     Row(Modifier.fillMaxWidth()) {
                         Text(
                             text = stringResource(R.string.greeting, context.getCurrentDayCycle()),
-                            style = MaterialTheme.typography.h3.copy(
+                            style = MaterialTheme.typography.h4.copy(
                                 fontWeight = FontWeight.Bold
                             ),
                             modifier = Modifier.weight(1f)
@@ -142,8 +142,8 @@ fun HomeScreen(
                                 setOnDuty(!isWorkState)
                                 navHostController.navigate(
                                     Screen.Success.createRoute(
-                                        R.string.success_change_status.toString(),
-                                        if (!isWorkState) R.string.status_desc_work.toString() else R.string.status_desc_permit.toString()
+                                        context.getString(R.string.success_change_status),
+                                        context.getString(if (!isWorkState) R.string.status_desc_work else R.string.status_desc_permit)
                                     )
                                 )
                             } catch (e: Exception) {

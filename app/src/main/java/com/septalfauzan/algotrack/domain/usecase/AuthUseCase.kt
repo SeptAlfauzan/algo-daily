@@ -35,7 +35,6 @@ class AuthUseCase @Inject constructor(private val authRepository: IAuthRepositor
         onSuccess: () -> Unit
     ) {
         authRepository.changePassword(newPassword).catch { error ->
-            Log.d("TAG", "changePassword: ${error.message}")
             eventChannel.send(MyEvent.MessageEvent("error: ${error.message}"))
         }.collect{
             withContext(Dispatchers.Main){

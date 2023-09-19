@@ -150,6 +150,7 @@ private fun RegisterForm(
             ),
             modifier = Modifier.fillMaxWidth()
         )
+        Box(modifier = Modifier.weight(1f))
         Box(
             modifier = Modifier.fillMaxWidth(),
             contentAlignment = Alignment.Center

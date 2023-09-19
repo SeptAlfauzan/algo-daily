@@ -1,5 +1,6 @@
 package com.septalfauzan.algotrack.presentation
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
@@ -12,6 +13,7 @@ import com.septalfauzan.algotrack.domain.model.ui.AttendanceFormUiState
 import com.septalfauzan.algotrack.domain.usecase.IOnDutyUseCase
 import com.septalfauzan.algotrack.helper.navigation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
@@ -21,6 +23,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AttendanceViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val repository: AttendanceRepository,
     private val onDutyUseCase: IOnDutyUseCase
 ) : ViewModel() {
@@ -69,8 +72,8 @@ class AttendanceViewModel @Inject constructor(
                 withContext(Dispatchers.Main) {
                     navController.navigate(
                         Screen.Success.createRoute(
-                            R.string.absence_sent_successfully.toString(),
-                            R.string.thank_you_message.toString()
+                            context.getString(R.string.absence_sent_successfully) ,
+                            context.getString(R.string.thank_you_message)
                         )
                     ) {
                         popUpTo(Screen.Attendance.route) {

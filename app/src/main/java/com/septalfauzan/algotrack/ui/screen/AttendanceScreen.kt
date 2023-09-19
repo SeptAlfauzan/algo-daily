@@ -60,7 +60,6 @@ fun AttendanceScreen(
         override fun onLocationResult(locationResult: LocationResult) {
             val latestLocation = locationResult.lastLocation
             latestLocation?.let {
-                Log.d("TAG", "onLocationResult: $it")
                 latitude = it.latitude
                 longitude = it.longitude
             }

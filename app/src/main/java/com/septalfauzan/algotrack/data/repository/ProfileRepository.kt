@@ -40,7 +40,6 @@ class ProfileRepository @Inject constructor(
     override suspend fun updateProfilePic(imageFile: File): Flow<UpdateUserProfilePicData> {
         val token = dataStorePreference.getAuthToken().first()
         val requestFile = imageFile.asRequestBody("image/*".toMediaTypeOrNull())
-    Log.d("TAG", "updateProfilePic:  $requestFile")
         val photoPart = MultipartBody.Part.createFormData("photo", imageFile.name, requestFile)
         try {
             val result = apiService.updatePP(token, photoPart)
@@ -51,7 +50,6 @@ class ProfileRepository @Inject constructor(
             }
             return flowOf(result.body()!!)
         } catch (e: Exception){
-            Log.d("TAG", "updateProfilePic: error: $e")
             throw e
         }
     }

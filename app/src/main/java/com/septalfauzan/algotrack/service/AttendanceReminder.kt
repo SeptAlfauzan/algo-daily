@@ -68,11 +68,6 @@ class AttendanceReminder : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         executeThread {
             context?.let {
-                val calendar = Calendar.getInstance()
-                val currentHour = calendar.get(Calendar.HOUR_OF_DAY)
-                val currentMinute = calendar.get(Calendar.MINUTE)
-                if(currentHour > 16 && currentMinute > 5) return@executeThread
-
                 val workManager = WorkManager.getInstance(context)
                 workManager.enqueue(DailyAttendanceWorker.oneTImeWorkRequest)
             }

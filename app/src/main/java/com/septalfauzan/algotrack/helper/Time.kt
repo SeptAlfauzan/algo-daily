@@ -91,7 +91,7 @@ fun String.formatCalendarDate(): String{
 
 fun String.reverseFormatCalendarDate(): String{
     return try {
-        val inputFormat = SimpleDateFormat("EEEE, dd MMM yyyy", Locale.US)
+        val inputFormat = SimpleDateFormat("EEEE, dd MMM yyyy", Locale.getDefault())
         val outputFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         val data = inputFormat.parse(this)
 
