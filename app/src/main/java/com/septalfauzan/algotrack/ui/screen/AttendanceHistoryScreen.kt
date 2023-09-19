@@ -78,7 +78,6 @@ fun AttendanceHistoryScreen(
     )
 
     LaunchedEffect(Unit) {
-        Log.d("launchedEffect", "$dayOfMonth/${month + 1}/$year")
         if (selectedDateText == null) {
             selectedDateText = "$dayOfMonth/${month + 1}/$year".formatCalendarDate()
         }
@@ -87,6 +86,7 @@ fun AttendanceHistoryScreen(
     DisposableEffect(Unit){
         onDispose {
             reloadHistory()
+            selectedDateText = ""
         }
     }
 

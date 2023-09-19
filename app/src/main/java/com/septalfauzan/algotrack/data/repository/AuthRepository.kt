@@ -48,7 +48,6 @@ class AuthRepository @Inject constructor(
     }
 
     override suspend fun setAuthToken(token: String){
-        Log.d("TAG", "setAuthToken: $token")
         dataStorePreference.setAuthToken(token)
     }
 

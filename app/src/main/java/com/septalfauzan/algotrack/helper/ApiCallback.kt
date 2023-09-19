@@ -33,12 +33,8 @@ class NetworkCall<T>{
             }
         }
 
-        Log.d("TAG", "makeCall: ${result.value}")
         call.enqueue(callback)
         return result
-//        val callback = makeCallback(this._result)
-//        call.enqueue(callback)
-//        return this.result
     }
 
     private fun makeCallback(result: MutableStateFlow<UiState<T>>) = object : Callback<T>{
@@ -55,23 +51,4 @@ class NetworkCall<T>{
             result.value = UiState.Error("Network call failed: ${t.message}")
         }
     }
-//    class ApiCallback<T> : Callback<T> {
-//        private val _result = MutableStateFlow<UiState<T>>(UiState.Loading)
-//        val result: MutableStateFlow<UiState<T>> = _result
-//
-//        override fun onResponse(call: Call<T>, response: Response<T>) {
-//            _result.value = when{
-//                response.isSuccessful -> response.body()?.let {
-//                    UiState.Success(it)
-//                } ?: UiState.Error("response is null!")
-//                else -> UiState.Error("Request failed: ${response.code()}")
-//            }
-//
-//            Log.d("TAG", "onResponse: ${_result.value} ${result.value}")
-//        }
-//
-//        override fun onFailure(call: Call<T>, t: Throwable) {
-//            _result.value = UiState.Error("Network call failed: ${t.message}")
-//        }
-//    }
 }

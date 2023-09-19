@@ -1,6 +1,8 @@
 package com.septalfauzan.algotrack
 
+import android.content.Context
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -31,6 +33,7 @@ import com.septalfauzan.algotrack.ui.component.BottomBar
 import com.septalfauzan.algotrack.ui.screen.*
 import com.septalfauzan.algotrack.presentation.*
 import com.septalfauzan.algotrack.ui.component.AlertModalDialog
+import com.septalfauzan.algotrack.util.Notification
 
 val permission33APIBelow = listOf(
     android.Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -47,6 +50,7 @@ val permission33APIAbove = listOf(
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun AlgoDailyApp(
+    openNotificationSetting: (Context) -> Unit,
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
     authViewModel: AuthViewModel,
@@ -75,7 +79,10 @@ fun AlgoDailyApp(
     var showDialog by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         permissionsState.launchMultiplePermissionRequest()
-        if (!permissionsState.allPermissionsGranted) showDialog = true
+        if (!permissionsState.allPermissionsGranted) {
+            showDialog = true
+            openNotificationSetting(context)
+        }
     }
 
     Scaffold(

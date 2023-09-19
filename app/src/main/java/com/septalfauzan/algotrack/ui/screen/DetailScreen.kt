@@ -79,7 +79,6 @@ fun DetailScreen(
             )
         }
     }
-//    val mapStyle = MapStyleOptions.loadRawResourceStyle(context, R.raw.map_style)
     Scaffold(
         topBar = {
             TopAppBar(
@@ -175,7 +174,6 @@ fun DetailScreen(
                                         BitmapDescriptorFactory.HUE_CYAN
                                     ),
                                 )
-//                    Circle(center = mapPosition, radius = pulse.toDouble(), fillColor = MaterialTheme.colors.secondary.copy(alpha = 0.3f), strokeColor = MaterialTheme.colors.primary, strokeWidth = 0f)
                             }
                         }
                     }

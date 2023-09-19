@@ -47,7 +47,6 @@ fun UserChangeProfilePicScreen(
         rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
             if (uri != null) {
                 imageFile = convertContentUriToImageFile(context, uri)
-                Log.d("TAG", "UserChangeProfilePicScreen: $uri file: $imageFile")
             }
         }
     LaunchedEffect(Unit){
