@@ -18,11 +18,15 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.outlined.Timer
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -55,6 +59,7 @@ import com.septalfauzan.algotrack.util.Notification
 import kotlinx.coroutines.flow.StateFlow
 import java.util.Calendar
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HomeScreen(
     navHostController: NavHostController,
@@ -67,6 +72,11 @@ fun HomeScreen(
     reloadHomeData: () -> Unit
 ) {
     var showAlert by remember { mutableStateOf(false) }
+    var loading by remember { mutableStateOf(false) }
+
+    val pullRefreshState =
+        rememberPullRefreshState(refreshing = loading, onRefresh = { reloadHomeData() })
+
     val timer = System.currentTimeMillis()
     val currentDate = Calendar.getInstance()
     currentDate.timeInMillis = timer
@@ -75,87 +85,114 @@ fun HomeScreen(
     val isWorkState = onDutyValue.collectAsState().value
 
 
-    homeData.collectAsState(initial = UiState.Loading).value.let { uiState ->
-        when (uiState) {
-            is UiState.Loading -> {
-                ShimmerLoading()
-                getHomeStateFlow()
-            }
-            is UiState.Error -> {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    ErrorHandler(
-                        reload = reloadHomeData,
-                        errorMessage = "Error: ${uiState.errorMessage}"
-                    )
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .pullRefresh(pullRefreshState)
+    ) {
+        homeData.collectAsState(initial = UiState.Loading).value.let { uiState ->
+            when (uiState) {
+                is UiState.Loading -> {
+                    loading = true
+                    ShimmerLoading()
+                    getHomeStateFlow()
                 }
-            }
-            is UiState.Success -> {
-                val homeUiStateData = uiState.data
-                Column(
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .verticalScroll(rememberScrollState())
-                        .padding(horizontal = 16.dp, vertical = 32.dp)
-                        .statusBarsPadding(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(32.dp)
-                ) {
-                    Row(Modifier.fillMaxWidth()) {
-                        Text(
-                            text = stringResource(R.string.greeting, context.getCurrentDayCycle()),
-                            style = MaterialTheme.typography.h4.copy(
-                                fontWeight = FontWeight.Bold
-                            ),
-                            modifier = Modifier.weight(1f)
-                        )
-                        Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.TopEnd) {
-                            AvatarProfile(
-                                imageUri = homeUiStateData.profile.data.photoUrl ?: "",
-                                onClick = {
-                                    navHostController.navigate(
-                                        Screen.Profile.route
-                                    )
-                                })
-                        }
-                    }
-                    TimerBanner(timer = timerState.collectAsState().value, onWork = (isWorkState && Notification.isWorkHour() && Notification.isWorkDay()))
-                    VacationBanner(action = { showAlert = true }, isWork = isWorkState)
-                    homeUiStateData.stats.let {
-                        Statistic(
-                            ontime = it.data?.onTimeCountDay ?: 0,
-                            late = it.data?.lateCountDay ?: 0,
-                            weekPercentage = it.data
-                                ?.onTimePercentageWeek ?: 0
+                is UiState.Error -> {
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        ErrorHandler(
+                            reload = reloadHomeData,
+                            errorMessage = "Error: ${uiState.errorMessage}"
                         )
                     }
-                    AlertModalDialog(
-                        isShowed = showAlert,
-                        title = if (isWorkState) stringResource(R.string.change_offduty_title_msg) else stringResource(
-                            R.string.change_onduty_title_msg
-                        ),
-                        text = if (isWorkState) stringResource(R.string.change_offduty_desc_msg) else stringResource(
-                            R.string.change_onduty_desc_msg
-                        ),
-                        onStateChange = { showAlert = false },
-                        onConfirmYes = {
-                            try {
-                                setOnDuty(!isWorkState)
-                                navHostController.navigate(
-                                    Screen.Success.createRoute(
-                                        context.getString(R.string.success_change_status),
-                                        context.getString(if (!isWorkState) R.string.status_desc_work else R.string.status_desc_permit)
-                                    )
-                                )
-                            } catch (e: Exception) {
-                                Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT)
-                                    .show()
+                }
+                is UiState.Success -> {
+                    loading = false
+                    val homeUiStateData = uiState.data
+                    Column(
+                        modifier = modifier
+                            .fillMaxWidth()
+                            .verticalScroll(rememberScrollState())
+                            .padding(horizontal = 16.dp, vertical = 32.dp)
+                            .statusBarsPadding(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(32.dp)
+                    ) {
+                        Row(Modifier.fillMaxWidth()) {
+                            Text(
+                                text = stringResource(
+                                    R.string.greeting,
+                                    context.getCurrentDayCycle()
+                                ),
+                                style = MaterialTheme.typography.h4.copy(
+                                    fontWeight = FontWeight.Bold
+                                ),
+                                modifier = Modifier.weight(1f)
+                            )
+                            Box(
+                                modifier = Modifier.weight(1f),
+                                contentAlignment = Alignment.TopEnd
+                            ) {
+                                AvatarProfile(
+                                    imageUri = homeUiStateData.profile.data.photoUrl ?: "",
+                                    onClick = {
+                                        navHostController.navigate(
+                                            Screen.Profile.route
+                                        )
+                                    })
                             }
                         }
-                    )
+                        TimerBanner(
+                            timer = timerState.collectAsState().value,
+                            onWork = (isWorkState && Notification.isWorkHour() && Notification.isWorkDay())
+                        )
+                        VacationBanner(action = { showAlert = true }, isWork = isWorkState)
+                        homeUiStateData.stats.let {
+                            Statistic(
+                                ontime = it.data?.onTimeCountDay ?: 0,
+                                late = it.data?.lateCountDay ?: 0,
+                                weekPercentage = it.data
+                                    ?.onTimePercentageWeek ?: 0
+                            )
+                        }
+                        AlertModalDialog(
+                            isShowed = showAlert,
+                            title = if (isWorkState) stringResource(R.string.change_offduty_title_msg) else stringResource(
+                                R.string.change_onduty_title_msg
+                            ),
+                            text = if (isWorkState) stringResource(R.string.change_offduty_desc_msg) else stringResource(
+                                R.string.change_onduty_desc_msg
+                            ),
+                            onStateChange = { showAlert = false },
+                            onConfirmYes = {
+                                try {
+                                    setOnDuty(!isWorkState)
+                                    navHostController.navigate(
+                                        Screen.Success.createRoute(
+                                            context.getString(R.string.success_change_status),
+                                            context.getString(if (!isWorkState) R.string.status_desc_work else R.string.status_desc_permit)
+                                        )
+                                    )
+                                } catch (e: Exception) {
+                                    Toast.makeText(
+                                        context,
+                                        "Error: ${e.message}",
+                                        Toast.LENGTH_SHORT
+                                    )
+                                        .show()
+                                }
+                            }
+                        )
+                    }
                 }
             }
+            PullRefreshIndicator(
+                refreshing = loading,
+                state = pullRefreshState,
+                modifier = Modifier.padding(top = 32.dp).align(Alignment.TopCenter),
+            )
         }
     }
+
 }
 
 
@@ -209,20 +246,26 @@ private fun ShimmerLoading() {
     ) {
         Row(Modifier.fillMaxWidth()) {
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Box(modifier = Modifier
-                    .width(240.dp)
-                    .height(58.dp)
-                    .shimmer(true))
-                Box(modifier = Modifier
-                    .width(120.dp)
-                    .height(58.dp)
-                    .shimmer(true))
+                Box(
+                    modifier = Modifier
+                        .width(240.dp)
+                        .height(58.dp)
+                        .shimmer(true)
+                )
+                Box(
+                    modifier = Modifier
+                        .width(120.dp)
+                        .height(58.dp)
+                        .shimmer(true)
+                )
             }
             Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.TopEnd) {
-                Box(modifier = Modifier
-                    .size(58.dp)
-                    .clip(CircleShape)
-                    .shimmer(true))
+                Box(
+                    modifier = Modifier
+                        .size(58.dp)
+                        .clip(CircleShape)
+                        .shimmer(true)
+                )
             }
         }
         Box(

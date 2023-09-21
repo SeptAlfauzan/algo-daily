@@ -2,8 +2,9 @@ package com.septalfauzan.algotrack
 
 import android.content.Context
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
@@ -33,11 +34,12 @@ import com.septalfauzan.algotrack.ui.component.BottomBar
 import com.septalfauzan.algotrack.ui.screen.*
 import com.septalfauzan.algotrack.presentation.*
 import com.septalfauzan.algotrack.ui.component.AlertModalDialog
-import com.septalfauzan.algotrack.util.Notification
+import kotlinx.coroutines.flow.StateFlow
 
 val permission33APIBelow = listOf(
     android.Manifest.permission.ACCESS_COARSE_LOCATION,
     android.Manifest.permission.ACCESS_FINE_LOCATION,
+    android.Manifest.permission.WAKE_LOCK,
 )
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -45,6 +47,8 @@ val permission33APIAbove = listOf(
     android.Manifest.permission.POST_NOTIFICATIONS,
     android.Manifest.permission.ACCESS_COARSE_LOCATION,
     android.Manifest.permission.ACCESS_FINE_LOCATION,
+    android.Manifest.permission.WAKE_LOCK,
+    android.Manifest.permission.SCHEDULE_EXACT_ALARM,
 )
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -61,6 +65,8 @@ fun AlgoDailyApp(
     profileViewModel: ProfileViewModel,
     historyAttendanceViewModel: HistoryAttendanceViewModel,
     attendanceViewModel: AttendanceViewModel,
+    isAutoStarteGranted: StateFlow<Boolean>,
+    openAutoStartSetting: (Context) -> Unit,
 ) {
     val bottomBarMenuItems = listOf(
         BottomBarMenu(screen = Screen.Home, icon = Icons.Default.Home),
@@ -77,6 +83,8 @@ fun AlgoDailyApp(
         rememberMultiplePermissionsState(permissions = if (Build.VERSION.SDK_INT >= 33) permission33APIAbove else permission33APIBelow)
 
     var showDialog by remember { mutableStateOf(false) }
+    var showAutoStartDialog by remember { mutableStateOf(isAutoStarteGranted.value) }
+
     LaunchedEffect(Unit) {
         permissionsState.launchMultiplePermissionRequest()
         if (!permissionsState.allPermissionsGranted) {
@@ -96,204 +104,213 @@ fun AlgoDailyApp(
             )
         }
     ) { innerPadding ->
-        PermissionsRequired(
-            multiplePermissionsState = permissionsState,
-            permissionsNotGrantedContent = {
-                AlertModalDialog(
-                    isShowed = showDialog,
-                    title = stringResource(id = R.string.permissions_need_to_be_added),
-                    text = stringResource(id = R.string.need_permission),
-                    onStateChange = { showDialog = it }
-                )
-            },
-            permissionsNotAvailableContent = { }) {
-            NavHost(
-                navController = navController,
-                startDestination = if (isLogged) Screen.Home.route else Screen.Login.route,
-                modifier = Modifier.padding(innerPadding)
-            ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            AlertModalDialog(
+                isShowed = showAutoStartDialog,
+                title = "Aplikasi membutuhkan izin autostart!",
+                text = "Untuk bisa menjalankan beberapa fitur, aplikasi algodaily memerlukan izin berjalan di latar belakang. Buka pengaturan aplikasi?",
+                onStateChange = { showAutoStartDialog = it },
+                onConfirmYes = { openAutoStartSetting(context) }
+            )
+            PermissionsRequired(
+                multiplePermissionsState = permissionsState,
+                permissionsNotGrantedContent = {
+                    AlertModalDialog(
+                        isShowed = showDialog,
+                        title = stringResource(id = R.string.permissions_need_to_be_added),
+                        text = stringResource(id = R.string.need_permission),
+                        onStateChange = { showDialog = it }
+                    )
+                },
+                permissionsNotAvailableContent = { }) {
+                NavHost(
+                    navController = navController,
+                    startDestination = if (isLogged) Screen.Home.route else Screen.Login.route,
+                    modifier = Modifier.padding(innerPadding)
+                ) {
 
-                composable(Screen.Login.route) {
-                    fun navigateToHome() = navController.navigate(Screen.Home.route) {
-                        popUpTo(Screen.Login.route) {
-                            inclusive = true
+                    composable(Screen.Login.route) {
+                        fun navigateToHome() = navController.navigate(Screen.Home.route) {
+                            popUpTo(Screen.Login.route) {
+                                inclusive = true
+                            }
                         }
-                    }
-                    LoginScreen(
-                        updateEmail = { authViewModel.updateEmail(it) },
-                        updatePassword = { authViewModel.updatePassword(it) },
-                        formUIStateFlow = authViewModel.formUiState,
-                        eventMessage = authViewModel.eventFlow,
-                        loginAction = { authViewModel.login(onSuccess = { navigateToHome() }) },
-                        navController = navController
-                    )
-                }
-
-                composable(Screen.Register.route) {
-                    fun navigateToLogin() = navController.navigate(Screen.Login.route) {
-                        popUpTo(Screen.Register.route) {
-                            inclusive = true
-                        }
-                    }
-
-                    RegisterScreen(
-                        RegisterAction = { userData ->
-                            registerViewModel.registerUser(
-                                userData,
-                                onSuccess = { navigateToLogin() })
-                        },
-                        LoginAction = { navigateToLogin() },
-                        registerFormUiStateFlow = registerViewModel.registerFormUiState,
-                        updateName = { registerViewModel.updateName(it) },
-                        updateEmail = { registerViewModel.updateEmail(it) },
-                        updatePassword = { registerViewModel.updatePassword(it) },
-                        eventMessage = registerViewModel.eventFlow,
-                    )
-                }
-
-                composable(Screen.Home.route) {
-                    HomeScreen(
-                        timerState = timerViewModel.timerState,
-                        navHostController = navController,
-                        getHomeStateFlow = { profileViewModel.getProfileWithStats() },
-                        homeData = profileViewModel.homeData,
-                        reloadHomeData = { profileViewModel.reloadProfile() },
-                        setOnDuty = { value -> attendanceViewModel.setOnDutyValue(value) },
-                        onDutyValue = attendanceViewModel.onDutyStatus
-                    )
-                }
-
-                composable(Screen.Map.route) {
-                    MapScreen()
-                }
-
-                composable(
-                    route = Screen.Attendance.route,
-                    deepLinks = listOf(navDeepLink {
-                        uriPattern = "https://algodaily/attendance/{id}/{createdAt}"
-                    }),
-                    arguments = listOf(
-                        navArgument("id") { type = NavType.StringType },
-                        navArgument("createdAt") { type = NavType.StringType })
-                ) {
-                    val id = it.arguments?.getString("id") ?: ""
-                    val createdAt = it.arguments?.getString("createdAt") ?: ""
-                    AttendanceScreen(
-                        id = id,
-                        createdAt = createdAt,
-                        navController = navController,
-                        viewModel = attendanceViewModel
-                    )
-                }
-
-                composable(
-                    route = Screen.Success.route,
-                    arguments = listOf(
-                        navArgument("title") { type = NavType.StringType },
-                        navArgument("desc") { type = NavType.StringType })
-                ) {
-                    val title = it.arguments?.getString("title")
-                    val desc = it.arguments?.getString("desc")
-                    SuccessScreen(navController = navController, title = title, desc = desc)
-                }
-
-                composable(Screen.History.route) {
-                    AttendanceHistoryScreen(
-                        navController,
-                        getHistory = { date -> historyAttendanceViewModel.getHistory(date) },
-                        reloadHistory = { historyAttendanceViewModel.reloadHistory() },
-                        historyUiState = historyAttendanceViewModel.result,
-                        setSortingBy = { column, sortType ->
-                            historyAttendanceViewModel.sortBy(
-                                column,
-                                sortType
-                            )
-                        },
-                        statusSortType = historyAttendanceViewModel.statusSortType,
-                        timestampSortType = historyAttendanceViewModel.timestampSortType,
-                    )
-                }
-
-                composable(
-                    route = Screen.Profile.route,
-                ) {
-                    fun navigateToLogin() = navController.navigate(Screen.Login.route) {
-                        popUpTo(Screen.Home.route) { inclusive = true }
-                    }
-                    ProfileScreen(
-                        profileUiState = profileViewModel.profile,
-                        getProfile = { profileViewModel.getProfile() },
-                        setOnDuty = { value -> attendanceViewModel.setOnDutyValue(value) },
-                        onDutyState = attendanceViewModel.onDutyStatus,
-                        navController = navController,
-                        toggleTheme = { themeViewModel.toggleDarkTheme() },
-                        isDarkMode = themeViewModel.isDarkTheme.collectAsState().value,
-                        logout = { authViewModel.logout(onSuccess = { navigateToLogin() }) },
-                        eventMessage = authViewModel.eventFlow,
-                        reloadProfile = { profileViewModel.reloadProfile() }
-                    )
-                }
-
-                composable(
-                    route = Screen.Detail.route,
-                    arguments = listOf(navArgument("id") { type = NavType.StringType }
-                    )) {
-                    val id = it.arguments?.getString("id") ?: ""
-                    DetailScreen(
-                        attendanceId = id,
-                        navController = navController,
-                        detailStateUi = historyAttendanceViewModel.detail,
-                        loadDetail = { id -> historyAttendanceViewModel.getDetail(id) },
-                        reloadDetail = { historyAttendanceViewModel.reloadDetail() }
-                    )
-                }
-
-                composable(route = Screen.UploadProfilePic.route) {
-                    fun navigateToHome() = navController.navigate(
-                        Screen.Success.createRoute(
-                            context.getString(
-                                R.string.success_title_change_profile_pic
-                            ), context.getString(
-                                R.string.success_desc_change_profile_pic
-                            )
+                        LoginScreen(
+                            updateEmail = { authViewModel.updateEmail(it) },
+                            updatePassword = { authViewModel.updatePassword(it) },
+                            formUIStateFlow = authViewModel.formUiState,
+                            eventMessage = authViewModel.eventFlow,
+                            loginAction = { authViewModel.login(onSuccess = { navigateToHome() }) },
+                            navController = navController
                         )
-                    ) {
-                        popUpTo(Screen.UploadProfilePic.route) { inclusive = true }
                     }
-                    UserChangeProfilePicScreen(
-                        profileStateFlow = profileViewModel.profile,
-                        getProfile = { profileViewModel.getProfile() },
-                        reloadProfile = { profileViewModel.reloadProfile() },
-                        updatePP = { selectedImageFile ->
-                            if (selectedImageFile != null) {
-                                profileViewModel.updatePP(
-                                    selectedImageFile,
+
+                    composable(Screen.Register.route) {
+                        fun navigateToLogin() = navController.navigate(Screen.Login.route) {
+                            popUpTo(Screen.Register.route) {
+                                inclusive = true
+                            }
+                        }
+
+                        RegisterScreen(
+                            RegisterAction = { userData ->
+                                registerViewModel.registerUser(
+                                    userData,
+                                    onSuccess = { navigateToLogin() })
+                            },
+                            LoginAction = { navigateToLogin() },
+                            registerFormUiStateFlow = registerViewModel.registerFormUiState,
+                            updateName = { registerViewModel.updateName(it) },
+                            updateEmail = { registerViewModel.updateEmail(it) },
+                            updatePassword = { registerViewModel.updatePassword(it) },
+                            eventMessage = registerViewModel.eventFlow,
+                        )
+                    }
+
+                    composable(Screen.Home.route) {
+                        HomeScreen(
+                            timerState = timerViewModel.timerState,
+                            navHostController = navController,
+                            getHomeStateFlow = { profileViewModel.getProfileWithStats() },
+                            homeData = profileViewModel.homeData,
+                            reloadHomeData = { profileViewModel.reloadProfileWithStats() },
+                            setOnDuty = { value -> attendanceViewModel.setOnDutyValue(value) },
+                            onDutyValue = attendanceViewModel.onDutyStatus
+                        )
+                    }
+
+                    composable(Screen.Map.route) {
+                        MapScreen()
+                    }
+
+                    composable(
+                        route = Screen.Attendance.route,
+                        deepLinks = listOf(navDeepLink {
+                            uriPattern = "https://algodaily/attendance/{id}/{createdAt}"
+                        }),
+                        arguments = listOf(
+                            navArgument("id") { type = NavType.StringType },
+                            navArgument("createdAt") { type = NavType.StringType })
+                    ) {
+                        val id = it.arguments?.getString("id") ?: ""
+                        val createdAt = it.arguments?.getString("createdAt") ?: ""
+                        AttendanceScreen(
+                            id = id,
+                            createdAt = createdAt,
+                            navController = navController,
+                            viewModel = attendanceViewModel
+                        )
+                    }
+
+                    composable(
+                        route = Screen.Success.route,
+                        arguments = listOf(
+                            navArgument("title") { type = NavType.StringType },
+                            navArgument("desc") { type = NavType.StringType })
+                    ) {
+                        val title = it.arguments?.getString("title")
+                        val desc = it.arguments?.getString("desc")
+                        SuccessScreen(navController = navController, title = title, desc = desc)
+                    }
+
+                    composable(Screen.History.route) {
+                        AttendanceHistoryScreen(
+                            navController,
+                            getHistory = { date -> historyAttendanceViewModel.getHistory(date) },
+                            reloadHistory = { historyAttendanceViewModel.reloadHistory() },
+                            historyUiState = historyAttendanceViewModel.result,
+                            setSortingBy = { column, sortType ->
+                                historyAttendanceViewModel.sortBy(
+                                    column,
+                                    sortType
+                                )
+                            },
+                            statusSortType = historyAttendanceViewModel.statusSortType,
+                            timestampSortType = historyAttendanceViewModel.timestampSortType,
+                        )
+                    }
+
+                    composable(
+                        route = Screen.Profile.route,
+                    ) {
+                        fun navigateToLogin() = navController.navigate(Screen.Login.route) {
+                            popUpTo(Screen.Home.route) { inclusive = true }
+                        }
+                        ProfileScreen(
+                            profileUiState = profileViewModel.profile,
+                            getProfile = { profileViewModel.getProfile() },
+                            setOnDuty = { value -> attendanceViewModel.setOnDutyValue(value) },
+                            onDutyState = attendanceViewModel.onDutyStatus,
+                            navController = navController,
+                            toggleTheme = { themeViewModel.toggleDarkTheme() },
+                            isDarkMode = themeViewModel.isDarkTheme.collectAsState().value,
+                            logout = { authViewModel.logout(onSuccess = { navigateToLogin() }) },
+                            eventMessage = authViewModel.eventFlow,
+                            reloadProfile = { profileViewModel.reloadProfile() }
+                        )
+                    }
+
+                    composable(
+                        route = Screen.Detail.route,
+                        arguments = listOf(navArgument("id") { type = NavType.StringType }
+                        )) {
+                        val id = it.arguments?.getString("id") ?: ""
+                        DetailScreen(
+                            attendanceId = id,
+                            navController = navController,
+                            detailStateUi = historyAttendanceViewModel.detail,
+                            loadDetail = { id -> historyAttendanceViewModel.getDetail(id) },
+                            reloadDetail = { historyAttendanceViewModel.reloadDetail() }
+                        )
+                    }
+
+                    composable(route = Screen.UploadProfilePic.route) {
+                        fun navigateToHome() = navController.navigate(
+                            Screen.Success.createRoute(
+                                context.getString(
+                                    R.string.success_title_change_profile_pic
+                                ), context.getString(
+                                    R.string.success_desc_change_profile_pic
+                                )
+                            )
+                        ) {
+                            popUpTo(Screen.UploadProfilePic.route) { inclusive = true }
+                        }
+                        UserChangeProfilePicScreen(
+                            profileStateFlow = profileViewModel.profile,
+                            getProfile = { profileViewModel.getProfile() },
+                            reloadProfile = { profileViewModel.reloadProfile() },
+                            updatePP = { selectedImageFile ->
+                                if (selectedImageFile != null) {
+                                    profileViewModel.updatePP(
+                                        selectedImageFile,
+                                        onSuccess = { navigateToHome() })
+                                }
+                            },
+                            navController = navController,
+                            eventMessage = profileViewModel.eventFlow
+                        )
+                    }
+
+                    composable(route = Screen.ChangePassword.route) {
+                        fun navigateToHome() = navController.navigate(
+                            Screen.Success.createRoute(
+                                context.getString(R.string.success_change_title_password),
+                                context.getString(R.string.success_change_desc_password)
+                            )
+                        ) {
+                            popUpTo(Screen.ChangePassword.route) { inclusive = true }
+                        }
+                        ChangePasswordScreen(
+                            navController = navController,
+                            eventMessage = authViewModel.eventFlow,
+                            changePassword = { userNewPassword ->
+                                authViewModel.changePassword(
+                                    userNewPassword,
                                     onSuccess = { navigateToHome() })
                             }
-                        },
-                        navController = navController,
-                        eventMessage = profileViewModel.eventFlow
-                    )
-                }
-
-                composable(route = Screen.ChangePassword.route) {
-                    fun navigateToHome() = navController.navigate(
-                        Screen.Success.createRoute(
-                            context.getString(R.string.success_change_title_password),
-                            context.getString(R.string.success_change_desc_password)
                         )
-                    ) {
-                        popUpTo(Screen.ChangePassword.route) { inclusive = true }
                     }
-                    ChangePasswordScreen(
-                        navController = navController,
-                        eventMessage = authViewModel.eventFlow,
-                        changePassword = { userNewPassword ->
-                            authViewModel.changePassword(
-                                userNewPassword,
-                                onSuccess = { navigateToHome() })
-                        }
-                    )
                 }
             }
         }

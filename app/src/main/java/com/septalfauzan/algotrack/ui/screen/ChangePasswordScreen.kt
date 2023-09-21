@@ -116,6 +116,7 @@ fun ChangePasswordScreen(
                 )
                 Spacer(modifier = Modifier.height(72.dp))
                 RoundedButton(
+                    modifier = Modifier.fillMaxWidth(),
                     text = stringResource(R.string.save),
                     onClick = { showDialog = true },
                 )
