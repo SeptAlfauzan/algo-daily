@@ -9,7 +9,7 @@
     <string name="attendance_text_workday">Next absence</string>
     <string name="your_stats">Your statistics for today</string>
     <string name="ask_vacation">Want to take a day off today?</string>
-    <string name="create_vacation">apply for leave</string>
+    <string name="create_vacation">apply for day off</string>
     <string name="ontime_stats">On time</string>
     <string name="late_stats">Late</string>
     <string name="in_week">A week</string>

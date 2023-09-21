@@ -15,6 +15,9 @@ import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Sort
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -46,6 +49,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import java.util.*
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun AttendanceHistoryScreen(
     navController: NavController,
@@ -61,6 +65,9 @@ fun AttendanceHistoryScreen(
 
     var dropdownExpanded by remember { mutableStateOf(false) }
     var selectedDateText: String? by rememberSaveable { mutableStateOf(null) }
+    var loading: Boolean by remember { mutableStateOf(false) }
+    val pullRefreshState =
+        rememberPullRefreshState(refreshing = loading, onRefresh = { reloadHistory() })
 
 // Fetching current year, month and day
     val year = calendar[Calendar.YEAR]
@@ -83,7 +90,7 @@ fun AttendanceHistoryScreen(
         }
     }
 
-    DisposableEffect(Unit){
+    DisposableEffect(Unit) {
         onDispose {
             reloadHistory()
             selectedDateText = ""
@@ -111,52 +118,69 @@ fun AttendanceHistoryScreen(
             )
         }
     ) { paddingValues ->
-        historyUiState.collectAsState(initial = UiState.Loading).value.let { uiState ->
-            when (uiState) {
-                is UiState.Loading -> {
-                    ShimmerLoading(showShimmer = true, modifier = Modifier.padding(paddingValues))
-                    selectedDateText?.let {
-                        getHistory(it.reverseFormatCalendarDate())
+        Box(
+            Modifier
+                .fillMaxSize()
+                .pullRefresh(pullRefreshState)
+        )
+        {
+            historyUiState.collectAsState(initial = UiState.Loading).value.let { uiState ->
+                when (uiState) {
+                    is UiState.Loading -> {
+                        loading = true
+                        ShimmerLoading(
+                            showShimmer = true,
+                            modifier = Modifier.padding(paddingValues)
+                        )
+                        selectedDateText?.let {
+                            getHistory(it.reverseFormatCalendarDate())
+                        }
                     }
-                }
-                is UiState.Success -> {
-                    Column(
-                        Modifier
-                            .fillMaxSize()
-                            .padding(16.dp)
-                    ) {
-                        Row(
+                    is UiState.Success -> {
+                        loading = false
+                        Column(
                             Modifier
-                                .padding(bottom = 16.dp)
-                                .clickable { datePicker.show() },
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                .fillMaxSize()
+                                .padding(16.dp)
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.DateRange,
-                                contentDescription = "date icon"
-                            )
-                            Text(
-                                text = selectedDateText!!,
-                                style = MaterialTheme.typography.caption,
-                                color = MaterialTheme.colors.onSurface
-                            )
-                        }
-                        LazyColumn(
-                            verticalArrangement = Arrangement.spacedBy(8.dp),
-                            modifier = Modifier.fillMaxSize()
-                        ) {
-                            items(uiState.data) { history ->
-                                HistoryCard(data = history, navController = navController)
+                            Row(
+                                Modifier
+                                    .padding(bottom = 16.dp)
+                                    .clickable { datePicker.show() },
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.DateRange,
+                                    contentDescription = "date icon"
+                                )
+                                Text(
+                                    text = selectedDateText!!,
+                                    style = MaterialTheme.typography.caption,
+                                    color = MaterialTheme.colors.onSurface
+                                )
                             }
-                            if (uiState.data.isEmpty()) {
-                                item { NoAttendanceData() }
+                            LazyColumn(
+                                verticalArrangement = Arrangement.spacedBy(8.dp),
+                                modifier = Modifier.fillMaxSize()
+                            ) {
+                                items(uiState.data) { history ->
+                                    HistoryCard(data = history, navController = navController)
+                                }
+                                if (uiState.data.isEmpty()) {
+                                    item { NoAttendanceData() }
+                                }
                             }
                         }
                     }
+                    is UiState.Error -> ErrorHandler(
+                        reload = { reloadHistory() },
+                        errorMessage = uiState.errorMessage
+                    )
                 }
-                is UiState.Error -> ErrorHandler(
-                    reload = { reloadHistory() },
-                    errorMessage = uiState.errorMessage
+                PullRefreshIndicator(
+                    refreshing = loading,
+                    state = pullRefreshState,
+                    modifier = Modifier.padding(top= 32.dp).align(Alignment.TopCenter),
                 )
             }
         }

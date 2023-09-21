@@ -1,14 +1,7 @@
 package com.septalfauzan.algotrack.ui.screen
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -16,6 +9,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -44,16 +38,14 @@ fun SuccessScreen(navController: NavController, title: String? = null, desc: Str
             .padding(16.dp),
         contentAlignment = Alignment.Center
     ) {
-        LottieAnimation(
-            composition = composition,
-        )
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(bottom = 64.dp),
-            verticalArrangement = Arrangement.Bottom,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+            LottieAnimation(
+                modifier = Modifier.fillMaxWidth().height(240.dp),
+                contentScale = ContentScale.Crop,
+                composition = composition,
+            )
             Text(
                 text = title ?: stringResource(id = R.string.absence_sent_successfully),
                 style = MaterialTheme.typography.h5.copy(
