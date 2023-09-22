@@ -109,8 +109,8 @@ fun AlgoDailyApp(
         Box(modifier = Modifier.fillMaxSize()) {
             AlertModalDialog(
                 isShowed = showAutoStartDialog,
-                title = "Aplikasi membutuhkan izin autostart!",
-                text = "Untuk bisa menjalankan beberapa fitur, aplikasi algodaily memerlukan izin berjalan di latar belakang dan abaikan penggunaan baterai. Buka pengaturan aplikasi?",
+                title = stringResource(R.string.auto_start_permission),
+                text = stringResource(R.string.auto_start_permission_desc),
                 onStateChange = { showAutoStartDialog = it },
                 onConfirmYes = { openAutoStartSetting(context) }
             )

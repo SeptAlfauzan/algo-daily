@@ -49,6 +49,7 @@ class AttendanceReminder : BroadcastReceiver() {
                     .setContentIntent(deepLinkPendingIntent)
                     .setPriority(NotificationCompat.PRIORITY_HIGH)
                     .setDefaults(NotificationCompat.DEFAULT_ALL)
+                    .setSound(android.provider.Settings.System.DEFAULT_NOTIFICATION_URI)
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 val channel = NotificationChannel(
@@ -66,18 +67,17 @@ class AttendanceReminder : BroadcastReceiver() {
     }
 
     override fun onReceive(context: Context?, intent: Intent?) {
-        executeThread {
+//        executeThread {
             context?.let {
-                val currentDate: Calendar = Calendar.getInstance()
-                val hour = currentDate.get(Calendar.HOUR_OF_DAY)
-                val nextHour = intent?.getIntExtra("next-hour", hour+1) ?: hour+1
-
-                Log.d("TAG", "onReceive value: $nextHour")
-                Notification.getInstance(it).setDailyReminder(hour = nextHour)
+//                val currentDate: Calendar = Calendar.getInstance()
+//                val hour = currentDate.get(Calendar.HOUR_OF_DAY)
+//                val nextHour = intent?.getIntExtra("next-hour", hour+1) ?: hour+1
+//                Notification.getInstance(it).setDailyReminder(hour = nextHour)
+//                Log.d("TAG", "onReceive value:")
 
                 val workManager = WorkManager.getInstance(context)
                 workManager.enqueue(DailyAttendanceWorker.oneTImeWorkRequest)
             }
-        }
+//        }
     }
 }

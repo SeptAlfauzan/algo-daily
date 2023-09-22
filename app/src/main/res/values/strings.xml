@@ -117,4 +117,6 @@
     <string name="change_pp_title">Upload Profile Photo</string>
     <string name="cancel_change">cancel edit</string>
     <string name="save_change">save change</string>
+    <string name="auto_start_permission">App needs autostart permission!</string>
+    <string name="auto_start_permission_desc">To run some features, the Algo Daily app needs permission to run in the background and ignore battery usage. Go to app settings?</string>
 </resources>
