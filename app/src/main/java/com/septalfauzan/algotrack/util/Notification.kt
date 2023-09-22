@@ -5,12 +5,16 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.icu.util.Calendar
+import android.util.Log
 import com.septalfauzan.algotrack.service.AttendanceReminder
 
 class  Notification(private val context: Context) {
     fun setDailyReminder() {
         val calendar = Calendar.getInstance()
         val hour = calendar.get(Calendar.HOUR_OF_DAY)
+
+        Log.d("TAG", "setDailyReminder: $hour")
+
         calendar.set(Calendar.HOUR_OF_DAY, hour+1)
         calendar.set(Calendar.MINUTE, 0)
 
@@ -22,10 +26,10 @@ class  Notification(private val context: Context) {
         val alarmManager =  context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
 //        alarmManager.setAlarmClock(AlarmManager.AlarmClockInfo(calendar.timeInMillis, null), pendingIntent)
-        alarmManager.setInexactRepeating(
+        alarmManager.setRepeating(
             AlarmManager.RTC_WAKEUP,
             calendar.timeInMillis,
-            AlarmManager.INTERVAL_HOUR,
+            AlarmManager.INTERVAL_FIFTEEN_MINUTES,
             pendingIntent
         )
     }
