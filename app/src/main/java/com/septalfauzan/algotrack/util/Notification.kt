@@ -29,7 +29,7 @@ class  Notification(private val context: Context) {
         alarmManager.setRepeating(
             AlarmManager.RTC_WAKEUP,
             calendar.timeInMillis,
-            AlarmManager.INTERVAL_FIFTEEN_MINUTES,
+            AlarmManager.INTERVAL_HOUR,
             pendingIntent
         )
     }
