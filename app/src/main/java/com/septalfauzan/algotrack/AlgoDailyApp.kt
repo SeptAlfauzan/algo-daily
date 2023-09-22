@@ -40,6 +40,7 @@ val permission33APIBelow = listOf(
     android.Manifest.permission.ACCESS_COARSE_LOCATION,
     android.Manifest.permission.ACCESS_FINE_LOCATION,
     android.Manifest.permission.WAKE_LOCK,
+    android.Manifest.permission.RECEIVE_BOOT_COMPLETED
 )
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -49,6 +50,7 @@ val permission33APIAbove = listOf(
     android.Manifest.permission.ACCESS_FINE_LOCATION,
     android.Manifest.permission.WAKE_LOCK,
     android.Manifest.permission.SCHEDULE_EXACT_ALARM,
+    android.Manifest.permission.RECEIVE_BOOT_COMPLETED
 )
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -108,7 +110,7 @@ fun AlgoDailyApp(
             AlertModalDialog(
                 isShowed = showAutoStartDialog,
                 title = "Aplikasi membutuhkan izin autostart!",
-                text = "Untuk bisa menjalankan beberapa fitur, aplikasi algodaily memerlukan izin berjalan di latar belakang. Buka pengaturan aplikasi?",
+                text = "Untuk bisa menjalankan beberapa fitur, aplikasi algodaily memerlukan izin berjalan di latar belakang dan abaikan penggunaan baterai. Buka pengaturan aplikasi?",
                 onStateChange = { showAutoStartDialog = it },
                 onConfirmYes = { openAutoStartSetting(context) }
             )

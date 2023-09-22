@@ -59,10 +59,8 @@ class DailyAttendanceWorker @AssistedInject constructor(
         private val currentMinuteSecond = currentDate.getMilliSecFromMinutesSecond()
         private val timerLeft = totalTimer - currentMinuteSecond
 
-
-
         val periodicWorkRequest =
-            PeriodicWorkRequestBuilder<DailyAttendanceWorker>(1, TimeUnit.HOURS)
+            PeriodicWorkRequestBuilder<DailyAttendanceWorker>(59, TimeUnit.MINUTES)
                 .addTag(REMINDER_WORK_MANAGER_TAG)
                 .setInitialDelay(timerLeft, TimeUnit.MILLISECONDS)
                 .build()

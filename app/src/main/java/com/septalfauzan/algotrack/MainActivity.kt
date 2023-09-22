@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.os.PowerManager
 import android.provider.Settings
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -56,8 +57,12 @@ class MainActivity : ComponentActivity() {
 //        workManager.cancelAllWorkByTag(REMINDER_WORK_MANAGER_TAG)
 //        workManager.pruneWork()
 //        workManager.enqueue(DailyAttendanceWorker.periodicWorkRequest)
+
+
+        val currentDate: Calendar = Calendar.getInstance()
+        val hour = currentDate.get(Calendar.HOUR_OF_DAY)
         val notificationHelper = Notification.getInstance(this)
-        notificationHelper.setDailyReminder()
+        notificationHelper.setDailyReminder(hour)
 
         val packageName = packageName
         val powerManager: PowerManager = getSystemService(POWER_SERVICE) as PowerManager
@@ -69,14 +74,14 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-//        if (!powerManager.isIgnoringBatteryOptimizations(packageName)) {
-//            Toast.makeText(this, "no allowed", Toast.LENGTH_SHORT).show()
-//            // it is not enabled. Ask the user to do so from the settings.
+        if (!powerManager.isIgnoringBatteryOptimizations(packageName)) {
+            Toast.makeText(this, "no allowed", Toast.LENGTH_SHORT).show()
+            // it is not enabled. Ask the user to do so from the settings.
 //        openBackgroundServiceSetting(this)
-//        }else {
+        }else {
 //            Toast.makeText(this, "allowed", Toast.LENGTH_SHORT).show();
-//            // good news! It works fine even in the background.
-//        }
+            // good news! It works fine even in the background.
+        }
 
         setContent {
             AlgoTrackTheme(darkTheme = themeViewModel.isDarkTheme.collectAsState().value) {
