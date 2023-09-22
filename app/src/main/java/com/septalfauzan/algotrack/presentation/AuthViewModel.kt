@@ -41,10 +41,15 @@ class AuthViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            if (!authUseCase.checkAuthTokenValid()) logout()
-            _isLogged.value = authUseCase.checkAuthTokenValid()
-            delay(1000)
-            _isLoadingSplash.value = false
+            try {
+                if (!authUseCase.checkAuthTokenValid()) logout()
+                _isLogged.value = authUseCase.checkAuthTokenValid()
+                delay(1000)
+            }catch (e: Exception){
+                e.printStackTrace()
+            }finally {
+                _isLoadingSplash.value = false
+            }
         }
     }
 
