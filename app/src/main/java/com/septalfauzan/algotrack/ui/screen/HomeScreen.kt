@@ -188,7 +188,7 @@ fun HomeScreen(
             PullRefreshIndicator(
                 refreshing = loading,
                 state = pullRefreshState,
-                modifier = Modifier.padding(top = 32.dp).align(Alignment.TopCenter),
+                modifier = Modifier.padding(top = if(loading) 32.dp else 0.dp).align(Alignment.TopCenter),
             )
         }
     }

@@ -27,8 +27,8 @@ class DailyAttendanceWorker @AssistedInject constructor(
     CoroutineWorker(context, workerParams) {
     override suspend fun doWork(): Result {
         try {
-//            if (!Notification.isWorkDay())  return Result.success()
-//            if (!Notification.isWorkHour())  return Result.success()
+            if (!Notification.isWorkDay())  return Result.success()
+            if (!Notification.isWorkHour())  return Result.success()
             if(dataStorePreference.getAuthToken().first().isEmpty())  return Result.success()
 
             val response = pendingAttendanceUseCase.create()
@@ -60,7 +60,7 @@ class DailyAttendanceWorker @AssistedInject constructor(
         private val timerLeft = totalTimer - currentMinuteSecond
 
         val periodicWorkRequest =
-            PeriodicWorkRequestBuilder<DailyAttendanceWorker>(59, TimeUnit.MINUTES)
+            PeriodicWorkRequestBuilder<DailyAttendanceWorker>(repeatInterval = 59, repeatIntervalTimeUnit = TimeUnit.MINUTES, flexTimeInterval = 1, flexTimeIntervalUnit = TimeUnit.SECONDS)
                 .addTag(REMINDER_WORK_MANAGER_TAG)
                 .setInitialDelay(timerLeft, TimeUnit.MILLISECONDS)
                 .build()
@@ -68,7 +68,6 @@ class DailyAttendanceWorker @AssistedInject constructor(
         val oneTImeWorkRequest =
             OneTimeWorkRequestBuilder<DailyAttendanceWorker>()
                 .addTag(REMINDER_WORK_MANAGER_TAG)
-                .setConstraints(networkConstraints)
                 .build()
     }
 }

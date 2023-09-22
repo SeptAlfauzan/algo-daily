@@ -1,7 +1,6 @@
 package com.septalfauzan.algotrack.ui.screen
 
 import android.app.DatePickerDialog
-import android.util.Log
 import android.widget.DatePicker
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -180,7 +179,7 @@ fun AttendanceHistoryScreen(
                 PullRefreshIndicator(
                     refreshing = loading,
                     state = pullRefreshState,
-                    modifier = Modifier.padding(top= 32.dp).align(Alignment.TopCenter),
+                    modifier = Modifier.padding(top = if(loading) 32.dp else 0.dp).align(Alignment.TopCenter),
                 )
             }
         }

@@ -8,45 +8,24 @@ import android.icu.util.Calendar
 import com.septalfauzan.algotrack.service.AttendanceReminder
 
 class  Notification(private val context: Context) {
-    fun setDailyReminder(hour: Int = 8) {
-//        set alarm for attendance every hour from 8am to 4pm
-        val workHour = (8..16).map {
-            val calendar = Calendar.getInstance()
-            calendar.set(Calendar.HOUR_OF_DAY, it)
-            calendar.set(Calendar.MINUTE, 0)
-            calendar
-        }
-//        workHour.mapIndexed { index, hour ->
-//            val calendar = Calendar.getInstance()
-//            calendar.set(Calendar.HOUR_OF_DAY, 21)
-//            calendar.set(Calendar.MINUTE, 6+(index*10))
-//
-//            val intent = Intent(context, AttendanceReminder::class.java)
-//            val pendingIntent =
-//                PendingIntent.getBroadcast(context, ID_REPEATING+index, intent, PendingIntent.FLAG_IMMUTABLE)
-//            val alarmManager =  context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-//
-//            alarmManager.setExactAndAllowWhileIdle(
-//                AlarmManager.RTC_WAKEUP,
-//                calendar.timeInMillis,
-//                pendingIntent
-//            )
-//        }
-
+    fun setDailyReminder() {
         val calendar = Calendar.getInstance()
-        calendar.set(Calendar.HOUR_OF_DAY, hour)
+        val hour = calendar.get(Calendar.HOUR_OF_DAY)
+        calendar.set(Calendar.HOUR_OF_DAY, hour+1)
         calendar.set(Calendar.MINUTE, 0)
 
         val intent = Intent(context, AttendanceReminder::class.java)
         intent.putExtra("next-hour", hour+1)
 
         val pendingIntent =
-            PendingIntent.getBroadcast(context, ID_REPEATING, intent, PendingIntent.FLAG_IMMUTABLE)
+            PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
         val alarmManager =  context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-        alarmManager.setExactAndAllowWhileIdle(
+//        alarmManager.setAlarmClock(AlarmManager.AlarmClockInfo(calendar.timeInMillis, null), pendingIntent)
+        alarmManager.setInexactRepeating(
             AlarmManager.RTC_WAKEUP,
             calendar.timeInMillis,
+            AlarmManager.INTERVAL_FIFTEEN_MINUTES,
             pendingIntent
         )
     }

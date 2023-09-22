@@ -14,6 +14,9 @@ class BootReceiver : BroadcastReceiver() {
         if (intent?.action == Intent.ACTION_BOOT_COMPLETED) {
             // Start your application here
             context?.let{
+//                val workManager = WorkManager.getInstance(it)
+//                workManager.cancelAllWorkByTag(REMINDER_WORK_MANAGER_TAG)
+//                workManager.enqueue(DailyAttendanceWorker.periodicWorkRequest)
                 val notificationHelper = Notification.getInstance(context)
                 notificationHelper.setDailyReminder()
                 Log.d("TAG", "notification alarm manager starting... ")

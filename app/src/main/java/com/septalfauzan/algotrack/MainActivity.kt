@@ -55,14 +55,10 @@ class MainActivity : ComponentActivity() {
 
 //        val workManager = WorkManager.getInstance(this)
 //        workManager.cancelAllWorkByTag(REMINDER_WORK_MANAGER_TAG)
-//        workManager.pruneWork()
+////        workManager.pruneWork()
 //        workManager.enqueue(DailyAttendanceWorker.periodicWorkRequest)
 
-
-        val currentDate: Calendar = Calendar.getInstance()
-        val hour = currentDate.get(Calendar.HOUR_OF_DAY)
-        val notificationHelper = Notification.getInstance(this)
-        notificationHelper.setDailyReminder(hour)
+        Notification.getInstance(applicationContext).setDailyReminder()
 
         val packageName = packageName
         val powerManager: PowerManager = getSystemService(POWER_SERVICE) as PowerManager

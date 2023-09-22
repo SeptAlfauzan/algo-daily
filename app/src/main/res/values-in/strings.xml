@@ -117,4 +117,7 @@
     <string name="change_pp_title">Upload Foto Profil</string>
     <string name="cancel_change">batal edit</string>
     <string name="save_change">simpan perubahan</string>
+
+    <string name="auto_start_permission">Aplikasi membutuhkan izin autostart!</string>
+    <string name="auto_start_permission_desc">Untuk bisa menjalankan beberapa fitur, aplikasi Algo Daily memerlukan izin berjalan di latar belakang dan abaikan penggunaan baterai. Buka pengaturan aplikasi?</string>
 </resources>
