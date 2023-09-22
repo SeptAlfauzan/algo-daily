@@ -68,6 +68,13 @@ class AttendanceReminder : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         executeThread {
             context?.let {
+                val currentDate: Calendar = Calendar.getInstance()
+                val hour = currentDate.get(Calendar.HOUR_OF_DAY)
+                val nextHour = intent?.getIntExtra("next-hour", hour+1) ?: hour+1
+
+                Log.d("TAG", "onReceive value: $nextHour")
+                Notification.getInstance(it).setDailyReminder(hour = nextHour)
+
                 val workManager = WorkManager.getInstance(context)
                 workManager.enqueue(DailyAttendanceWorker.oneTImeWorkRequest)
             }
