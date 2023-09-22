@@ -12,3 +12,7 @@ Features of Algo Daily:
 - Daily and weekly stats
 - Attendance history record
 - Dark mode support
+
+Test Account for this project
+username: test@test.com
+password: test2
